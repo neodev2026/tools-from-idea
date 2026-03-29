@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listen & Learn - Endless Loop Mode</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #2d3436; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { width: 100%; max-width: 600px; background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #0984e3; margin-bottom: 5px; }
+        .subtitle { text-align: center; font-size: 14px; color: #636e72; margin-bottom: 20px; }
+        textarea { width: 95%; height: 300px; background: #f1f2f6; color: #2d3436; border: 2px solid #dfe6e9; border-radius: 12px; padding: 15px; font-size: 16px; margin-bottom: 20px; resize: none; line-height: 1.6; outline: none; }
+        textarea:focus { border-color: #0984e3; background: #fff; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        button { padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s; }
+        .play-btn { background: #0984e3; color: white; }
+        .pause-btn { background: #fab1a0; color: #d63031; }
+        .stop-btn { background: #dfe6e9; color: #2d3436; grid-column: span 2; }
+        button:hover { opacity: 0.9; transform: scale(0.98); }
+        .status { text-align: center; font-size: 13px; color: #0984e3; font-weight: bold; height: 20px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🎧 Listen & Learn</h2>
+        <div class="subtitle">Endless Loop & Auto-Language Switch</div>
+        <div id="status" class="status"></div>
+        
+        <textarea id="scriptInput">
+look forward
+> 기대하다
+I’m really looking forward to your post!
+> 당신의 포스팅이 정말 기대돼요!
+
+be burned by
+> 상처를 입다, 호되게 당하다
+I have been burned by fake people as well.
+> 저도 가식적인 사람들 때문에 상처를 입은 적이 있어요.
+
+power through
+> 꿋꿋이 버티며 해내다
+I just kind of power through most of the anxiety.
+> 저는 보통 대부분의 불안감을 억누르며 버텨내고 있어요.
+        </textarea>
+
+        <div class="controls">
+            <button class="play-btn" onclick="startLearning()">▶ PLAY / RESUME</button>
+            <button class="pause-btn" onclick="pause()">Ⅱ PAUSE</button>
+            <button class="stop-btn" onclick="stop()">■ RESET</button>
+        </div>
+    </div>
+
+    <script>
+        const synth = window.speechSynthesis;
+        const scriptInput = document.querySelector('#scriptInput');
+        const statusDiv = document.querySelector('#status');
+
+        let lines = [];
+        let currentIndex = 0;
+        let isPaused = false;
+
+        function startLearning() {
+            if (isPaused) {
+                synth.resume();
+                isPaused = false;
+                statusDiv.innerText = "재생 중...";
+                return;
+            }
+
+            if (synth.speaking) synth.cancel();
+
+            lines = scriptInput.value.split('\n').filter(line => line.trim() !== '');
+            currentIndex = 0;
+            isPaused = false;
+            statusDiv.innerText = "재생 시작 (무한 반복)";
+            playNext();
+        }
+
+        function playNext() {
+            if (currentIndex >= lines.length) {
+                currentIndex = 0; // 스크립트 끝에 도달하면 처음부터 다시 시작
+            }
+
+            const currentLine = lines[currentIndex].trim();
+            const isKorean = currentLine.startsWith('>') || /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(currentLine);
+            const utter = new SpeechSynthesisUtterance(currentLine.replace('>', ''));
+            
+            const voices = synth.getVoices();
+            if (isKorean) {
+                utter.voice = voices.find(v => v.lang.includes('ko')) || voices[0];
+                utter.rate = 1.0;
+            } else {
+                utter.voice = voices.find(v => v.lang === 'en-GB') || voices.find(v => v.lang.includes('en')) || voices[0];
+                utter.rate = 0.9;
+            }
+
+            utter.onend = () => {
+                if (!isPaused) {
+                    currentIndex++;
+                    playNext();
+                }
+            };
+
+            synth.speak(utter);
+        }
+
+        function pause() {
+            if (synth.speaking && !isPaused) {
+                synth.pause();
+                isPaused = true;
+                statusDiv.innerText = "일시 정지됨";
+            }
+        }
+
+        function stop() {
+            synth.cancel();
+            isPaused = false;
+            currentIndex = 0;
+            statusDiv.innerText = "정지 및 초기화됨";
+        }
+
+        window.speechSynthesis.onvoiceschanged = () => {};
+    </script>
+</body>
+</html>
