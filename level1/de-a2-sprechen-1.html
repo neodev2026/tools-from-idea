@@ -3,89 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deutsch A2 Speaking - Perfect Trainer</title>
+    <title>Deutsch A2 Speaking - Chat Trainer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .step-hidden { display: none; }
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .schedule-table td { border: 1px solid #e2e8f0; padding: 4px; text-align: left; font-size: 0.7rem; }
+        .chat-scroll { max-height: 400px; overflow-y: auto; scroll-behavior: smooth; }
+        /* 스크롤바 숨기기 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen p-4 font-sans">
 
-    <div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
-        <div class="bg-amber-600 p-6 text-white flex justify-between items-center">
+    <div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col h-[90vh]">
+        <div class="bg-amber-600 p-5 text-white flex justify-between items-center shrink-0">
             <div>
-                <h1 class="text-xl font-black">Teil 3: Etwas aushandeln</h1>
-                <p id="role-display" class="text-amber-100 text-xs mt-1">Wählen Sie Ihre Rolle</p>
+                <h1 class="text-lg font-black italic">Teil 3: Etwas aushandeln</h1>
+                <p id="role-display" class="text-amber-100 text-[10px] uppercase font-bold tracking-widest">Wählen Sie Ihre Rolle</p>
             </div>
-            <div id="lives-display" class="text-sm font-bold bg-white/20 px-3 py-1 rounded-full hidden">
-                오답 기회: <span id="lives-count">3</span>/3
+            <div id="lives-display" class="text-xs font-bold bg-white/20 px-3 py-1 rounded-full hidden">
+                LIFE: <span id="lives-count">2</span>/2
             </div>
         </div>
 
-        <div class="p-6">
-            <div id="role-selector" class="text-center py-10">
-                <h2 class="text-lg font-bold mb-6 italic text-slate-700">연습할 역할을 선택하세요</h2>
+        <div class="flex-1 overflow-hidden flex flex-col p-6">
+            
+            <div id="role-selector" class="text-center my-auto">
+                <h2 class="text-lg font-bold mb-8 text-slate-700">연습할 역할을 선택하세요</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <button onclick="startPart3('A')" class="p-6 border-2 border-slate-200 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all">
-                        <span class="block text-2xl mb-2">🙋‍♂️</span><b>Kandidat A</b>
+                    <button onclick="startPart3('A')" class="p-6 border-2 border-slate-200 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all group">
+                        <span class="block text-3xl mb-2 group-hover:scale-110 transition-transform">🙋‍♂️</span><b class="text-slate-700">Kandidat A</b>
                     </button>
-                    <button onclick="startPart3('B')" class="p-6 border-2 border-slate-200 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all">
-                        <span class="block text-2xl mb-2">🙋‍♀️</span><b>Kandidat B</b>
+                    <button onclick="startPart3('B')" class="p-6 border-2 border-slate-200 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all group">
+                        <span class="block text-3xl mb-2 group-hover:scale-110 transition-transform">🙋‍♀️</span><b class="text-slate-700">Kandidat B</b>
                     </button>
                 </div>
             </div>
 
-            <div id="main-trainer" class="step-hidden">
-                <div id="schedule-section" class="mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                    <p class="text-[10px] font-black text-slate-500 uppercase mb-2">📅 Meine Termine (내 일정표)</p>
-                    <div id="schedule-content"></div>
+            <div id="main-trainer" class="step-hidden flex flex-col h-full">
+                <div id="schedule-section" class="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-200 shrink-0">
+                    <p class="text-[10px] font-black text-slate-400 uppercase mb-1">📅 Meine Termine</p>
+                    <div id="schedule-content" class="text-[11px] text-slate-600"></div>
                 </div>
 
-                <div class="flex justify-between items-center mb-4">
-                    <p class="text-[10px] font-black text-slate-400 uppercase">연습 진행 중</p>
-                    <button onclick="showHint()" class="text-xs bg-white text-amber-600 px-3 py-1 rounded-full font-bold border border-amber-200 shadow-sm">💡 힌트 보기</button>
-                </div>
+                <div id="chat-history" class="chat-scroll no-scrollbar flex-1 space-y-4 mb-4 pr-2">
+                    </div>
 
-                <div class="mb-6 space-y-4">
-                    <div class="flex gap-2">
-                        <div class="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-xs">🤖</div>
-                        <div class="bg-slate-100 p-3 rounded-2xl rounded-tl-none max-w-[85%]">
-                            <p id="partner-text" class="text-sm font-medium text-slate-700 italic"></p>
+                <div class="shrink-0 space-y-4">
+                    <div id="system-msg" class="h-6 text-center text-xs font-bold transition-opacity opacity-0"></div>
+
+                    <div id="section-step1" class="fade-in">
+                        <div class="p-4 bg-amber-50 border-2 border-dashed border-amber-200 rounded-2xl text-center mb-4 min-h-[60px] flex items-center justify-center gap-2 flex-wrap shadow-inner" id="sentence-dropzone"></div>
+                        <div class="flex flex-wrap justify-center gap-2" id="word-bank"></div>
+                    </div>
+
+                    <div id="section-step2" class="step-hidden fade-in space-y-3">
+                        <div class="flex gap-2">
+                            <button onclick="playTTS()" class="flex-1 py-3 bg-white border-2 border-amber-500 text-amber-600 rounded-xl font-bold text-sm">🔊 발음 듣기</button>
+                            <button onclick="playTTS()" class="flex-1 py-3 bg-rose-500 text-white rounded-xl font-bold text-sm">🎤 녹음 연습</button>
                         </div>
+                        <button id="next-btn" class="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-base shadow-lg">NÄCHSTE (다음으로)</button>
                     </div>
-                    <div class="flex justify-end">
-                        <div class="bg-amber-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] text-white shadow-md">
-                            <p id="my-answer-preview" class="text-sm font-bold">나: (단어를 조합하세요)</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="section-step1" class="fade-in">
-                    <div class="p-4 bg-amber-50 border-2 border-dashed border-amber-200 rounded-2xl text-center mb-4 min-h-[60px] flex items-center justify-center gap-2 flex-wrap" id="sentence-dropzone"></div>
-                    <div class="flex flex-wrap justify-center gap-2" id="word-bank"></div>
-                </div>
-
-                <div id="section-step2" class="step-hidden fade-in text-center space-y-4 border-t pt-6">
-                    <p class="text-xs font-bold text-blue-600">성공! 이제 큰 소리로 따라 하세요.</p>
-                    <h3 id="target-sentence" class="text-xl font-bold text-slate-800"></h3>
-                    <div class="flex gap-2">
-                        <button onclick="playTTS()" class="flex-1 py-3 bg-white border-2 border-amber-500 text-amber-600 rounded-xl font-bold">🔊 발음 듣기</button>
-                        <button id="record-btn" onclick="toggleRecording()" class="flex-1 py-3 bg-rose-500 text-white rounded-xl font-bold">🎤 녹음 연습</button>
-                    </div>
-                    <button id="next-btn" class="w-full py-4 bg-slate-800 text-white rounded-xl font-black shadow-xl">다음 문장으로</button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div id="hint-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6 hidden">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl">
-            <h3 class="text-lg font-black mb-4">💡 학습 가이드</h3>
-            <div id="hint-content" class="text-sm space-y-3 text-slate-600 leading-relaxed border-t pt-4"></div>
-            <button onclick="document.getElementById('hint-modal').classList.add('hidden')" class="w-full mt-6 py-3 bg-slate-800 text-white rounded-xl font-bold">확인</button>
         </div>
     </div>
 
@@ -94,22 +76,22 @@
         let currentIdx = 0;
         let selectedWords = [];
         let errorCount = 0;
-        const maxErrors = 3;
-
-        const scheduleHTML = {
-            'A': `<table class="w-full schedule-table"><tr><td>08:00</td><td>Michaela & Paul</td><td>12:00</td><td>Mittagessen</td></tr><tr><td>15:00</td><td>Sportkurse</td><td>17:00</td><td>Elisa & Max</td></tr></table>`,
-            'B': `<table class="w-full schedule-table"><tr><td>08:00</td><td>Frühstück Boris</td><td>10:00</td><td>Prüfung</td></tr><tr><td>12:30</td><td>Pizzeria</td><td>17:00</td><td>Deutsch lernen</td></tr></table>`
-        };
+        const maxErrors = 2; // 피드백 반영: 2회로 변경
 
         const scenarios = {
             'A': [
-                { partner: "Hast du am Samstag um 10 Uhr Zeit?", target: "Nein, da habe ich Frühstück mit Michaela.", words: ["Nein,", "da", "habe", "ich", "Frühstück", "mit", "Michaela."], order: ["Nein,", "da", "habe", "ich", "Frühstück", "mit", "Michaela."], hint: "<b>da</b>: 그때(10시)를 지칭합니다.<br><b>mit</b>: 누구와 함께 할 때 쓰는 전치사예요." },
-                { partner: "Wie wäre es vielleicht um 14 Uhr?", target: "Ja, das passt mir gut.", words: ["Ja,", "das", "passt", "mir", "gut."], order: ["Ja,", "das", "passt", "mir", "gut."], hint: "<b>passt mir gut</b>: 나에게 시간이 딱 좋다는 표현입니다." }
+                { partner: "Hast du am Samstag um 10 Uhr Zeit?", target: "Nein, da habe ich Frühstück mit Michaela.", words: ["Nein,", "da", "habe", "ich", "Frühstück", "mit", "Michaela."], order: ["Nein,", "da", "habe", "ich", "Frühstück", "mit", "Michaela."] },
+                { partner: "Wie wäre es vielleicht um 14 Uhr?", target: "Ja, das passt mir gut.", words: ["Ja,", "das", "passt", "mir", "gut."], order: ["Ja,", "das", "passt", "mir", "gut."] }
             ],
             'B': [
-                { partner: "Wollen 우리는 사전을 함께 살까?", target: "Ja, gerne. Hast du um 13 Uhr Zeit?", words: ["Ja,", "gerne.", "Hast", "du", "um", "13", "Uhr", "Zeit?"], order: ["Ja,", "gerne.", "Hast", "du", "um", "13", "Uhr", "Zeit?"], hint: "<b>Zeit haben</b>: 시간이 있는지 물을 때 사용합니다." },
-                { partner: "Um 13 Uhr esse ich Pizza. Geht es um 16 Uhr?", target: "Nein, da muss ich Frau Schäfer besuchen.", words: ["Nein,", "da", "muss", "ich", "Frau", "Schäfer", "besuchen."], order: ["Nein,", "da", "muss", "ich", "Frau", "Schäfer", "besuchen."], hint: "<b>muss... besuchen</b>: ~를 방문해야 한다는 의무 표현입니다." }
+                { partner: "Wollen wir zusammen ein Wörterbuch kaufen?", target: "Ja, gerne. Hast du um 15 Uhr Zeit?", words: ["Ja,", "gerne.", "Hast", "du", "um", "15", "Uhr", "Zeit?"], order: ["Ja,", "gerne.", "Hast", "du", "um", "15", "Uhr", "Zeit?"] },
+                { partner: "Da habe ich leider keine Zeit. Geht es um 13 Uhr?", target: "Nein, da bin ich in der Pizzeria.", words: ["Nein,", "da", "bin", "ich", "in", "der", "Pizzeria."], order: ["Nein,", "da", "bin", "ich", "in", "der", "Pizzeria."] }
             ]
+        };
+
+        const scheduleData = {
+            'A': "08:00 Michaela | 12:00 Mittagessen | 15:00 Sport | 17:00 Elisa & Max",
+            'B': "08:00 Boris | 10:00 Prüfung | 12:30 Pizzeria | 17:00 Deutsch"
         };
 
         function startPart3(role) {
@@ -117,17 +99,19 @@
             document.getElementById('role-selector').classList.add('step-hidden');
             document.getElementById('main-trainer').classList.remove('step-hidden');
             document.getElementById('lives-display').classList.remove('hidden');
-            document.getElementById('schedule-content').innerHTML = scheduleHTML[role];
             document.getElementById('role-display').innerText = `Kandidat ${role} 모드`;
+            document.getElementById('schedule-content').innerText = scheduleData[role];
             initDialog();
         }
 
         function initDialog() {
             const d = scenarios[myRole][currentIdx];
             errorCount = 0;
-            updateLives();
-            document.getElementById('partner-text').innerText = d.partner;
-            document.getElementById('my-answer-preview').innerText = "나: (단어를 조합하세요)";
+            updateLivesUI();
+            
+            // 파트너 말풍선 추가
+            addChatBubble('partner', d.partner);
+
             document.getElementById('section-step1').classList.remove('step-hidden');
             document.getElementById('section-step2').classList.add('step-hidden');
             document.getElementById('sentence-dropzone').innerHTML = '';
@@ -137,11 +121,27 @@
             bank.innerHTML = '';
             [...d.words].sort(() => Math.random() - 0.5).forEach(word => {
                 const btn = document.createElement('button');
-                btn.className = "px-3 py-2 bg-white border-2 border-slate-200 rounded-xl text-sm font-bold shadow-sm active:bg-slate-100";
+                btn.className = "px-3 py-1.5 bg-white border-2 border-slate-200 rounded-xl text-sm font-bold shadow-sm active:scale-95 transition-transform";
                 btn.innerText = word;
                 btn.onclick = () => selectWord(word, btn);
                 bank.appendChild(btn);
             });
+        }
+
+        function addChatBubble(side, text) {
+            const history = document.getElementById('chat-history');
+            const container = document.createElement('div');
+            container.className = side === 'partner' ? "flex gap-2 fade-in" : "flex justify-end fade-in";
+            
+            const bubble = document.createElement('div');
+            bubble.className = side === 'partner' 
+                ? "bg-slate-100 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-sm font-medium text-slate-700 italic shadow-sm"
+                : "bg-amber-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] text-sm font-bold text-white shadow-md";
+            bubble.innerText = text;
+            
+            container.appendChild(bubble);
+            history.appendChild(container);
+            history.scrollTop = history.scrollHeight;
         }
 
         function selectWord(word, btn) {
@@ -149,7 +149,7 @@
             btn.classList.add('invisible');
             const dropzone = document.getElementById('sentence-dropzone');
             const chip = document.createElement('span');
-            chip.className = "px-2 py-1 bg-amber-600 text-white rounded text-xs font-bold fade-in";
+            chip.className = "px-2 py-1 bg-amber-600 text-white rounded-lg font-bold text-xs fade-in";
             chip.innerText = word;
             dropzone.appendChild(chip);
             
@@ -163,38 +163,45 @@
             }
         }
 
+        function showSystemMsg(text, colorClass) {
+            const msgEl = document.getElementById('system-msg');
+            msgEl.innerText = text;
+            msgEl.className = `h-6 text-center text-xs font-bold transition-opacity opacity-100 ${colorClass}`;
+            setTimeout(() => msgEl.classList.replace('opacity-100', 'opacity-0'), 2000);
+        }
+
         function handleWrongAnswer() {
             errorCount++;
-            updateLives();
+            updateLivesUI();
             const d = scenarios[myRole][currentIdx];
             
             if (errorCount >= maxErrors) {
-                alert(`3회 오답! 정답을 확인하고 따라 읽으세요.\n정답: ${d.target}`);
-                showSuccess(d.target);
+                showSystemMsg(`2회 오답! 정답: ${d.target}`, "text-rose-600");
+                setTimeout(() => showSuccess(d.target), 2000);
             } else {
-                alert(`순서가 틀렸습니다! (남은 기회: ${maxErrors - errorCount}번)`);
-                selectedWords = [];
-                document.getElementById('sentence-dropzone').innerHTML = '';
-                // 단어 버튼 다시 보이게 처리
-                document.querySelectorAll('#word-bank button').forEach(b => b.classList.remove('invisible'));
+                showSystemMsg("틀렸습니다! 다시 시도하세요.", "text-amber-600");
+                setTimeout(() => {
+                    selectedWords = [];
+                    document.getElementById('sentence-dropzone').innerHTML = '';
+                    document.querySelectorAll('#word-bank button').forEach(b => b.classList.remove('invisible'));
+                }, 2000);
             }
         }
 
         function showSuccess(sentence) {
-            document.getElementById('my-answer-preview').innerText = `나: ${sentence}`;
+            // 내 말풍선 추가 (중복 방지 체크 필요 시 로직 추가 가능)
+            if (document.getElementById('section-step1').className.indexOf('step-hidden') === -1) {
+                addChatBubble('me', sentence);
+            }
+            
             document.getElementById('section-step1').classList.add('step-hidden');
             document.getElementById('section-step2').classList.remove('step-hidden');
             document.getElementById('target-sentence').innerText = sentence;
             playTTS();
         }
 
-        function updateLives() {
-            document.getElementById('lives-count').innerText = maxErrors - errorCount;
-        }
-
-        function showHint() {
-            document.getElementById('hint-content').innerHTML = scenarios[myRole][currentIdx].hint;
-            document.getElementById('hint-modal').classList.remove('hidden');
+        function updateLivesUI() {
+            document.getElementById('lives-count').innerText = Math.max(0, maxErrors - errorCount);
         }
 
         function playTTS() {
@@ -204,14 +211,13 @@
 
         document.getElementById('next-btn').onclick = () => {
             currentIdx++;
-            if (currentIdx < scenarios[myRole].length) initDialog();
-            else alert("모든 대화 연습을 마쳤습니다! 🎉");
+            if (currentIdx < scenarios[myRole].length) {
+                initDialog();
+            } else {
+                addChatBubble('partner', "연습이 끝났습니다! 정말 잘하셨어요. 🎉");
+                document.getElementById('section-step2').classList.add('step-hidden');
+            }
         };
-
-        async function toggleRecording() {
-            // 녹음 기능 로직 (이전과 동일)
-            alert("마이크를 허용하고 발음해 보세요!");
-        }
     </script>
 </body>
 </html>
