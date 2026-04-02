@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deutsch A2 Speaking - Pro Trainer</title>
+    <title>Deutsch A2 Speaking - Smart Trainer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .step-hidden { display: none; }
@@ -15,51 +15,42 @@
 <body class="bg-slate-100 min-h-screen p-4 font-sans">
 
     <div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
-        <div class="bg-amber-600 p-6 text-white">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-xl font-black">Teil 3: Etwas aushandeln</h1>
-                    <p class="text-amber-100 text-xs mt-1">상대방과 대화하며 약속 정하기</p>
-                </div>
-                <div id="role-display" class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold border border-white/30">역할 선택 전</div>
+        <div class="bg-amber-600 p-6 text-white flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-black">Teil 3: Etwas aushandeln</h1>
+                <p id="role-display" class="text-amber-100 text-xs mt-1">역할을 선택해 주세요</p>
+            </div>
+            <div id="lives-display" class="text-sm font-bold bg-white/20 px-3 py-1 rounded-full hidden">
+                오답 기회: <span id="lives-count">3</span>/3
             </div>
         </div>
 
         <div class="p-6">
             <div id="role-selector" class="text-center py-10">
-                <h2 class="text-lg font-bold text-slate-800 mb-6">연습할 역할을 선택하세요</h2>
+                <h2 class="text-lg font-bold mb-6">연습할 역할을 선택하세요</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <button onclick="startPart3('A')" class="p-6 border-2 border-slate-200 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all">
-                        <span class="block text-2xl mb-2">🙋‍♂️</span>
-                        <span class="font-bold">Kandidat A</span>
-                        <span class="block text-[10px] text-slate-400 mt-1">오전 Frühstück 일정 있음</span>
+                    <button onclick="startPart3('A')" class="p-6 border-2 border-slate-200 rounded-2xl hover:border-amber-500 transition-all">
+                        <span class="block text-2xl mb-2">🙋‍♂️</span><b>Kandidat A</b>
                     </button>
-                    <button onclick="startPart3('B')" class="p-6 border-2 border-slate-200 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all">
-                        <span class="block text-2xl mb-2">🙋‍♀️</span>
-                        <span class="font-bold">Kandidat B</span>
-                        <span class="block text-[10px] text-slate-400 mt-1">오전 시험 일정 있음</span>
+                    <button onclick="startPart3('B')" class="p-6 border-2 border-slate-200 rounded-2xl hover:border-amber-500 transition-all">
+                        <span class="block text-2xl mb-2">🙋‍♀️</span><b>Kandidat B</b>
                     </button>
                 </div>
             </div>
 
             <div id="main-trainer" class="step-hidden">
-                <div class="mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-200 shadow-sm">
-                    <div class="flex justify-between items-center mb-3">
-                        <p class="text-xs font-black text-slate-500 uppercase tracking-tighter">📅 Meine Termine (내 일정표)</p>
-                        <button onclick="showHint()" class="text-[10px] bg-amber-100 text-amber-700 px-2 py-1 rounded font-bold">단어 힌트</button>
-                    </div>
-                    <div id="my-schedule-content" class="grid grid-cols-2 gap-2 schedule-card text-slate-600">
-                        </div>
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-xs font-black text-slate-400 uppercase">Dialog Flow</p>
+                    <button onclick="showHint()" class="text-xs bg-amber-100 text-amber-700 px-3 py-1 rounded-full font-bold border border-amber-200">💡 단어/문장 힌트</button>
                 </div>
 
                 <div class="mb-6 space-y-4">
-                    <div id="partner-bubble" class="flex gap-2">
+                    <div class="flex gap-2">
                         <div class="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-xs">🤖</div>
-                        <div class="bg-slate-100 p-3 rounded-2xl rounded-tl-none max-w-[80%] shadow-sm">
-                            <p id="partner-text" class="text-sm font-medium text-slate-700 italic">"Hast du am Samstag 시간 있어?"</p>
+                        <div class="bg-slate-100 p-3 rounded-2xl rounded-tl-none max-w-[80%]">
+                            <p id="partner-text" class="text-sm font-medium text-slate-700 italic"></p>
                         </div>
                     </div>
-                    
                     <div class="flex justify-end">
                         <div class="bg-amber-600 p-3 rounded-2xl rounded-tr-none max-w-[80%] text-white shadow-md">
                             <p id="my-answer-preview" class="text-sm font-bold">나: (문장을 완성해 보세요)</p>
@@ -73,12 +64,11 @@
                 </div>
 
                 <div id="section-step2" class="step-hidden fade-in text-center space-y-4 border-t pt-6">
-                    <h3 id="target-sentence" class="text-xl font-bold text-slate-800 tracking-tight"></h3>
+                    <h3 id="target-sentence" class="text-xl font-bold text-slate-800"></h3>
                     <div class="flex gap-2">
                         <button onclick="playTTS()" class="flex-1 py-3 bg-white border-2 border-amber-500 text-amber-600 rounded-xl font-bold">🔊 듣기</button>
                         <button id="record-btn" onclick="toggleRecording()" class="flex-1 py-3 bg-rose-500 text-white rounded-xl font-bold">🎤 녹음</button>
                     </div>
-                    <audio id="audio-playback" controls class="w-full hidden filter sepia"></audio>
                     <button id="next-btn" class="w-full py-4 bg-slate-800 text-white rounded-xl font-black shadow-xl">다음 대화로</button>
                 </div>
             </div>
@@ -87,62 +77,43 @@
 
     <div id="hint-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6 hidden">
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl">
-            <h3 class="text-lg font-black mb-4">💡 Teil 3 단어장</h3>
-            <ul class="text-sm space-y-2 text-slate-600">
-                <li>• <b>Termin</b>: 일정/약속 </li>
-                <li>• <b>Besuch</b>: 방문 </li>
-                <li>• <b>Krankenhaus</b>: 병원 </li>
-                <li>• <b>vielleicht</b>: 아마도/어쩌면</li>
-            </ul>
-            <button onclick="document.getElementById('hint-modal').classList.add('hidden')" class="w-full mt-6 py-3 bg-slate-800 text-white rounded-xl font-bold">닫기</button>
+            <h3 class="text-lg font-black mb-4">💡 이번 대화 힌트</h3>
+            <div id="hint-content" class="text-sm space-y-3 text-slate-600 leading-relaxed"></div>
+            <button onclick="document.getElementById('hint-modal').classList.add('hidden')" class="w-full mt-6 py-3 bg-slate-800 text-white rounded-xl font-bold">이해했어요</button>
         </div>
     </div>
 
     <script>
         let myRole = '';
-        let currentDialogIdx = 0;
+        let currentIdx = 0;
         let selectedWords = [];
-        let mediaRecorder;
-        let audioChunks = [];
+        let errorCount = 0;
+        const maxErrors = 3;
 
-        // 시나리오 데이터 (역할별 대화 흐름)
         const scenarios = {
             'A': [
-                { partner: "Hast du am Samstag um 10 Uhr Zeit?", target: "Nein, da habe ich Frühstück mit Michaela.", verb: "haben", words: ["Nein,", "da", "habe", "ich", "Frühstück", "mit", "Michaela."], order: ["Nein,", "da", "habe", "ich", "Frühstück", "mit", "Michaela."] },
-                { partner: "Wie wäre es um 14 Uhr?", target: "Ja, das passt mir gut.", verb: "passen", words: ["Ja,", "das", "passt", "mir", "gut."], order: ["Ja,", "das", "passt", "mir", "gut."] }
+                { partner: "Hast du am Samstag um 10 Uhr 시간 있어?", target: "Nein, da habe ich Frühstück mit Michaela.", words: ["Nein,", "da", "habe", "ich", "Frühstück", "mit", "Michaela."], order: ["Nein,", "da", "habe", "ich", "Frühstück", "mit", "Michaela."], hint: "<b>Frühstück</b>: 아침 식사<br><b>da</b>: 그때(토요일 10시)<br><b>mit</b>: ~와 함께<br><br>💡 나 바빠서 안 된다고 거절할 때 쓰는 문장이에요." },
+                { partner: "Wie wäre es um 14 Uhr?", target: "Ja, das passt mir gut.", words: ["Ja,", "das", "passt", "mir", "gut."], order: ["Ja,", "das", "passt", "mir", "gut."], hint: "<b>passt mir gut</b>: 나에게 잘 맞다(좋다)<br><br>💡 약속 시간을 수락할 때 가장 많이 쓰는 표현입니다." }
             ],
             'B': [
-                { partner: "Wollen wir am Samstag ein Wörterbuch kaufen?", target: "Ja, gerne. Hast du um 13 Uhr Zeit?", verb: "haben", words: ["Ja,", "gerne.", "Hast", "du", "um", "13", "Uhr", "Zeit?"], order: ["Ja,", "gerne.", "Hast", "du", "um", "13", "Uhr", "Zeit?"] },
-                { partner: "Da habe ich Mittagessen. Geht es um 17 Uhr?", target: "Nein, da muss ich Deutsch lernen.", verb: "müssen", words: ["Nein,", "da", "muss", "ich", "Deutsch", "lernen."], order: ["Ne인,", "da", "muss", "ich", "Deutsch", "lernen."] }
+                { partner: "Wollen wir ein Wörterbuch kaufen?", target: "Ja, gerne. Hast du um 13 Uhr 시간 있어?", words: ["Ja,", "gerne.", "Hast", "du", "um", "13", "Uhr", "Zeit?"], order: ["Ja,", "gerne.", "Hast", "du", "um", "13", "Uhr", "Zeit?"], hint: "<b>gerne</b>: 기꺼이/좋아<br><b>Zeit haben</b>: 시간이 있다<br><br>💡 제안을 수락하고 역으로 시간을 물어보는 패턴입니다." }
             ]
-        };
-
-        const scheduleData = {
-            'A': "08:00 Michaela & Paul | 12:00 Mittagessen | 15:00 Sportkurse | 17:00 Elisa & Max",
-            'B': "08:00 Frühstück Boris | 10:00 Computerkurs | 12:30 Pizzeria | 17:00 Deutsch lernen"
         };
 
         function startPart3(role) {
             myRole = role;
             document.getElementById('role-selector').classList.add('step-hidden');
             document.getElementById('main-trainer').classList.remove('step-hidden');
-            document.getElementById('role-display').innerText = `Role: Kandidat ${role}`;
-            
-            // 내 스케줄 텍스트 주입
-            const content = document.getElementById('my-schedule-content');
-            scheduleData[role].split('|').forEach(item => {
-                const div = document.createElement('div');
-                div.className = "bg-white p-2 rounded border border-slate-100 shadow-sm";
-                div.innerText = item.trim();
-                content.appendChild(div);
-            });
-
+            document.getElementById('lives-display').classList.remove('hidden');
+            document.getElementById('role-display').innerText = `Kandidat ${role} 훈련 중`;
             initDialog();
         }
 
         function initDialog() {
-            const d = scenarios[myRole][currentDialogIdx];
-            document.getElementById('partner-text').innerText = `"${d.partner}"`;
+            const d = scenarios[myRole][currentIdx];
+            errorCount = 0;
+            updateLives();
+            document.getElementById('partner-text').innerText = d.partner;
             document.getElementById('my-answer-preview').innerText = "나: (문장을 완성해 보세요)";
             document.getElementById('section-step1').classList.remove('step-hidden');
             document.getElementById('section-step2').classList.add('step-hidden');
@@ -153,7 +124,7 @@
             bank.innerHTML = '';
             [...d.words].sort(() => Math.random() - 0.5).forEach(word => {
                 const btn = document.createElement('button');
-                btn.className = "px-3 py-2 bg-white border-2 border-slate-200 rounded-xl text-sm font-bold shadow-sm";
+                btn.className = "px-3 py-2 bg-white border-2 border-slate-200 rounded-xl text-sm font-bold";
                 btn.innerText = word;
                 btn.onclick = () => selectWord(word, btn);
                 bank.appendChild(btn);
@@ -163,27 +134,54 @@
         function selectWord(word, btn) {
             selectedWords.push(word);
             btn.classList.add('invisible');
+            const dropzone = document.getElementById('sentence-dropzone');
             const chip = document.createElement('span');
             chip.className = "px-2 py-1 bg-amber-600 text-white rounded text-xs font-bold";
             chip.innerText = word;
-            document.getElementById('sentence-dropzone').appendChild(chip);
+            dropzone.appendChild(chip);
             
-            const d = scenarios[myRole][currentDialogIdx];
+            const d = scenarios[myRole][currentIdx];
             if(selectedWords.length === d.words.length) {
                 if(JSON.stringify(selectedWords) === JSON.stringify(d.order)) {
-                    document.getElementById('my-answer-preview').innerText = `나: ${d.target}`;
-                    setTimeout(() => startShadowing(d.target), 600);
+                    showSuccess(d.target);
                 } else {
-                    setTimeout(() => { selectedWords = []; document.getElementById('sentence-dropzone').innerHTML = ''; initDialog(); }, 800);
+                    handleError();
                 }
             }
         }
 
-        function startShadowing(sentence) {
+        function handleError() {
+            errorCount++;
+            updateLives();
+            const d = scenarios[myRole][currentIdx];
+            
+            if (errorCount >= maxErrors) {
+                alert(`3번 틀렸습니다! 정답은: \n"${d.target}" 입니다.`);
+                showSuccess(d.target);
+            } else {
+                alert("틀렸습니다! 다시 시도해 보세요.");
+                selectedWords = [];
+                document.getElementById('sentence-dropzone').innerHTML = '';
+                initDialog(); // 재시작 (errorCount 유지됨)
+                errorCount = errorCount; // 이전 카운트 유지
+            }
+        }
+
+        function showSuccess(sentence) {
+            document.getElementById('my-answer-preview').innerText = `나: ${sentence}`;
             document.getElementById('section-step1').classList.add('step-hidden');
             document.getElementById('section-step2').classList.remove('step-hidden');
             document.getElementById('target-sentence').innerText = sentence;
             playTTS();
+        }
+
+        function updateLives() {
+            document.getElementById('lives-count').innerText = maxErrors - errorCount;
+        }
+
+        function showHint() {
+            document.getElementById('hint-content').innerHTML = scenarios[myRole][currentIdx].hint;
+            document.getElementById('hint-modal').classList.remove('hidden');
         }
 
         function playTTS() {
@@ -191,33 +189,11 @@
             msg.lang = 'de-DE'; msg.rate = 0.8; window.speechSynthesis.speak(msg);
         }
 
-        async function toggleRecording() {
-            const btn = document.getElementById('record-btn');
-            if (!mediaRecorder || mediaRecorder.state === "inactive") {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-                mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
-                mediaRecorder.onstop = () => {
-                    const playback = document.getElementById('audio-playback');
-                    playback.src = URL.createObjectURL(new Blob(audioChunks));
-                    playback.classList.remove('hidden');
-                };
-                mediaRecorder.start();
-                btn.innerText = "⏹ 중지"; btn.classList.add('bg-slate-700');
-            } else {
-                mediaRecorder.stop();
-                btn.innerText = "🎤 녹음"; btn.classList.remove('bg-slate-700');
-            }
-        }
-
         document.getElementById('next-btn').onclick = () => {
-            currentDialogIdx++;
-            if (currentDialogIdx < scenarios[myRole].length) initDialog();
-            else alert("🎉 이 역할의 대화 연습을 마쳤습니다!");
+            currentIdx++;
+            if (currentIdx < scenarios[myRole].length) initDialog();
+            else alert("연습 완료!");
         };
-
-        function showHint() { document.getElementById('hint-modal').classList.remove('hidden'); }
     </script>
 </body>
 </html>
