@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deutsch A2 Speaking - Situation 3 (A2 Level)</title>
+    <title>Deutsch A2 Speaking - Multi Scenarios & Auto Play</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .step-hidden { display: none; }
@@ -14,6 +14,8 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .schedule-table { font-size: 0.65rem; line-height: 1.2; width: 100%; border-collapse: collapse; }
         .schedule-table td { border: 1px solid #e2e8f0; padding: 4px; vertical-align: top; }
+        .btn-active-play { animation: pulseBg 1.5s infinite; border-color: #f43f5e; background-color: #f43f5e; color: white; }
+        @keyframes pulseBg { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen p-4 font-sans">
@@ -22,34 +24,50 @@
         <div class="bg-amber-600 p-5 text-white flex justify-between items-center shrink-0">
             <div>
                 <h1 class="text-lg font-black italic tracking-tight">Deutsch A2 Trainer</h1>
-                <p id="role-display" class="text-amber-100 text-[10px] uppercase font-bold tracking-widest">Situation 3: Termin finden</p>
+                <p id="role-display" class="text-amber-100 text-[10px] uppercase font-bold tracking-widest">Setup</p>
             </div>
-            <div id="lives-display" class="text-xs font-bold bg-white/20 px-3 py-1 rounded-full hidden">
-                LIFE: <span id="lives-count">2</span>/2
+            
+            <div id="top-controls" class="flex items-center gap-2 hidden">
+                <button id="play-all-btn" onclick="togglePlayAll()" class="text-[10px] font-bold bg-white/20 hover:bg-white/30 border border-white/30 px-3 py-1.5 rounded-full transition-all flex items-center gap-1 shadow-sm">
+                    <span>🔄 전체 반복</span>
+                </button>
+                <div class="text-[10px] font-bold bg-white/20 border border-white/30 px-3 py-1.5 rounded-full shadow-sm">
+                    LIFE: <span id="lives-count">2</span>
+                </div>
             </div>
         </div>
 
         <div class="flex-1 overflow-hidden flex flex-col p-6">
             
-            <div id="role-selector" class="text-center my-auto">
-                <h2 class="text-xl font-bold mb-8 text-slate-800 italic">연습할 역할을 선택하세요 (PDF 3-4P 기준)</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="startTraining('A')" class="p-6 border-2 border-slate-200 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all group">
-                        <span class="block text-4xl mb-2 group-hover:scale-110 transition-transform">🙋‍♂️</span>
-                        <b class="text-slate-700 block">Kandidat A</b>
-                        <span class="text-[10px] text-slate-400 italic">Frühstück & Mittagessen 일상 중심</span>
-                    </button>
-                    <button onclick="startTraining('B')" class="p-6 border-2 border-slate-200 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all group">
-                        <span class="block text-4xl mb-2 group-hover:scale-110 transition-transform">🙋‍♀️</span>
-                        <b class="text-slate-700 block">Kandidat B</b>
-                        <span class="text-[10px] text-slate-400 italic">Prüfung & Pizzeria 중심</span>
-                    </button>
+            <div id="setup-screen" class="my-auto">
+                <div class="mb-8 bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-inner">
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-3">1. 훈련 상황 선택 (PDF 기준)</label>
+                    <select id="situation-select" class="w-full p-4 rounded-xl border border-slate-300 font-bold text-slate-700 bg-white shadow-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="1">상황 1 (A1 수준) - 10시 제안 / 14시 합의</option>
+                        <option value="2">상황 2 (A1 수준) - 15시 제안 / 16시 합의</option>
+                        <option value="3" selected>상황 3 (A2 수준) - 오전 시험 / 18시 합의</option>
+                        <option value="4">상황 4 (A2 수준) - 15시 병원 / 14시 합의</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-3">2. 역할 선택 후 시작</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="startTraining('A')" class="p-6 border-2 border-slate-200 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all group shadow-sm bg-white">
+                            <span class="block text-4xl mb-2 group-hover:scale-110 transition-transform">🙋‍♂️</span>
+                            <b class="text-slate-700 block">Kandidat A</b>
+                        </button>
+                        <button onclick="startTraining('B')" class="p-6 border-2 border-slate-200 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all group shadow-sm bg-white">
+                            <span class="block text-4xl mb-2 group-hover:scale-110 transition-transform">🙋‍♀️</span>
+                            <b class="text-slate-700 block">Kandidat B</b>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <div id="main-trainer" class="step-hidden flex flex-col h-full">
                 <div id="schedule-section" class="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-200 shrink-0 shadow-sm">
-                    <p class="text-[10px] font-black text-slate-400 uppercase mb-1">📅 Meine Termine am Samstag, 17. Mai</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase mb-1">📅 Meine Termine</p>
                     <div id="schedule-content"></div>
                 </div>
 
@@ -61,7 +79,7 @@
                     <div id="section-level1" class="fade-in">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">1단계: 문장 조립</span>
-                            <button onclick="showHint()" class="text-[11px] bg-amber-50 text-amber-600 px-3 py-1.5 rounded-full font-bold border border-amber-200 shadow-sm">💡 힌트 보기</button>
+                            <button onclick="showHint()" class="text-[11px] bg-amber-50 text-amber-600 px-3 py-1.5 rounded-full font-bold border border-amber-200 shadow-sm hover:bg-amber-100 transition-all">💡 힌트 보기</button>
                         </div>
                         <div class="p-4 bg-amber-50 border-2 border-dashed border-amber-200 rounded-2xl text-center mb-4 min-h-[60px] flex items-center justify-center gap-2 flex-wrap shadow-inner" id="sentence-dropzone"></div>
                         <div class="flex flex-wrap justify-center gap-2" id="word-bank"></div>
@@ -108,6 +126,8 @@
     </div>
 
     <script>
+        // 전역 상태 변수
+        let currentSituation = '3';
         let myRole = '';
         let currentIdx = 0;
         let selectedWords = [];
@@ -115,45 +135,148 @@
         const maxErrors = 2;
         let repeatLimit = 3;
         let repeatDone = 0;
+        
+        // 반복 재생 상태 변수
+        let isPlayingAll = false;
+        let playAllIndex = 0;
+        let scriptArray = [];
 
+        // 스케줄 데이터
         const scheduleHTML = {
-            'A': `<table class="schedule-table"><tr><td>08:00</td><td>Michaela & Paul</td><td>11:00</td><td>Paket kommt an!</td></tr><tr><td>12:00</td><td>Mittagessen bei Hans</td><td>15:00</td><td>Sportkurse</td></tr></table>`,
-            'B': `<table class="schedule-table"><tr><td>08:00</td><td>Boris (Frühstück)</td><td>10:00</td><td>Computerkurs-Prüfung</td></tr><tr><td>12:30</td><td>Pizzeria (Abschluss)</td><td>17:00</td><td>Deutsch mit Judith</td></tr></table>`
+            'A': `<table class="schedule-table"><tr><td class="font-bold bg-slate-100">08:00</td><td>Michaela & Paul</td><td class="font-bold bg-slate-100">11:00</td><td>Paket kommt an!</td></tr><tr><td class="font-bold bg-slate-100">12:00</td><td>Mittagessen bei Hans</td><td class="font-bold bg-slate-100">15:00</td><td>Sportkurse</td></tr></table>`,
+            'B': `<table class="schedule-table"><tr><td class="font-bold bg-slate-100">08:00</td><td>Boris (Frühstück)</td><td class="font-bold bg-slate-100">10:00</td><td>Computerkurs-Prüfung</td></tr><tr><td class="font-bold bg-slate-100">12:30</td><td>Pizzeria</td><td class="font-bold bg-slate-100">17:00</td><td>Deutsch lernen</td></tr></table>`
         };
 
-        const scenarios = {
-            'A': [
-                { partner: "Hallo! Wollen wir zusammen ein Wörterbuch kaufen?", target: "Wann hast du am Samstag, den 17. Mai, Zeit?", words: ["Wann", "hast", "du", "am", "Samstag,", "den", "17.", "Mai,", "Zeit?"], order: ["Wann", "hast", "du", "am", "Samstag,", "den", "17.", "Mai,", "Zeit?"], hint: "<b>Zeit haben</b>: 시간이 있는지 묻는 가장 중요한 질문입니다.<br>날짜 앞에 <b>am</b>을 쓴다는 점을 기억하세요." },
-                { partner: "Am Vormittag habe ich eine Prüfung. Wie wäre es um 12 Uhr?", target: "Tut mir leid, um 12 Uhr esse ich bei Hans zu Mittag.", words: ["Tut", "mir", "leid,", "um", "12", "Uhr", "esse", "ich", "bei", "Hans", "zu", "Mittag."], order: ["Tut", "mir", "leid,", "um", "12", "Uhr", "esse", "ich", "bei", "Hans", "zu", "Mittag."], hint: "<b>zu Mittag essen</b>: 점심 식사를 하다<br><b>bei Hans</b>: 한스네 집에서 (사람 이름 앞에 bei를 씁니다.)" },
-                { partner: "Da lerne ich Deutsch mit Judith. Aber um 18 Uhr habe ich Zeit. Passt dir das?", target: "Ja, 18 Uhr passt mir sehr gut.", words: ["Ja,", "18", "Uhr", "passt", "mir", "sehr", "gut."], order: ["Ja,", "18", "Uhr", "passt", "mir", "sehr", "gut."], hint: "<b>passt mir gut</b>: 시간 제안을 수락할 때 쓰는 필수 표현입니다." }
-            ],
-            'B': [
-                { partner: "Wann hast du am Samstag, den 17. Mai, Zeit?", target: "Am Vormittag habe ich leider eine Computerkurs-Prüfung.", words: ["Am", "Vormittag", "habe", "ich", "leider", "eine", "Computerkurs-Prüfung."], order: ["Am", "Vormittag", "habe", "ich", "leider", "eine", "Computerkurs-Prüfung."], hint: "<b>leider</b>: 유감스럽게도 (안 되는 이유를 말할 때 씁니다.)<br><b>Vormittag</b>: 오전" },
-                { partner: "Tut mir leid, um 12 Uhr esse ich bei Hans. Hast du um 17 Uhr Zeit?", target: "Da lerne ich leider Deutsch mit Judith. Aber danach um 18 Uhr?", words: ["Da", "lerne", "ich", "leider", "Deutsch", "mit", "Judith.", "Aber", "danach", "um", "18", "Uhr?"], order: ["Da", "lerne", "ich", "leider", "Deutsch", "mit", "Judith.", "Aber", "danach", "um", "18", "Uhr?"], hint: "<b>danach</b>: 그 뒤에 (17시 일정 끝난 뒤를 의미합니다.)" },
-                { partner: "Ja, 18 Uhr passt mir gut. Wollen wir uns am Bahnhof treffen?", target: "Abgemacht! Bis Samstag um 18 Uhr.", words: ["Abgemacht!", "Bis", "Samstag", "um", "18", "Uhr."], order: ["Abgemacht!", "Bis", "Samstag", "um", "18", "Uhr."], hint: "<b>Abgemacht!</b>: 약속 성립! (좋아! 결정됐어!)" }
-            ]
+        // 전체 시나리오 데이터베이스 (상황 1~4)
+        const allScenarios = {
+            '1': { // A1 수준
+                'A': [
+                    { partner: "Hallo! Ja. Gehen wir um 10 Uhr?", target: "Nein, um 10 Uhr habe ich Besuch.", words: ["Nein,", "um", "10", "Uhr", "habe", "ich", "Besuch."], order: ["Nein,", "um", "10", "Uhr", "habe", "ich", "Besuch."], hint: "<b>Besuch haben</b>: 손님이 있다." },
+                    { partner: "Hast du um 14 Uhr Zeit?", target: "Ja, 14 Uhr ist gut.", words: ["Ja,", "14", "Uhr", "ist", "gut."], order: ["Ja,", "14", "Uhr", "ist", "gut."], hint: "단순히 시간이 좋다고 동의하는 A1 표현입니다." }
+                ],
+                'B': [
+                    { partner: "Hast du am Samstag Zeit?", target: "Hallo! Ja. Gehen wir um 10 Uhr?", words: ["Hallo!", "Ja.", "Gehen", "wir", "um", "10", "Uhr?"], order: ["Hallo!", "Ja.", "Gehen", "wir", "um", "10", "Uhr?"], hint: "<b>Gehen wir...</b>: 우리 ~시에 갈까?" },
+                    { partner: "Nein, um 10 Uhr habe ich Besuch.", target: "Hast du um 14 Uhr Zeit?", words: ["Hast", "du", "um", "14", "Uhr", "Zeit?"], order: ["Hast", "du", "um", "14", "Uhr", "Zeit?"], hint: "대안 시간을 물어보는 기본 문장입니다." }
+                ]
+            },
+            '2': { // A1 수준
+                'A': [
+                    { partner: "Wollen wir am Samstag das Wörterbuch kaufen?", target: "Ja, gerne. Hast du um 15 Uhr Zeit?", words: ["Ja,", "gerne.", "Hast", "du", "um", "15", "Uhr", "Zeit?"], order: ["Ja,", "gerne.", "Hast", "du", "um", "15", "Uhr", "Zeit?"], hint: "<b>Ja, gerne</b>: 흔쾌히 수락할 때 씁니다." },
+                    { partner: "Nein, da gehe ich ins Krankenhaus. Geht es um 16 Uhr?", target: "Ja, um 16 Uhr habe ich Zeit.", words: ["Ja,", "um", "16", "Uhr", "habe", "ich", "Zeit."], order: ["Ja,", "um", "16", "Uhr", "habe", "ich", "Zeit."], hint: "<b>Zeit haben</b>을 이용해 긍정합니다." }
+                ],
+                'B': [
+                    { partner: "Ja, gerne. Hast du um 15 Uhr Zeit?", target: "Nein, ich gehe ins Krankenhaus.", words: ["Nein,", "ich", "gehe", "ins", "Krankenhaus."], order: ["Nein,", "ich", "gehe", "ins", "Krankenhaus."], hint: "<b>ins Krankenhaus</b>: 병원으로 (방향을 나타냅니다)" },
+                    { partner: "Geht es um 16 Uhr?", target: "Ja, um 16 Uhr habe ich Zeit.", words: ["Ja,", "um", "16", "Uhr", "habe", "ich", "Zeit."], order: ["Ja,", "um", "16", "Uhr", "habe", "ich", "Zeit."], hint: "간단한 수락 표현입니다." }
+                ]
+            },
+            '3': { // A2 수준 (기존에 작성한 고득점 시나리오)
+                'A': [
+                    { partner: "Hallo! Wollen wir zusammen ein Wörterbuch kaufen?", target: "Wann hast du am Samstag, den 17. Mai, Zeit?", words: ["Wann", "hast", "du", "am", "Samstag,", "den", "17.", "Mai,", "Zeit?"], order: ["Wann", "hast", "du", "am", "Samstag,", "den", "17.", "Mai,", "Zeit?"], hint: "날짜 앞에 <b>am</b>을 씁니다." },
+                    { partner: "Am Vormittag habe ich eine Prüfung. Wie wäre es um 12 Uhr?", target: "Tut mir leid, um 12 Uhr esse ich bei Hans zu Mittag.", words: ["Tut", "mir", "leid,", "um", "12", "Uhr", "esse", "ich", "bei", "Hans", "zu", "Mittag."], order: ["Tut", "mir", "leid,", "um", "12", "Uhr", "esse", "ich", "bei", "Hans", "zu", "Mittag."], hint: "<b>zu Mittag essen</b>: 점심을 먹다." },
+                    { partner: "Da lerne ich Deutsch. Aber um 18 Uhr habe ich Zeit. Passt dir das?", target: "Ja, 18 Uhr passt mir sehr gut.", words: ["Ja,", "18", "Uhr", "passt", "mir", "sehr", "gut."], order: ["Ja,", "18", "Uhr", "passt", "mir", "sehr", "gut."], hint: "<b>passt mir sehr gut</b>: 나에게 아주 좋다." }
+                ],
+                'B': [
+                    { partner: "Wann hast du am Samstag, den 17. Mai, Zeit?", target: "Am Vormittag habe ich leider eine Computerkurs-Prüfung.", words: ["Am", "Vormittag", "habe", "ich", "leider", "eine", "Computerkurs-Prüfung."], order: ["Am", "Vormittag", "habe", "ich", "leider", "eine", "Computerkurs-Prüfung."], hint: "<b>leider</b>: 유감스럽게도" },
+                    { partner: "Tut mir leid, um 12 Uhr esse ich bei Hans. Hast du um 17 Uhr Zeit?", target: "Da lerne ich leider Deutsch. Aber danach um 18 Uhr?", words: ["Da", "lerne", "ich", "leider", "Deutsch.", "Aber", "danach", "um", "18", "Uhr?"], order: ["Da", "lerne", "ich", "leider", "Deutsch.", "Aber", "danach", "um", "18", "Uhr?"], hint: "<b>danach</b>: 그 이후에" },
+                    { partner: "Ja, 18 Uhr passt mir gut. Wollen wir uns am Bahnhof treffen?", target: "Abgemacht! Bis Samstag um 18 Uhr.", words: ["Abgemacht!", "Bis", "Samstag", "um", "18", "Uhr."], order: ["Abgemacht!", "Bis", "Samstag", "um", "18", "Uhr."], hint: "<b>Abgemacht!</b>: 약속됐어! (합의 완료)" }
+                ]
+            },
+            '4': { // A2 수준 (오후 스케줄 조정)
+                'A': [
+                    { partner: "Wir müssen noch das Wörterbuch kaufen. Hast du Zeit?", target: "Ja, gerne. Wollen wir uns um 15 Uhr treffen?", words: ["Ja,", "gerne.", "Wollen", "wir", "uns", "um", "15", "Uhr", "treffen?"], order: ["Ja,", "gerne.", "Wollen", "wir", "uns", "um", "15", "Uhr", "treffen?"], hint: "<b>Wollen wir uns... treffen?</b>: 우리 ~시에 만날까?" },
+                    { partner: "Um 15 Uhr muss ich ins Krankenhaus. Könnten wir uns um 14 Uhr treffen?", target: "Um 14 Uhr ist super! Da habe ich nichts vor.", words: ["Um", "14", "Uhr", "ist", "super!", "Da", "habe", "ich", "nichts", "vor."], order: ["Um", "14", "Uhr", "ist", "super!", "Da", "habe", "ich", "nichts", "vor."], hint: "<b>nichts vorhaben</b>: 아무 계획이 없다." }
+                ],
+                'B': [
+                    { partner: "Ja, gerne. Wollen wir uns um 15 Uhr treffen?", target: "Um 15 Uhr besuche ich Frau Schäfer. Geht es um 14 Uhr?", words: ["Um", "15", "Uhr", "besuche", "ich", "Frau", "Schäfer.", "Geht", "es", "um", "14", "Uhr?"], order: ["Um", "15", "Uhr", "besuche", "ich", "Frau", "Schäfer.", "Geht", "es", "um", "14", "Uhr?"], hint: "<b>Geht es um...?</b>: ~시는 어때?" },
+                    { partner: "Um 14 Uhr ist super! Da habe ich nichts vor.", target: "Perfekt. Dann kaufen wir das Wörterbuch.", words: ["Perfekt.", "Dann", "kaufen", "wir", "das", "Wörterbuch."], order: ["Perfekt.", "Dann", "kaufen", "wir", "das", "Wörterbuch."], hint: "<b>Dann...</b>: 그러면 (결정 후 행동을 말할 때)" }
+                ]
+            }
         };
 
         function startTraining(role) {
             myRole = role;
-            document.getElementById('role-selector').classList.add('step-hidden');
+            currentSituation = document.getElementById('situation-select').value;
+            currentIdx = 0;
+            
+            // 재생 중지 및 상태 초기화
+            stopPlayAll();
+            
+            document.getElementById('setup-screen').classList.add('step-hidden');
             document.getElementById('main-trainer').classList.remove('step-hidden');
-            document.getElementById('lives-display').classList.remove('hidden');
-            document.getElementById('role-display').innerText = "Kandidat " + role + " - 상황 3 (A2)";
+            document.getElementById('top-controls').classList.remove('hidden');
+            
+            document.getElementById('role-display').innerText = `상황 ${currentSituation} - Kandidat ${role}`;
             document.getElementById('schedule-content').innerHTML = scheduleHTML[role];
             document.getElementById('chat-history').innerHTML = '';
+            
+            // 스크립트 배열 생성 (무한 반복용)
+            scriptArray = [];
+            allScenarios[currentSituation][myRole].forEach(d => {
+                scriptArray.push(d.partner);
+                scriptArray.push(d.target);
+            });
+
             initDialog();
         }
 
+        // ---------- 대화 전체 무한 반복 재생 로직 ---------- //
+        function togglePlayAll() {
+            const btn = document.getElementById('play-all-btn');
+            if (isPlayingAll) {
+                stopPlayAll();
+            } else {
+                isPlayingAll = true;
+                playAllIndex = 0;
+                btn.innerHTML = `<span>⏹ 반복 중지</span>`;
+                btn.classList.add('btn-active-play');
+                playNextInSequence();
+            }
+        }
+
+        function stopPlayAll() {
+            isPlayingAll = false;
+            window.speechSynthesis.cancel();
+            const btn = document.getElementById('play-all-btn');
+            if(btn) {
+                btn.innerHTML = `<span>🔄 전체 반복</span>`;
+                btn.classList.remove('btn-active-play');
+            }
+        }
+
+        function playNextInSequence() {
+            if (!isPlayingAll || scriptArray.length === 0) return;
+            
+            if (playAllIndex >= scriptArray.length) {
+                playAllIndex = 0; // 배열 끝에 도달하면 무한 루프
+            }
+
+            const msg = new SpeechSynthesisUtterance(scriptArray[playAllIndex]);
+            msg.lang = 'de-DE';
+            msg.rate = 0.8;
+            
+            msg.onend = () => {
+                playAllIndex++;
+                if (isPlayingAll) {
+                    setTimeout(playNextInSequence, 1000); // 문장 사이 1초 간격
+                }
+            };
+
+            window.speechSynthesis.speak(msg);
+        }
+        // ---------------------------------------------------- //
+
         function initDialog() {
-            const d = scenarios[myRole][currentIdx];
+            const d = allScenarios[currentSituation][myRole][currentIdx];
             errorCount = 0; repeatDone = 0;
             updateLivesUI(); updateRepeatUI();
+            
             addChatBubble('partner', d.partner);
+            
             document.getElementById('section-level1').classList.remove('step-hidden');
             document.getElementById('section-level2').classList.add('step-hidden');
             document.getElementById('sentence-dropzone').innerHTML = '';
             selectedWords = [];
+            
             const bank = document.getElementById('word-bank');
             bank.innerHTML = '';
             [...d.words].sort(() => Math.random() - 0.5).forEach(word => {
@@ -180,6 +303,8 @@
         }
 
         function selectWord(word, btn) {
+            if(isPlayingAll) stopPlayAll(); // 학습 중 조작 시 전체듣기 일시 정지
+
             selectedWords.push(word);
             btn.classList.add('invisible');
             const dropzone = document.getElementById('sentence-dropzone');
@@ -187,7 +312,8 @@
             chip.className = "px-2 py-1 bg-amber-600 text-white rounded-lg font-bold text-[10px] fade-in";
             chip.innerText = word;
             dropzone.appendChild(chip);
-            const d = scenarios[myRole][currentIdx];
+            
+            const d = allScenarios[currentSituation][myRole][currentIdx];
             if(selectedWords.length === d.words.length) {
                 if(JSON.stringify(selectedWords) === JSON.stringify(d.order)) startLevel2(d.target);
                 else handleWrong();
@@ -196,7 +322,7 @@
 
         function handleWrong() {
             errorCount++; updateLivesUI();
-            const d = scenarios[myRole][currentIdx];
+            const d = allScenarios[currentSituation][myRole][currentIdx];
             if (errorCount >= maxErrors) {
                 showSystemMsg("2회 오답! 정답을 확인하세요.", "text-rose-600");
                 setTimeout(() => startLevel2(d.target), 2000);
@@ -218,18 +344,20 @@
             repeatDone = 0;
             const nextBtn = document.getElementById('next-btn');
             nextBtn.disabled = true;
-            nextBtn.className = "w-full py-4 bg-slate-700 text-slate-500 rounded-xl font-black text-base";
+            nextBtn.className = "w-full py-4 bg-slate-700 text-slate-500 rounded-xl font-black text-base transition-all";
             updateRepeatUI();
-            setTimeout(playTTS, 500);
+            
+            if(!isPlayingAll) setTimeout(playSingleTTS, 500);
         }
 
         function handlePlay() {
-            playTTS();
+            if(isPlayingAll) stopPlayAll();
+            playSingleTTS();
             if (repeatDone < repeatLimit) { repeatDone++; updateRepeatUI(); }
             if (repeatDone >= repeatLimit) {
                 const nextBtn = document.getElementById('next-btn');
                 nextBtn.disabled = false;
-                nextBtn.className = "w-full py-4 bg-blue-600 text-white rounded-xl font-black text-base shadow-lg";
+                nextBtn.className = "w-full py-4 bg-blue-600 text-white rounded-xl font-black text-base shadow-lg active:bg-blue-500 transition-all";
             }
         }
 
@@ -255,21 +383,25 @@
         }
 
         function showHint() {
-            document.getElementById('hint-content').innerHTML = scenarios[myRole][currentIdx].hint;
+            document.getElementById('hint-content').innerHTML = allScenarios[currentSituation][myRole][currentIdx].hint;
             document.getElementById('hint-modal').classList.remove('hidden');
         }
 
         function closeHint() { document.getElementById('hint-modal').classList.add('hidden'); }
 
-        function playTTS() {
+        function playSingleTTS() {
             const msg = new SpeechSynthesisUtterance(document.getElementById('target-sentence').innerText);
             msg.lang = 'de-DE'; msg.rate = 0.8; window.speechSynthesis.speak(msg);
         }
 
         document.getElementById('next-btn').onclick = () => {
             currentIdx++;
-            if (currentIdx < scenarios[myRole].length) initDialog();
-            else addChatBubble('partner', "훈련 완료! 정말 고생하셨습니다. 🎉");
+            if (currentIdx < allScenarios[currentSituation][myRole].length) {
+                initDialog();
+            } else {
+                addChatBubble('partner', "훈련 완료! 상황 목록으로 돌아가려면 새로고침 하세요. 🎉");
+                document.getElementById('section-level2').classList.add('step-hidden');
+            }
         };
     </script>
 </body>
