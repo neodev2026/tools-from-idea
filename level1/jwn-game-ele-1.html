@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>10M층 초우주 엘레베이터</title>
+    <title>100M층 초우주 엘레베이터</title>
     <style>
         body {
             margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
@@ -23,7 +23,7 @@
             display: flex; flex-direction: column; align-items: center; font-size: 100px;
             filter: drop-shadow(0 0 30px rgba(0, 210, 255, 0.4));
         }
-        .planet span { font-size: 22px; margin-top: 10px; color: #ffd700; font-weight: bold; }
+        .planet span { font-size: 22px; margin-top: 10px; color: #ffd700; font-weight: bold; text-shadow: 2px 2px 5px #000; }
 
         .star { position: absolute; background: white; border-radius: 50%; opacity: 0.8; animation: blink 2s infinite; }
         @keyframes blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
@@ -43,9 +43,10 @@
         }
 
         #display {
-            width: 120px; height: 40px; background: #000; color: #00ff00;
+            width: 130px; height: 40px; background: #000; color: #00ff00;
             border: 2px solid #333; display: flex; align-items: center; justify-content: center;
-            font-size: 16px; font-weight: bold; margin-bottom: 8px; font-family: 'Courier New', monospace;
+            font-size: 15px; font-weight: bold; margin-bottom: 8px; font-family: 'Courier New', monospace;
+            text-align: center;
         }
 
         #passenger { font-size: 80px; transition: 0.5s; }
@@ -66,7 +67,8 @@
         button:hover { transform: scale(1.05); }
         button.active { background: #ff00ff; color: white; box-shadow: 0 0 15px #ff00ff; }
         .special { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; }
-        .ultra { background: linear-gradient(45deg, #f1c40f, #e74c3c); color: white; font-size: 20px; }
+        .mega-btn { background: linear-gradient(45deg, #f1c40f, #e74c3c); color: white; font-size: 20px; }
+        .hyper-btn { background: linear-gradient(45deg, #ff00cc, #3333ff); color: white; font-size: 24px; text-shadow: 0 0 5px #fff; }
 
         input { font-size: 22px; width: 100%; padding: 12px; box-sizing: border-box; text-align: center; border-radius: 10px; border: 2px solid #00d2ff; background: #111; color: white; }
     </style>
@@ -76,11 +78,11 @@
     <div id="space"></div>
 
     <div id="p-moon" class="planet" style="top: 80vh;">🌙<span>달 (1만 층)</span></div>
-    <div id="p-earth" class="planet" style="top: -100vh;">🌍<span>지구 (10만 층)</span></div>
-    <div id="p-sun" class="planet" style="top: -300vh;">☀️<span>태양 (100만 층)</span></div>
-    <div id="p-uranus" class="planet" style="top: -500vh;">🌀<span>천왕성 (500만 층)</span></div>
-    <div id="p-saturn" class="planet" style="top: -800vh;">🪐<span>토성 (800만 층)</span></div>
-    <div id="p-galaxy" class="planet" style="top: -1000vh;">🌌<span>블랙홀 (1000만 층)</span></div>
+    <div id="p-earth" class="planet" style="top: -100vh;">🌍<span>지구 (1M 층)</span></div>
+    <div id="p-sun" class="planet" style="top: -300vh;">☀️<span>태양 (10M 층)</span></div>
+    <div id="p-uranus" class="planet" style="top: -500vh;">🌀<span>천왕성 (30M 층)</span></div>
+    <div id="p-saturn" class="planet" style="top: -800vh;">🪐<span>토성 (60M 층)</span></div>
+    <div id="p-galaxy" class="planet" style="top: -1000vh;">🌌<span>우주의 끝 (100M 층)</span></div>
 
     <div id="game-container">
         <div id="shaft">
@@ -91,25 +93,35 @@
         </div>
 
         <div id="panel">
-            <input type="number" id="target-input" value="1" max="10000000" placeholder="가고 싶은 층">
+            <input type="number" id="target-input" value="1" max="100000000" placeholder="가고 싶은 층">
             <button onclick="goMagic()" style="background: #00ff00; color: black; font-size: 18px;">워프 엔진 가동!</button>
-            <div id="button-grid"></div>
+            
+            <div id="button-grid">
+                <button class="hyper-btn" onclick="clickBtn(100000000, this)">100M</button>
+                <button class="special" onclick="clickBtn(60000000, this)">60,000,000</button>
+                <button class="special" onclick="clickBtn(30000000, this)">30,000,000</button>
+                <button class="mega-btn" onclick="clickBtn(10000000, this)">10M</button>
+                <button class="mega-btn" onclick="clickBtn(1000000, this)">1M</button>
+                <button class="special" onclick="clickBtn(100000, this)">100,000</button>
+                <button onclick="clickBtn(10000, this)">10,000</button>
+                <button class="active" onclick="clickBtn(1, this)">1</button>
+            </div>
         </div>
     </div>
 
     <script>
         const planets = [
             { id: 'p-moon', floor: 10000 },
-            { id: 'p-earth', floor: 100000 },
-            { id: 'p-sun', floor: 1000000 },
-            { id: 'p-uranus', floor: 5000000 },
-            { id: 'p-saturn', floor: 8000000 },
-            { id: 'p-galaxy', floor: 10000000 }
+            { id: 'p-earth', floor: 1000000 },
+            { id: 'p-sun', floor: 10000000 },
+            { id: 'p-uranus', floor: 30000000 },
+            { id: 'p-saturn', floor: 60000000 },
+            { id: 'p-galaxy', floor: 100000000 }
         ];
 
         // 별 만들기
         const space = document.getElementById('space');
-        for(let i=0; i<200; i++) {
+        for(let i=0; i<250; i++) {
             const star = document.createElement('div');
             star.className = 'star';
             star.style.width = star.style.height = Math.random()*2.5+'px';
@@ -119,20 +131,11 @@
             space.appendChild(star);
         }
 
-        // 버튼 생성 (10M, 1M 강조)
-        const grid = document.getElementById('button-grid');
-        const floors = [10000000, 8000000, 5000000, 3000000, 1000000, 500000, 100000, 50000, 10000, 1];
-        floors.forEach(f => {
-            const b = document.createElement('button');
-            if (f === 10000000) { b.innerText = "10M"; b.className = "ultra"; }
-            else if (f === 1000000) { b.innerText = "1M"; b.className = "ultra"; }
-            else { 
-                b.innerText = f.toLocaleString(); 
-                if(f >= 100000) b.className = 'special';
-            }
-            b.onclick = () => { document.getElementById('target-input').value = f; moveElevator(f, b); };
-            grid.appendChild(b);
-        });
+        // 버튼 클릭 함수
+        function clickBtn(floor, btn) {
+            document.getElementById('target-input').value = floor;
+            moveElevator(floor, btn);
+        }
 
         function goMagic() {
             moveElevator(parseInt(document.getElementById('target-input').value));
@@ -142,19 +145,20 @@
             document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
 
-            // 1. 엘레베이터 위치 (10M 기준)
-            const elPos = (floor / 10000000) * 85;
+            // 1. 엘레베이터 위치 (100M 기준)
+            const elPos = (floor / 100000000) * 85;
             document.getElementById('elevator').style.bottom = elPos + "%";
 
             // 2. 행성들 위치 업데이트
             planets.forEach(p => {
                 const pEl = document.getElementById(p.id);
-                const offset = (p.floor - floor) * 0.02; // 10M에 맞춰 오프셋 조정
+                const offset = (p.floor - floor) * 0.000003; 
                 pEl.style.top = (40 - offset) + "vh"; 
             });
 
-            // 3. 숫자 카운팅 (매우 빠르게)
-            let cur = parseInt(document.getElementById('display').innerText.replace(/,/g,'').replace('M','000000'));
+            // 3. 숫자 카운팅
+            let currentText = document.getElementById('display').innerText.split('\n')[0].replace(/,/g,'');
+            let cur = parseInt(currentText);
             if(isNaN(cur)) cur = 1;
             
             const timer = setInterval(() => {
@@ -172,22 +176,31 @@
 
         function displayFloor(f) {
             const d = document.getElementById('display');
-            if(f >= 10000000) d.innerText = "10,000,000 (10M)";
-            else if(f >= 1000000) d.innerText = f.toLocaleString() + " (1M)";
+            if(f >= 100000000) d.innerText = "100,000,000\n(100M)";
+            else if(f >= 10000000) d.innerText = f.toLocaleString() + "\n(10M)";
+            else if(f >= 1000000) d.innerText = f.toLocaleString() + "\n(1M)";
             else d.innerText = f.toLocaleString();
         }
 
         function arrive(floor) {
             window.speechSynthesis.cancel();
-            const floorText = floor >= 10000000 ? "천만" : (floor >= 1000000 ? "백만" : floor);
-            const m = new SpeechSynthesisUtterance(`띵동, ${floorText} 층 입니다. 아이미따미꼬 야옹야옹`);
+            
+            // 층수 한국어 발음
+            let floorText = floor;
+            if (floor === 100000000) floorText = "일억";
+            else if (floor === 10000000) floorText = "천만";
+            else if (floor === 1000000) floorText = "백만";
+
+            // 요청하신 도착 음성
+            const m = new SpeechSynthesisUtterance(`띵동, ${floorText} 층 입니다 아이미따미꼬 야옹야옹`);
             m.lang = 'ko-KR'; m.pitch = 1.8; m.rate = 1.1;
             window.speechSynthesis.speak(m);
 
+            // 탑승자 교체
             const p = document.getElementById('passenger');
             p.classList.add('exit');
             setTimeout(() => {
-                const friends = ["🧙‍♀️", "🤖", "🐰", "😊", "🐼", "🦄", "🦖", "👽", "🐙"];
+                const friends = ["🧙‍♀️", "🤖", "🐰", "😊", "🐼", "🦄", "🦖", "👽", "🐙", "☄️"];
                 p.innerText = friends[Math.floor(Math.random()*friends.length)];
                 p.classList.remove('exit');
                 p.classList.add('enter');
