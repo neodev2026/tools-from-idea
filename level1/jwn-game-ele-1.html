@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>마녀의 1000층 마법 엘레베이터</title>
+    <title>마녀의 10,000층 마법 엘레베이터</title>
     <style>
         body {
             display: flex;
@@ -11,7 +11,7 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background: linear-gradient(to bottom, #000428, #004e92, #00d2ff); /* 우주까지 가는 배경 */
+            background: linear-gradient(to bottom, #000428, #004e92, #00d2ff);
             font-family: 'Malgun Gothic', sans-serif;
             color: white;
             overflow: hidden;
@@ -21,9 +21,9 @@
             display: flex;
             gap: 30px;
             align-items: flex-end;
-            height: 85vh;
+            height: 80vh;
             width: 90%;
-            max-width: 800px;
+            max-width: 900px;
         }
 
         /* 엘레베이터 통로 */
@@ -39,8 +39,8 @@
 
         /* 엘레베이터 본체 */
         #elevator {
-            width: 120px;
-            height: 150px;
+            width: 130px;
+            height: 160px;
             background: #f1c40f;
             border: 4px solid #d4ac0d;
             border-radius: 15px;
@@ -48,7 +48,8 @@
             left: 50%;
             transform: translateX(-50%);
             bottom: 10px;
-            transition: bottom 3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+            /* 10000층까지는 조금 더 빨리 이동하도록 속도 조정 */
+            transition: bottom 4s cubic-bezier(0.45, 0.05, 0.55, 0.95);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -57,7 +58,7 @@
         }
 
         #display {
-            width: 90px;
+            width: 100px;
             height: 35px;
             background: #000;
             color: #00ff00;
@@ -65,13 +66,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             margin-bottom: 5px;
         }
 
         #witch-emoji {
-            font-size: 60px;
+            font-size: 70px;
             animation: floating 2s infinite ease-in-out;
         }
 
@@ -80,30 +81,54 @@
             50% { transform: translateY(-10px); }
         }
 
-        /* 1000개 버튼을 담는 패널 */
-        #button-panel {
+        /* 버튼 패널 영역 */
+        #right-panel {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: 10px;
+        }
+
+        /* 숫자 입력창 (마법의 숫자판) */
+        #quick-move {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        #target-input {
+            width: 80px;
+            font-size: 20px;
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+            text-align: center;
+        }
+
+        /* 10000개 버튼 스크롤 영역 */
+        #button-panel {
             background: rgba(0, 0, 0, 0.6);
             padding: 15px;
             border-radius: 20px;
-            height: 100%;
+            flex-grow: 1;
             overflow-y: auto;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 8px;
             border: 3px solid #00d2ff;
         }
 
         button {
-            height: 50px;
-            font-size: 18px;
+            height: 45px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             background: #fff;
             color: #333;
-            transition: 0.2s;
         }
 
         button.active {
@@ -112,18 +137,17 @@
             box-shadow: 0 0 15px #ff00ff;
         }
 
-        /* 특별 버튼 (100, 500, 1000층) */
         .special-btn {
             background: linear-gradient(45deg, #ff9a9e, #fad0c4);
             color: #d81b60;
         }
 
-        h1 { margin: 10px 0; color: #ffd700; text-shadow: 2px 2px 5px #000; }
+        h1 { margin: 10px 0; color: #ffd700; text-shadow: 2px 2px 5px #000; font-size: 24px; }
     </style>
 </head>
 <body>
 
-    <h1>✨ 1,000층 마법 여행 ✨</h1>
+    <h1>✨ 10,000층 우주 마법 여행 ✨</h1>
 
     <div id="game-container">
         <div id="shaft">
@@ -133,59 +157,84 @@
             </div>
         </div>
 
-        <div id="button-panel">
+        <div id="right-panel">
+            <div id="quick-move">
+                숫자 입력: <input type="number" id="target-input" min="1" max="10000" value="1">
+                <button onclick="goMagic()" style="width: 60px; height: 35px; font-size: 14px;">출발!</button>
             </div>
+
+            <div id="button-panel">
+                </div>
+        </div>
     </div>
 
     <script>
         const panel = document.getElementById('button-panel');
         const elevator = document.getElementById('elevator');
         const display = document.getElementById('display');
+        const targetInput = document.getElementById('target-input');
 
-        // 1. 1000층 버튼 생성 (1000부터 1까지)
-        for (let i = 1000; i >= 1; i--) {
-            const btn = document.createElement('button');
-            btn.innerText = i;
-            if (i % 100 === 0) btn.className = 'special-btn';
-            if (i === 1) btn.classList.add('active');
-            
-            btn.onclick = () => moveElevator(i, btn);
-            panel.appendChild(btn);
+        // 1. 10000층 버튼 생성 (1000개 단위로 특별 색상)
+        // 성능을 위해 10000개를 한꺼번에 그리면 느려질 수 있어 역순으로 배치
+        const fragment = document.createDocumentFragment();
+        for (let i = 10000; i >= 1; i--) {
+            // 모든 버튼을 다 만들면 브라우저가 힘들어할 수 있어 주요 층 위주로 보여주거나, 
+            // 여기서는 요청대로 일단 생성하되 스타일로 구분합니다.
+            if (i === 10000 || i % 1000 === 0 || i <= 100) { 
+                const btn = document.createElement('button');
+                btn.innerText = i;
+                if (i % 1000 === 0) btn.className = 'special-btn';
+                if (i === 1) btn.classList.add('active');
+                btn.onclick = () => moveElevator(i, btn);
+                fragment.appendChild(btn);
+            }
+        }
+        panel.appendChild(fragment);
+
+        // 입력창으로 이동하기
+        function goMagic() {
+            const floor = parseInt(targetInput.value);
+            if(floor >= 1 && floor <= 10000) {
+                moveElevator(floor);
+            } else {
+                alert("1층부터 10000층까지만 갈 수 있어요!");
+            }
         }
 
         function moveElevator(floor, clickedBtn) {
             document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-            clickedBtn.classList.add('active');
+            if(clickedBtn) clickedBtn.classList.add('active');
 
-            // 2. 위치 이동 (1층=2%, 1000층=92%)
-            const percent = 2 + (floor - 1) * (90 / 999);
+            // 2. 위치 이동 (1층=2%, 10000층=95%)
+            const percent = 2 + (floor - 1) * (93 / 9999);
             elevator.style.bottom = percent + '%';
 
-            // 3. 디스플레이 숫자 굴리기
+            // 3. 디스플레이 숫자 업데이트 (빠르게!)
             let current = parseInt(display.innerText);
             const target = floor;
+            
             const timer = setInterval(() => {
-                if (current < target) {
-                    current = Math.min(current + Math.ceil((target-current)/10), target);
-                } else if (current > target) {
-                    current = Math.max(current - Math.ceil((current-target)/10), target);
-                } else {
+                const diff = target - current;
+                if (Math.abs(diff) < 1) {
+                    current = target;
                     clearInterval(timer);
-                    // 도착 시 음성 출력!
                     speakMagicWords();
+                } else {
+                    // 숫자가 클수록 더 빨리 변하게 계산
+                    current += Math.ceil(diff / 10);
                 }
-                display.innerText = current;
-            }, 50);
+                display.innerText = Math.floor(current);
+            }, 40);
         }
 
-        // 4. 음성 합성 함수 (아이미따미꼬 야옹야옹)
         function speakMagicWords() {
             if ('speechSynthesis' in window) {
+                // 이전 음성 중단
+                window.speechSynthesis.cancel();
                 const msg = new SpeechSynthesisUtterance();
                 msg.text = "아이미따미꼬 야옹야옹";
-                msg.lang = 'ko-KR'; // 한국어 설정
-                msg.rate = 1.0;     // 속도
-                msg.pitch = 1.5;    // 목소리 톤 (높게 해서 귀엽게)
+                msg.lang = 'ko-KR';
+                msg.pitch = 1.6; // 더 귀여운 목소리
                 window.speechSynthesis.speak(msg);
             }
         }
