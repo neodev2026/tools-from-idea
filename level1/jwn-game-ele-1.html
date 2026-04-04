@@ -18,7 +18,7 @@
 
         #building {
             width: 300px;
-            height: 400px;
+            height: 600px;
             border: 10px solid #555;
             border-radius: 20px;
             background-color: white;
@@ -31,8 +31,8 @@
 
         /* 엘레베이터 본체 */
         #elevator {
-            width: 100px;
-            height: 120px;
+            width: 150px;
+            height: 180px;
             background-color: #ffcc00;
             border: 5px solid #ff9900;
             border-radius: 10px;
@@ -40,42 +40,71 @@
             bottom: 20px;
             transition: bottom 1.5s ease-in-out;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 20px;
             font-weight: bold;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* 층 표시 디스플레이 */
+        #display {
+            width: 120px;
+            height: 40px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        /* 꼬마 마녀 이미지 */
+        #witch {
+            width: 80px;
+            height: auto;
         }
 
         /* 버튼 컨테이너 */
         #controls {
             margin-top: 30px;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 15px;
         }
 
         /* 큰 버튼 스타일 */
         button {
-            width: 80px;
-            height: 80px;
-            font-size: 30px;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
             cursor: pointer;
             border: none;
             border-radius: 50%;
-            background-color: #4CAF50;
             color: white;
-            box-shadow: 0 6px #2e7d32;
+            box-shadow: 0 4px #ccc;
             transition: all 0.1s;
         }
 
         button:active {
-            box-shadow: 0 2px #2e7d32;
-            transform: translateY(4px);
+            box-shadow: 0 1px #ccc;
+            transform: translateY(3px);
         }
 
-        button:nth-child(2) { background-color: #2196F3; box-shadow: 0 6px #1565c0; }
-        button:nth-child(3) { background-color: #f44336; box-shadow: 0 6px #c62828; }
+        /* 층별 버튼 색상 */
+        button[onclick^="moveElevator(1,"] { background-color: #ffcccc; box-shadow: 0 4px #ff9999; }
+        button[onclick^="moveElevator(2,"] { background-color: #ffe0b3; box-shadow: 0 4px #ffcc80; }
+        button[onclick^="moveElevator(3,"] { background-color: #ffffcc; box-shadow: 0 4px #ffff99; }
+        button[onclick^="moveElevator(4,"] { background-color: #ccffcc; box-shadow: 0 4px #99ff99; }
+        button[onclick^="moveElevator(5,"] { background-color: #ccf2ff; box-shadow: 0 4px #99e6ff; }
+        button[onclick^="moveElevator(6,"] { background-color: #e0ccff; box-shadow: 0 4px #cc99ff; }
+        button[onclick^="moveElevator(7,"] { background-color: #ffccf2; box-shadow: 0 4px #ff99e6; }
+        button[onclick^="moveElevator(8,"] { background-color: #ffcccc; box-shadow: 0 4px #ff9999; }
+        button[onclick^="moveElevator(9,"] { background-color: #ffe0b3; box-shadow: 0 4px #ffcc80; }
+        button[onclick^="moveElevator(10,"] { background-color: #ffffcc; box-shadow: 0 4px #ffff99; }
 
         #floor-text {
             font-size: 24px;
@@ -89,25 +118,36 @@
     <div id="floor-text">지금은 <span id="current-floor">1</span>층이에요!</div>
 
     <div id="building">
-        <div id="elevator">1</div>
+        <div id="elevator">
+            <div id="display">1층</div>
+            <img id="witch" src="image_0.png" alt="꼬마 마녀">
+        </div>
     </div>
 
     <div id="controls">
         <button onclick="moveElevator(1, 20)">1</button>
-        <button onclick="moveElevator(2, 140)">2</button>
-        <button onclick="moveElevator(3, 260)">3</button>
+        <button onclick="moveElevator(2, 70)">2</button>
+        <button onclick="moveElevator(3, 120)">3</button>
+        <button onclick="moveElevator(4, 170)">4</button>
+        <button onclick="moveElevator(5, 220)">5</button>
+        <button onclick="moveElevator(6, 270)">6</button>
+        <button onclick="moveElevator(7, 320)">7</button>
+        <button onclick="moveElevator(8, 370)">8</button>
+        <button onclick="moveElevator(9, 420)">9</button>
+        <button onclick="moveElevator(10, 470)">10</button>
     </div>
 
     <script>
         function moveElevator(floor, position) {
             const elevator = document.getElementById('elevator');
+            const display = document.getElementById('display');
             const floorText = document.getElementById('current-floor');
             
             // 엘레베이터 이동
             elevator.style.bottom = position + 'px';
             
-            // 숫자 변경
-            elevator.innerText = floor;
+            // 숫자 및 디스플레이 변경
+            display.innerText = floor + '층';
             floorText.innerText = floor;
 
             // 도착 알림 효과음 (선택사항: 실제 소리 파일을 넣으면 더 좋아요)
