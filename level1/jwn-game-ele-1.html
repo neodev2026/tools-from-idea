@@ -2,67 +2,83 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>마녀와 친구들의 100,000층 여행</title>
+    <title>1M층 우주 엘레베이터</title>
     <style>
         body {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; margin: 0; background: linear-gradient(to bottom, #000428, #004e92, #00d2ff);
-            font-family: 'Malgun Gothic', sans-serif; color: white; overflow: hidden; cursor: pointer;
+            margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: #000; font-family: 'Malgun Gothic', sans-serif; color: white; overflow: hidden;
         }
 
-        #game-container { display: flex; gap: 20px; align-items: flex-end; height: 80vh; width: 95%; max-width: 950px; }
+        /* 우주 공간 (층수에 따라 배경이 움직임) */
+        #space {
+            position: absolute; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, #000000, #020111, #050b18, #191d35);
+            z-index: -1; transition: background-position 3s ease-in-out;
+        }
+
+        /* 행성 스타일 */
+        .planet {
+            position: absolute; left: 10%; font-size: 120px;
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.3));
+            transition: top 3s ease-in-out;
+            display: flex; flex-direction: column; align-items: center; font-size: 100px;
+        }
+        .planet span { font-size: 20px; margin-top: 10px; color: #ffd700; }
+
+        /* 별 배경 */
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.8; }
+
+        #game-container { display: flex; gap: 30px; align-items: flex-end; height: 80vh; width: 90%; max-width: 1000px; }
 
         #shaft {
-            flex: 1.2; height: 100%; background: rgba(255, 255, 255, 0.1);
-            border: 5px solid #ffd700; border-radius: 20px; position: relative;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3); overflow: hidden;
+            flex: 1; height: 100%; border: 5px solid rgba(255, 215, 0, 0.5);
+            border-radius: 20px; position: relative; background: rgba(255,255,255,0.05);
         }
 
         #elevator {
             width: 140px; height: 170px; background: #f1c40f; border: 4px solid #d4ac0d;
             border-radius: 15px; position: absolute; left: 50%; transform: translateX(-50%);
             bottom: 0%; transition: bottom 3s ease-in-out;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
         #display {
             width: 110px; height: 35px; background: #000; color: #00ff00;
             border: 2px solid #333; display: flex; align-items: center; justify-content: center;
-            font-size: 18px; font-weight: bold; margin-bottom: 5px;
+            font-size: 16px; font-weight: bold; margin-bottom: 5px;
         }
 
-        /* 탑승자 애니메이션 */
-        #passenger {
-            font-size: 70px; transition: all 0.5s ease-in-out;
-            opacity: 1; transform: scale(1);
+        #passenger { font-size: 70px; transition: 0.5s; }
+        .exit { opacity: 0; transform: translateX(50px); }
+        .enter { opacity: 0; transform: translateX(-50px); }
+
+        #panel {
+            flex: 1; background: rgba(0,0,0,0.8); padding: 20px; border-radius: 20px;
+            display: flex; flex-direction: column; gap: 10px; border: 2px solid #00d2ff;
         }
 
-        /* 내리고 타는 효과 */
-        .exit { opacity: 0 !important; transform: translateX(100px) scale(0.5) !important; }
-        .enter { opacity: 0; transform: translateX(-100px) scale(0.5); }
-
-        #right-panel { flex: 1; display: flex; flex-direction: column; height: 100%; gap: 10px; }
-
-        #quick-move { background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; text-align: center; }
-        #target-input { width: 100px; font-size: 20px; text-align: center; }
-
-        #button-panel {
-            background: rgba(0, 0, 0, 0.6); padding: 15px; border-radius: 20px;
-            flex-grow: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 8px; border: 3px solid #00d2ff;
+        #button-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+            overflow-y: auto; max-height: 400px;
         }
 
-        button { height: 45px; font-size: 14px; font-weight: bold; cursor: pointer; border: none; border-radius: 8px; background: #fff; }
+        button { height: 50px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
         button.active { background: #ff00ff; color: white; }
-        .special-btn { background: #ff9a9e; color: #d81b60; }
-        
-        #info { position: absolute; top: 10px; font-size: 14px; color: #ffd700; text-align: center; }
+        .special { background: #ff9a9e; }
+
+        input { font-size: 20px; width: 100%; padding: 10px; box-sizing: border-box; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div id="info">📢 화면을 클릭하면 소리가 나요! <br> 도착하면 친구들이 작별 인사를 하고 새 친구가 타요!</div>
-    <h1>🚀 100,000층 초우주 여행 🚀</h1>
+    <div id="space"></div>
+
+    <div id="p-moon" class="planet" style="top: 80vh;">🌙<span>달 (1만 층)</span></div>
+    <div id="p-sun" class="planet" style="top: -100vh;">☀️<span>태양 (10만 층)</span></div>
+    <div id="p-mars" class="planet" style="top: -300vh;">🔴<span>화성 (30만 층)</span></div>
+    <div id="p-jupiter" class="planet" style="top: -500vh;">🪐<span>목성 (50만 층)</span></div>
+    <div id="p-saturn" class="planet" style="top: -800vh;">🪐<span>토성 (80만 층)</span></div>
+    <div id="p-galaxy" class="planet" style="top: -1000vh;">🌌<span>은하수 (100만 층)</span></div>
 
     <div id="game-container">
         <div id="shaft">
@@ -72,92 +88,94 @@
             </div>
         </div>
 
-        <div id="right-panel">
-            <div id="quick-move">
-                숫자 입력: <input type="number" id="target-input" value="1" min="1" max="100000">
-                <button onclick="goMagic()" style="width:60px">출발!</button>
-            </div>
-            <div id="button-panel"></div>
+        <div id="panel">
+            <input type="number" id="target-input" value="1" placeholder="가고 싶은 층">
+            <button onclick="goMagic()" style="background: #00d2ff; color: white; margin-bottom: 10px;">우주선 출발!</button>
+            <div id="button-grid"></div>
         </div>
     </div>
 
     <script>
-        const passengers = ["🧙‍♀️", "🤖", "🐰", "😊", "🐼", "🦁", "🐱", "🦄", "🧚", "🦖"];
-        const panel = document.getElementById('button-panel');
-        const elevator = document.getElementById('elevator');
-        const display = document.getElementById('display');
-        const passengerDiv = document.getElementById('passenger');
-        let moveTimer;
+        const planets = [
+            { id: 'p-moon', floor: 10000 },
+            { id: 'p-sun', floor: 100000 },
+            { id: 'p-mars', floor: 300000 },
+            { id: 'p-jupiter', floor: 500000 },
+            { id: 'p-saturn', floor: 800000 },
+            { id: 'p-galaxy', floor: 1000000 }
+        ];
 
-        // 버튼 생성 (10만층 대응: 주요 단위만 생성하여 브라우저 부하 방지)
-        const floors = [100000, 90000, 80000, 70000, 60000, 50000, 40000, 30000, 20000, 10000, 5000, 1000, 500, 100, 50, 10, 1];
-        floors.forEach(f => {
-            const btn = document.createElement('button');
-            btn.innerText = f.toLocaleString();
-            if (f % 10000 === 0) btn.className = 'special-btn';
-            btn.onclick = () => {
-                document.getElementById('target-input').value = f;
-                moveElevator(f, btn);
-            };
-            panel.appendChild(btn);
+        // 별 만들기
+        const space = document.getElementById('space');
+        for(let i=0; i<150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = star.style.height = Math.random()*3+'px';
+            star.style.left = Math.random()*100+'%';
+            star.style.top = Math.random()*100+'%';
+            space.appendChild(star);
+        }
+
+        // 버튼 만들기
+        const grid = document.getElementById('button-grid');
+        [1000000, 800000, 500000, 300000, 100000, 50000, 10000, 5000, 1000, 1].forEach(f => {
+            const b = document.createElement('button');
+            b.innerText = f.toLocaleString();
+            if(f >= 100000) b.className = 'special';
+            b.onclick = () => { document.getElementById('target-input').value = f; moveElevator(f, b); };
+            grid.appendChild(b);
         });
 
         function goMagic() {
-            const floor = parseInt(document.getElementById('target-input').value);
-            if (floor >= 1 && floor <= 100000) moveElevator(floor);
+            moveElevator(parseInt(document.getElementById('target-input').value));
         }
 
         function moveElevator(floor, btn) {
             document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
 
-            // 1. 위치 이동 (10만층 스케일)
-            const targetPos = ((floor - 1) / 99999) * 85; 
-            elevator.style.bottom = targetPos + "%";
+            // 1. 엘레베이터 위치 (화면 내 이동)
+            const elPos = (floor / 1000000) * 85;
+            document.getElementById('elevator').style.bottom = elPos + "%";
 
-            // 2. 숫자 업데이트
-            clearInterval(moveTimer);
-            let current = parseInt(display.innerText.replace(/,/g, ''));
-            
-            moveTimer = setInterval(() => {
-                const diff = floor - current;
-                if (Math.abs(diff) < 1) {
-                    current = floor;
-                    display.innerText = current.toLocaleString();
-                    clearInterval(moveTimer);
-                    arriveAnimation(); // 도착 애니메이션 실행
+            // 2. 행성들 위치 (층수에 따라 배경이 흐름)
+            planets.forEach(p => {
+                const pEl = document.getElementById(p.id);
+                // 현재 층수와 행성 층수의 차이에 따라 위치 계산
+                const offset = (p.floor - floor) * 0.1; 
+                pEl.style.top = (40 - offset) + "vh"; 
+            });
+
+            // 3. 숫자 카운팅
+            let cur = parseInt(document.getElementById('display').innerText.replace(/,/g,''));
+            const timer = setInterval(() => {
+                const diff = floor - cur;
+                if(Math.abs(diff) < 1) {
+                    clearInterval(timer);
+                    document.getElementById('display').innerText = floor.toLocaleString();
+                    arrive();
                 } else {
-                    current += diff / 12;
-                    display.innerText = Math.round(current).toLocaleString();
+                    cur += diff / 10;
+                    document.getElementById('display').innerText = Math.round(cur).toLocaleString();
                 }
-            }, 40);
+            }, 30);
         }
 
-        function arriveAnimation() {
-            // 1. 음성 출력
+        function arrive() {
             window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance("아이미따미꼬 야옹야옹");
-            utter.lang = 'ko-KR'; utter.pitch = 1.8;
-            window.speechSynthesis.speak(utter);
+            const m = new SpeechSynthesisUtterance("아이미따미꼬 야옹야옹");
+            m.lang = 'ko-KR'; m.pitch = 1.8;
+            window.speechSynthesis.speak(m);
 
-            // 2. 탑승자 교체 애니메이션
-            // 기존 탑승자 내림
-            passengerDiv.classList.add('exit');
-
+            const p = document.getElementById('passenger');
+            p.classList.add('exit');
             setTimeout(() => {
-                // 새로운 랜덤 탑승자 선택
-                const nextPassenger = passengers[Math.floor(Math.random() * passengers.length)];
-                passengerDiv.innerText = nextPassenger;
-                
-                // 새로운 탑승자 타기 준비 (왼쪽 바깥으로 이동)
-                passengerDiv.classList.remove('exit');
-                passengerDiv.classList.add('enter');
-
-                // 실제로 타는 모습 보여주기
-                setTimeout(() => {
-                    passengerDiv.classList.remove('enter');
-                }, 50);
-            }, 600);
+                const friends = ["🧙‍♀️", "🤖", "🐰", "😊", "🐼", "🦄", "🦖"];
+                p.innerText = friends[Math.floor(Math.random()*friends.length)];
+                p.classList.remove('exit');
+                p.classList.add('enter');
+                setTimeout(() => p.classList.remove('enter'), 50);
+            }, 500);
         }
     </script>
 </body>
