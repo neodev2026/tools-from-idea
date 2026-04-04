@@ -2,71 +2,73 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>1M층 우주 엘레베이터</title>
+    <title>10M층 초우주 엘레베이터</title>
     <style>
         body {
             margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
             background: #000; font-family: 'Malgun Gothic', sans-serif; color: white; overflow: hidden;
+            cursor: pointer;
         }
 
-        /* 우주 공간 (층수에 따라 배경이 움직임) */
+        /* 우주 공간 배경 */
         #space {
             position: absolute; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, #000000, #020111, #050b18, #191d35);
-            z-index: -1; transition: background-position 3s ease-in-out;
+            background: radial-gradient(circle at center, #001529 0%, #000000 100%);
+            z-index: -1;
         }
 
         /* 행성 스타일 */
         .planet {
-            position: absolute; left: 10%; font-size: 120px;
-            filter: drop-shadow(0 0 20px rgba(255,255,255,0.3));
-            transition: top 3s ease-in-out;
+            position: absolute; left: 10%; transition: top 3s ease-in-out;
             display: flex; flex-direction: column; align-items: center; font-size: 100px;
+            filter: drop-shadow(0 0 30px rgba(0, 210, 255, 0.4));
         }
-        .planet span { font-size: 20px; margin-top: 10px; color: #ffd700; }
+        .planet span { font-size: 22px; margin-top: 10px; color: #ffd700; font-weight: bold; }
 
-        /* 별 배경 */
-        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.8; }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.8; animation: blink 2s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
 
-        #game-container { display: flex; gap: 30px; align-items: flex-end; height: 80vh; width: 90%; max-width: 1000px; }
+        #game-container { display: flex; gap: 30px; align-items: flex-end; height: 85vh; width: 90%; max-width: 1100px; }
 
         #shaft {
-            flex: 1; height: 100%; border: 5px solid rgba(255, 215, 0, 0.5);
-            border-radius: 20px; position: relative; background: rgba(255,255,255,0.05);
+            flex: 1; height: 100%; border: 5px solid #ffd700; border-radius: 25px;
+            position: relative; background: rgba(255,255,255,0.05); box-shadow: inset 0 0 50px rgba(255,215,0,0.2);
         }
 
         #elevator {
-            width: 140px; height: 170px; background: #f1c40f; border: 4px solid #d4ac0d;
-            border-radius: 15px; position: absolute; left: 50%; transform: translateX(-50%);
-            bottom: 0%; transition: bottom 3s ease-in-out;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 150px; height: 180px; background: linear-gradient(135deg, #f1c40f, #f39c12);
+            border: 4px solid #d4ac0d; border-radius: 15px; position: absolute;
+            left: 50%; transform: translateX(-50%); bottom: 0%; transition: bottom 3s ease-in-out;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;
         }
 
         #display {
-            width: 110px; height: 35px; background: #000; color: #00ff00;
+            width: 120px; height: 40px; background: #000; color: #00ff00;
             border: 2px solid #333; display: flex; align-items: center; justify-content: center;
-            font-size: 16px; font-weight: bold; margin-bottom: 5px;
+            font-size: 16px; font-weight: bold; margin-bottom: 8px; font-family: 'Courier New', monospace;
         }
 
-        #passenger { font-size: 70px; transition: 0.5s; }
-        .exit { opacity: 0; transform: translateX(50px); }
-        .enter { opacity: 0; transform: translateX(-50px); }
+        #passenger { font-size: 80px; transition: 0.5s; }
+        .exit { opacity: 0; transform: translateX(60px) rotate(20deg); }
+        .enter { opacity: 0; transform: translateX(-60px) rotate(-20deg); }
 
         #panel {
-            flex: 1; background: rgba(0,0,0,0.8); padding: 20px; border-radius: 20px;
-            display: flex; flex-direction: column; gap: 10px; border: 2px solid #00d2ff;
+            flex: 1; background: rgba(0,0,0,0.85); padding: 25px; border-radius: 25px;
+            display: flex; flex-direction: column; gap: 15px; border: 3px solid #00d2ff;
         }
 
         #button-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-            overflow-y: auto; max-height: 400px;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+            overflow-y: auto; max-height: 450px; padding-right: 5px;
         }
 
-        button { height: 50px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
-        button.active { background: #ff00ff; color: white; }
-        .special { background: #ff9a9e; }
+        button { height: 55px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        button:hover { transform: scale(1.05); }
+        button.active { background: #ff00ff; color: white; box-shadow: 0 0 15px #ff00ff; }
+        .special { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; }
+        .ultra { background: linear-gradient(45deg, #f1c40f, #e74c3c); color: white; font-size: 20px; }
 
-        input { font-size: 20px; width: 100%; padding: 10px; box-sizing: border-box; text-align: center; }
+        input { font-size: 22px; width: 100%; padding: 12px; box-sizing: border-box; text-align: center; border-radius: 10px; border: 2px solid #00d2ff; background: #111; color: white; }
     </style>
 </head>
 <body>
@@ -74,11 +76,11 @@
     <div id="space"></div>
 
     <div id="p-moon" class="planet" style="top: 80vh;">🌙<span>달 (1만 층)</span></div>
-    <div id="p-sun" class="planet" style="top: -100vh;">☀️<span>태양 (10만 층)</span></div>
-    <div id="p-mars" class="planet" style="top: -300vh;">🔴<span>화성 (30만 층)</span></div>
-    <div id="p-jupiter" class="planet" style="top: -500vh;">🪐<span>목성 (50만 층)</span></div>
-    <div id="p-saturn" class="planet" style="top: -800vh;">🪐<span>토성 (80만 층)</span></div>
-    <div id="p-galaxy" class="planet" style="top: -1000vh;">🌌<span>은하수 (100만 층)</span></div>
+    <div id="p-earth" class="planet" style="top: -100vh;">🌍<span>지구 (10만 층)</span></div>
+    <div id="p-sun" class="planet" style="top: -300vh;">☀️<span>태양 (100만 층)</span></div>
+    <div id="p-uranus" class="planet" style="top: -500vh;">🌀<span>천왕성 (500만 층)</span></div>
+    <div id="p-saturn" class="planet" style="top: -800vh;">🪐<span>토성 (800만 층)</span></div>
+    <div id="p-galaxy" class="planet" style="top: -1000vh;">🌌<span>블랙홀 (1000만 층)</span></div>
 
     <div id="game-container">
         <div id="shaft">
@@ -89,8 +91,8 @@
         </div>
 
         <div id="panel">
-            <input type="number" id="target-input" value="1" placeholder="가고 싶은 층">
-            <button onclick="goMagic()" style="background: #00d2ff; color: white; margin-bottom: 10px;">우주선 출발!</button>
+            <input type="number" id="target-input" value="1" max="10000000" placeholder="가고 싶은 층">
+            <button onclick="goMagic()" style="background: #00ff00; color: black; font-size: 18px;">워프 엔진 가동!</button>
             <div id="button-grid"></div>
         </div>
     </div>
@@ -98,30 +100,36 @@
     <script>
         const planets = [
             { id: 'p-moon', floor: 10000 },
-            { id: 'p-sun', floor: 100000 },
-            { id: 'p-mars', floor: 300000 },
-            { id: 'p-jupiter', floor: 500000 },
-            { id: 'p-saturn', floor: 800000 },
-            { id: 'p-galaxy', floor: 1000000 }
+            { id: 'p-earth', floor: 100000 },
+            { id: 'p-sun', floor: 1000000 },
+            { id: 'p-uranus', floor: 5000000 },
+            { id: 'p-saturn', floor: 8000000 },
+            { id: 'p-galaxy', floor: 10000000 }
         ];
 
         // 별 만들기
         const space = document.getElementById('space');
-        for(let i=0; i<150; i++) {
+        for(let i=0; i<200; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            star.style.width = star.style.height = Math.random()*3+'px';
+            star.style.width = star.style.height = Math.random()*2.5+'px';
             star.style.left = Math.random()*100+'%';
             star.style.top = Math.random()*100+'%';
+            star.style.animationDelay = Math.random()*2+'s';
             space.appendChild(star);
         }
 
-        // 버튼 만들기
+        // 버튼 생성 (10M, 1M 강조)
         const grid = document.getElementById('button-grid');
-        [1000000, 800000, 500000, 300000, 100000, 50000, 10000, 5000, 1000, 1].forEach(f => {
+        const floors = [10000000, 8000000, 5000000, 3000000, 1000000, 500000, 100000, 50000, 10000, 1];
+        floors.forEach(f => {
             const b = document.createElement('button');
-            b.innerText = f.toLocaleString();
-            if(f >= 100000) b.className = 'special';
+            if (f === 10000000) { b.innerText = "10M"; b.className = "ultra"; }
+            else if (f === 1000000) { b.innerText = "1M"; b.className = "ultra"; }
+            else { 
+                b.innerText = f.toLocaleString(); 
+                if(f >= 100000) b.className = 'special';
+            }
             b.onclick = () => { document.getElementById('target-input').value = f; moveElevator(f, b); };
             grid.appendChild(b);
         });
@@ -134,48 +142,57 @@
             document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
 
-            // 1. 엘레베이터 위치 (화면 내 이동)
-            const elPos = (floor / 1000000) * 85;
+            // 1. 엘레베이터 위치 (10M 기준)
+            const elPos = (floor / 10000000) * 85;
             document.getElementById('elevator').style.bottom = elPos + "%";
 
-            // 2. 행성들 위치 (층수에 따라 배경이 흐름)
+            // 2. 행성들 위치 업데이트
             planets.forEach(p => {
                 const pEl = document.getElementById(p.id);
-                // 현재 층수와 행성 층수의 차이에 따라 위치 계산
-                const offset = (p.floor - floor) * 0.1; 
+                const offset = (p.floor - floor) * 0.02; // 10M에 맞춰 오프셋 조정
                 pEl.style.top = (40 - offset) + "vh"; 
             });
 
-            // 3. 숫자 카운팅
-            let cur = parseInt(document.getElementById('display').innerText.replace(/,/g,''));
+            // 3. 숫자 카운팅 (매우 빠르게)
+            let cur = parseInt(document.getElementById('display').innerText.replace(/,/g,'').replace('M','000000'));
+            if(isNaN(cur)) cur = 1;
+            
             const timer = setInterval(() => {
                 const diff = floor - cur;
                 if(Math.abs(diff) < 1) {
                     clearInterval(timer);
-                    document.getElementById('display').innerText = floor.toLocaleString();
-                    arrive();
+                    displayFloor(floor);
+                    arrive(floor);
                 } else {
-                    cur += diff / 10;
-                    document.getElementById('display').innerText = Math.round(cur).toLocaleString();
+                    cur += diff / 8;
+                    displayFloor(Math.round(cur));
                 }
             }, 30);
         }
 
-        function arrive() {
+        function displayFloor(f) {
+            const d = document.getElementById('display');
+            if(f >= 10000000) d.innerText = "10,000,000 (10M)";
+            else if(f >= 1000000) d.innerText = f.toLocaleString() + " (1M)";
+            else d.innerText = f.toLocaleString();
+        }
+
+        function arrive(floor) {
             window.speechSynthesis.cancel();
-            const m = new SpeechSynthesisUtterance("아이미따미꼬 야옹야옹");
-            m.lang = 'ko-KR'; m.pitch = 1.8;
+            const floorText = floor >= 10000000 ? "천만" : (floor >= 1000000 ? "백만" : floor);
+            const m = new SpeechSynthesisUtterance(`띵동, ${floorText} 층 입니다. 아이미따미꼬 야옹야옹`);
+            m.lang = 'ko-KR'; m.pitch = 1.8; m.rate = 1.1;
             window.speechSynthesis.speak(m);
 
             const p = document.getElementById('passenger');
             p.classList.add('exit');
             setTimeout(() => {
-                const friends = ["🧙‍♀️", "🤖", "🐰", "😊", "🐼", "🦄", "🦖"];
+                const friends = ["🧙‍♀️", "🤖", "🐰", "😊", "🐼", "🦄", "🦖", "👽", "🐙"];
                 p.innerText = friends[Math.floor(Math.random()*friends.length)];
                 p.classList.remove('exit');
                 p.classList.add('enter');
                 setTimeout(() => p.classList.remove('enter'), 50);
-            }, 500);
+            }, 600);
         }
     </script>
 </body>
