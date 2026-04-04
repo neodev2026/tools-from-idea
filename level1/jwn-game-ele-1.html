@@ -15,20 +15,20 @@
             font-family: 'Malgun Gothic', sans-serif;
             color: white;
             overflow: hidden;
+            cursor: pointer; /* 클릭 유도 */
         }
 
         #game-container {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             align-items: flex-end;
             height: 80vh;
-            width: 90%;
+            width: 95%;
             max-width: 900px;
         }
 
-        /* 엘레베이터 통로 */
         #shaft {
-            flex: 1;
+            flex: 1.2;
             height: 100%;
             background: rgba(255, 255, 255, 0.1);
             border: 5px solid #ffd700;
@@ -37,7 +37,6 @@
             box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
         }
 
-        /* 엘레베이터 본체 */
         #elevator {
             width: 130px;
             height: 160px;
@@ -47,14 +46,12 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            bottom: 10px;
-            /* 10000층까지는 조금 더 빨리 이동하도록 속도 조정 */
-            transition: bottom 4s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+            bottom: 0px; /* 초기값 */
+            transition: bottom 3s ease-in-out;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 10;
         }
 
         #display {
@@ -71,26 +68,10 @@
             margin-bottom: 5px;
         }
 
-        #witch-emoji {
-            font-size: 70px;
-            animation: floating 2s infinite ease-in-out;
-        }
+        #witch-emoji { font-size: 70px; }
 
-        @keyframes floating {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
+        #right-panel { flex: 1; display: flex; flex-direction: column; height: 100%; gap: 10px; }
 
-        /* 버튼 패널 영역 */
-        #right-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            gap: 10px;
-        }
-
-        /* 숫자 입력창 (마법의 숫자판) */
         #quick-move {
             background: rgba(255,255,255,0.2);
             padding: 10px;
@@ -98,16 +79,8 @@
             text-align: center;
         }
 
-        #target-input {
-            width: 80px;
-            font-size: 20px;
-            padding: 5px;
-            border-radius: 5px;
-            border: none;
-            text-align: center;
-        }
+        #target-input { width: 80px; font-size: 20px; text-align: center; }
 
-        /* 10000개 버튼 스크롤 영역 */
         #button-panel {
             background: rgba(0, 0, 0, 0.6);
             padding: 15px;
@@ -120,37 +93,20 @@
             border: 3px solid #00d2ff;
         }
 
-        button {
-            height: 45px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            border-radius: 8px;
-            background: #fff;
-            color: #333;
-        }
-
-        button.active {
-            background: #ff00ff;
-            color: white;
-            box-shadow: 0 0 15px #ff00ff;
-        }
-
-        .special-btn {
-            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
-            color: #d81b60;
-        }
-
-        h1 { margin: 10px 0; color: #ffd700; text-shadow: 2px 2px 5px #000; font-size: 24px; }
+        button { height: 45px; font-size: 16px; font-weight: bold; cursor: pointer; border: none; border-radius: 8px; background: #fff; }
+        button.active { background: #ff00ff; color: white; }
+        .special-btn { background: #ff9a9e; color: #d81b60; }
+        
+        #sound-notice { position: absolute; top: 10px; font-size: 14px; color: #ffd700; }
     </style>
 </head>
 <body>
 
+    <div id="sound-notice">📢 소리가 안 나면 화면을 아무데나 한 번 클릭해 주세요!</div>
     <h1>✨ 10,000층 우주 마법 여행 ✨</h1>
 
     <div id="game-container">
-        <div id="shaft">
+        <div id="shaft" id="shaft-box">
             <div id="elevator">
                 <div id="display">1</div>
                 <div id="witch-emoji">🧙‍♀️</div>
@@ -159,12 +115,10 @@
 
         <div id="right-panel">
             <div id="quick-move">
-                숫자 입력: <input type="number" id="target-input" min="1" max="10000" value="1">
-                <button onclick="goMagic()" style="width: 60px; height: 35px; font-size: 14px;">출발!</button>
+                숫자 입력: <input type="number" id="target-input" value="1">
+                <button onclick="goMagic()">출발!</button>
             </div>
-
-            <div id="button-panel">
-                </div>
+            <div id="button-panel"></div>
         </div>
     </div>
 
@@ -172,71 +126,64 @@
         const panel = document.getElementById('button-panel');
         const elevator = document.getElementById('elevator');
         const display = document.getElementById('display');
-        const targetInput = document.getElementById('target-input');
+        const shaft = document.getElementById('shaft');
+        let moveTimer;
 
-        // 1. 10000층 버튼 생성 (1000개 단위로 특별 색상)
-        // 성능을 위해 10000개를 한꺼번에 그리면 느려질 수 있어 역순으로 배치
-        const fragment = document.createDocumentFragment();
+        // 버튼 생성 (주요 층 + 1~100층)
         for (let i = 10000; i >= 1; i--) {
-            // 모든 버튼을 다 만들면 브라우저가 힘들어할 수 있어 주요 층 위주로 보여주거나, 
-            // 여기서는 요청대로 일단 생성하되 스타일로 구분합니다.
-            if (i === 10000 || i % 1000 === 0 || i <= 100) { 
+            if (i === 10000 || i % 1000 === 0 || i % 100 === 0 || i <= 100) {
                 const btn = document.createElement('button');
                 btn.innerText = i;
                 if (i % 1000 === 0) btn.className = 'special-btn';
-                if (i === 1) btn.classList.add('active');
-                btn.onclick = () => moveElevator(i, btn);
-                fragment.appendChild(btn);
+                btn.onclick = () => {
+                    document.getElementById('target-input').value = i;
+                    moveElevator(i, btn);
+                };
+                panel.appendChild(btn);
             }
         }
-        panel.appendChild(fragment);
 
-        // 입력창으로 이동하기
         function goMagic() {
-            const floor = parseInt(targetInput.value);
-            if(floor >= 1 && floor <= 10000) {
-                moveElevator(floor);
-            } else {
-                alert("1층부터 10000층까지만 갈 수 있어요!");
-            }
+            const floor = parseInt(document.getElementById('target-input').value);
+            if (floor >= 1 && floor <= 10000) moveElevator(floor);
         }
 
-        function moveElevator(floor, clickedBtn) {
+        function moveElevator(floor, btn) {
             document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-            if(clickedBtn) clickedBtn.classList.add('active');
+            if(btn) btn.classList.add('active');
 
-            // 2. 위치 이동 (1층=2%, 10000층=95%)
-            const percent = 2 + (floor - 1) * (93 / 9999);
-            elevator.style.bottom = percent + '%';
+            // 1. 위치 계산 (정확하게 %로 변환)
+            // 하단 0%에서 상단 85% 사이만 움직이도록 제한 (마녀 머리 안 잘리게)
+            const moveRange = 85; 
+            const targetPos = ((floor - 1) / 9999) * moveRange;
+            elevator.style.bottom = targetPos + "%";
 
-            // 3. 디스플레이 숫자 업데이트 (빠르게!)
+            // 2. 숫자 업데이트
+            clearInterval(moveTimer);
             let current = parseInt(display.innerText);
-            const target = floor;
             
-            const timer = setInterval(() => {
-                const diff = target - current;
-                if (Math.abs(diff) < 1) {
-                    current = target;
-                    clearInterval(timer);
-                    speakMagicWords();
+            moveTimer = setInterval(() => {
+                const step = (floor - current) / 10;
+                if (Math.abs(step) < 0.1) {
+                    current = floor;
+                    display.innerText = current;
+                    clearInterval(moveTimer);
+                    speakMagic(); // 도착 시 음성
                 } else {
-                    // 숫자가 클수록 더 빨리 변하게 계산
-                    current += Math.ceil(diff / 10);
+                    current += step;
+                    display.innerText = Math.round(current);
                 }
-                display.innerText = Math.floor(current);
             }, 40);
         }
 
-        function speakMagicWords() {
-            if ('speechSynthesis' in window) {
-                // 이전 음성 중단
-                window.speechSynthesis.cancel();
-                const msg = new SpeechSynthesisUtterance();
-                msg.text = "아이미따미꼬 야옹야옹";
-                msg.lang = 'ko-KR';
-                msg.pitch = 1.6; // 더 귀여운 목소리
-                window.speechSynthesis.speak(msg);
-            }
+        function speakMagic() {
+            // 브라우저 음성 엔진 초기화 및 재생
+            window.speechSynthesis.cancel(); 
+            const utter = new SpeechSynthesisUtterance("아이미따미꼬 야옹야옹");
+            utter.lang = 'ko-KR';
+            utter.pitch = 1.8;
+            utter.rate = 1.2;
+            window.speechSynthesis.speak(utter);
         }
     </script>
 </body>
