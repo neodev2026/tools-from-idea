@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>꼬마 마녀의 마법 엘레베이터</title>
+    <title>꼬마 마녀의 100층 엘레베이터</title>
     <style>
         body {
             display: flex;
@@ -11,174 +11,182 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background: linear-gradient(to bottom, #1a1a2e, #16213e); /* 밤하늘 배경 */
-            font-family: 'Nanum Gothic', sans-serif;
+            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+            font-family: 'Malgun Gothic', sans-serif;
             color: white;
             overflow: hidden;
         }
 
         #game-container {
             display: flex;
-            gap: 50px;
-            align-items: center;
+            gap: 40px;
+            align-items: flex-end;
+            height: 80vh;
         }
 
-        /* 엘레베이터가 움직이는 통로 */
+        /* 엘레베이터 통로 (100층의 높이감을 위해 길게 설정) */
         #shaft {
-            width: 200px;
-            height: 600px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 5px solid #4e4e6d;
-            border-radius: 20px;
+            width: 180px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 4px solid #4a4e69;
+            border-radius: 15px;
             position: relative;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
         }
 
         /* 엘레베이터 본체 */
         #elevator {
-            width: 160px;
-            height: 180px;
-            background: #f1c40f; /* 황금색 엘레베이터 */
+            width: 140px;
+            height: 160px;
+            background: #f1c40f;
             border: 4px solid #d4ac0d;
-            border-radius: 15px;
+            border-radius: 10px;
             position: absolute;
-            left: 20px;
-            bottom: 20px; /* 1층 위치 */
-            transition: bottom 1.5s cubic-bezier(0.45, 0.05, 0.55, 0.95); /* 부드러운 움직임 */
+            left: 16px;
+            bottom: 10px;
+            transition: bottom 2.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-around;
-            padding: 10px 0;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(241, 196, 15, 0.5);
         }
 
-        /* 엘레베이터 내부 층수 디스플레이 */
+        /* 전광판 */
         #display {
-            width: 80px;
+            width: 90px;
             height: 35px;
-            background-color: #222;
-            color: #ff0000;
-            border: 2px solid #555;
+            background: #222;
+            color: #00ff00;
+            border: 2px solid #444;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Courier New', monospace;
             font-size: 24px;
             font-weight: bold;
-            text-shadow: 0 0 5px #ff0000;
+            margin-bottom: 10px;
+            font-family: 'monospace';
         }
 
-        /* 꼬마 마녀 캐릭터 이미지 */
-        #witch {
-            width: 100px;
-            height: 100px;
-            object-fit: contain;
+        /* 꼬마 마녀 (이모지 활용으로 절대 깨지지 않음) */
+        #witch-emoji {
+            font-size: 70px;
+            filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.3));
+            animation: floating 2s infinite ease-in-out;
         }
 
-        /* 버튼 판넬 */
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* 버튼 패널 (스크롤 가능하게 수정) */
         #button-panel {
-            background: #34495e;
+            background: #2c3e50;
             padding: 20px;
-            border-radius: 20px;
-            border: 5px solid #2c3e50;
+            border-radius: 15px;
+            height: 500px;
+            overflow-y: auto; /* 100개 버튼을 위해 스크롤 추가 */
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            box-shadow: 0 10px 0 #22313f;
+            gap: 10px;
+            border: 5px solid #1a252f;
         }
 
-        /* 숫자 버튼 */
+        /* 버튼 스타일 */
         button {
-            width: 70px;
-            height: 70px;
-            font-size: 28px;
+            width: 65px;
+            height: 65px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
             border: none;
-            border-radius: 50%;
-            background: radial-gradient(circle, #ecf0f1, #bdc3c7);
+            border-radius: 15px;
+            background: #ecf0f1;
             color: #2c3e50;
-            box-shadow: 0 5px #7f8c8d;
-            transition: all 0.1s;
+            transition: 0.2s;
         }
 
-        button:active {
-            box-shadow: 0 2px #7f8c8d;
-            transform: translateY(3px);
-        }
-
-        /* 현재 눌린 층 버튼 강조 */
+        button:hover { background: #bdc3c7; }
         button.active {
-            background: radial-gradient(circle, #f1c40f, #f39c12);
+            background: #e74c3c;
             color: white;
-            box-shadow: 0 5px #d35400;
+            transform: scale(1.05);
         }
 
-        h1 {
-            margin-bottom: 20px;
-            color: #f1c40f;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        /* 특별한 100층 버튼 */
+        .btn-100 {
+            grid-column: span 2;
+            background: linear-gradient(45deg, #f1c40f, #ff00ff);
+            color: white;
+            height: 80px;
+            font-size: 30px;
         }
+
+        h1 { color: #f1c40f; margin-bottom: 10px; }
+        p { color: #bdc3c7; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <h1>✨ 마법 엘레베이터 ✨</h1>
+    <h1>✨ 마녀의 100층 엘레베이터 ✨</h1>
+    <p>가고 싶은 층 버튼을 눌러보세요!</p>
 
     <div id="game-container">
         <div id="shaft">
-            <div id="elevator">
+            <div id="elevator" id="elevator-box">
                 <div id="display">1</div>
-                <img id="witch" src="https://cdn-icons-png.flaticon.com/512/3200/3200057.png" alt="꼬마 마녀">
+                <div id="witch-emoji">🧙‍♀️</div>
             </div>
         </div>
 
-        <div id="button-panel">
-            <button onclick="moveElevator(10)">10</button>
-            <button onclick="moveElevator(9)">9</button>
-            <button onclick="moveElevator(8)">8</button>
-            <button onclick="moveElevator(7)">7</button>
-            <button onclick="moveElevator(6)">6</button>
-            <button onclick="moveElevator(5)">5</button>
-            <button onclick="moveElevator(4)">4</button>
-            <button onclick="moveElevator(3)">3</button>
-            <button onclick="moveElevator(2)">2</button>
-            <button onclick="moveElevator(1)" class="active">1</button>
-        </div>
+        <div id="button-panel" id="panel">
+            </div>
     </div>
 
     <script>
-        function moveElevator(floor) {
-            const elevator = document.getElementById('elevator');
-            const display = document.getElementById('display');
-            const buttons = document.querySelectorAll('button');
+        const panel = document.getElementById('button-panel');
+        const elevator = document.getElementById('elevator');
+        const display = document.getElementById('display');
 
-            // 1. 버튼 활성화 표시 변경
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
-                if(btn.innerText == floor) btn.classList.add('active');
-            });
-
-            // 2. 엘레베이터 위치 계산 (1층: 20px ~ 10층: 400px 정도)
-            const newBottom = 20 + (floor - 1) * 45;
-            elevator.style.bottom = newBottom + 'px';
-
-            // 3. 디스플레이 숫자 업데이트 (이동 중에 계속 업데이트)
-            // 실제 이동 시간인 1.5초 동안 숫자가 변하는 효과를 주기 위한 간단한 로직
-            let currentDisplay = parseInt(display.innerText);
-            const targetFloor = floor;
+        // 1. 100층부터 1층까지 버튼 생성
+        for (let i = 100; i >= 1; i--) {
+            const btn = document.createElement('button');
+            btn.innerText = i;
+            if (i === 100) btn.className = 'btn-100';
+            if (i === 1) btn.classList.add('active');
             
-            const interval = setInterval(() => {
-                if (currentDisplay < targetFloor) {
-                    currentDisplay++;
-                } else if (currentDisplay > targetFloor) {
-                    currentDisplay--;
+            btn.onclick = () => moveElevator(i, btn);
+            panel.appendChild(btn);
+        }
+
+        function moveElevator(floor, clickedBtn) {
+            // 모든 버튼 활성화 해제 후 클릭된 버튼 활성화
+            document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            clickedBtn.classList.add('active');
+
+            // 2. 엘레베이터 이동 위치 계산 
+            // 100층은 맨 위(90%), 1층은 맨 아래(2%)
+            const percent = 2 + (floor - 1) * 0.88; 
+            elevator.style.bottom = percent + '%';
+
+            // 3. 디스플레이 숫자 업데이트 효과
+            let current = parseInt(display.innerText);
+            const target = floor;
+            const duration = 2500; // 이동 시간과 동일하게
+            const stepTime = Math.abs(duration / (target - current || 1));
+            
+            const timer = setInterval(() => {
+                if (current < target) {
+                    current++;
+                } else if (current > target) {
+                    current--;
                 } else {
-                    clearInterval(interval);
+                    clearInterval(timer);
                 }
-                display.innerText = currentDisplay;
-            }, 150); // 숫자가 바뀌는 속도
+                display.innerText = current;
+            }, Math.min(stepTime, 100)); // 너무 빠르면 0.1초 간격으로
         }
     </script>
 </body>
