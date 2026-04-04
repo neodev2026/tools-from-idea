@@ -2,188 +2,162 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>마녀의 10,000층 마법 엘레베이터</title>
+    <title>마녀와 친구들의 100,000층 여행</title>
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(to bottom, #000428, #004e92, #00d2ff);
-            font-family: 'Malgun Gothic', sans-serif;
-            color: white;
-            overflow: hidden;
-            cursor: pointer; /* 클릭 유도 */
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; margin: 0; background: linear-gradient(to bottom, #000428, #004e92, #00d2ff);
+            font-family: 'Malgun Gothic', sans-serif; color: white; overflow: hidden; cursor: pointer;
         }
 
-        #game-container {
-            display: flex;
-            gap: 20px;
-            align-items: flex-end;
-            height: 80vh;
-            width: 95%;
-            max-width: 900px;
-        }
+        #game-container { display: flex; gap: 20px; align-items: flex-end; height: 80vh; width: 95%; max-width: 950px; }
 
         #shaft {
-            flex: 1.2;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 5px solid #ffd700;
-            border-radius: 20px;
-            position: relative;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            flex: 1.2; height: 100%; background: rgba(255, 255, 255, 0.1);
+            border: 5px solid #ffd700; border-radius: 20px; position: relative;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3); overflow: hidden;
         }
 
         #elevator {
-            width: 130px;
-            height: 160px;
-            background: #f1c40f;
-            border: 4px solid #d4ac0d;
-            border-radius: 15px;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 0px; /* 초기값 */
-            transition: bottom 3s ease-in-out;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            width: 140px; height: 170px; background: #f1c40f; border: 4px solid #d4ac0d;
+            border-radius: 15px; position: absolute; left: 50%; transform: translateX(-50%);
+            bottom: 0%; transition: bottom 3s ease-in-out;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;
         }
 
         #display {
-            width: 100px;
-            height: 35px;
-            background: #000;
-            color: #00ff00;
-            border: 2px solid #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 5px;
+            width: 110px; height: 35px; background: #000; color: #00ff00;
+            border: 2px solid #333; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: bold; margin-bottom: 5px;
         }
 
-        #witch-emoji { font-size: 70px; }
+        /* 탑승자 애니메이션 */
+        #passenger {
+            font-size: 70px; transition: all 0.5s ease-in-out;
+            opacity: 1; transform: scale(1);
+        }
+
+        /* 내리고 타는 효과 */
+        .exit { opacity: 0 !important; transform: translateX(100px) scale(0.5) !important; }
+        .enter { opacity: 0; transform: translateX(-100px) scale(0.5); }
 
         #right-panel { flex: 1; display: flex; flex-direction: column; height: 100%; gap: 10px; }
 
-        #quick-move {
-            background: rgba(255,255,255,0.2);
-            padding: 10px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        #target-input { width: 80px; font-size: 20px; text-align: center; }
+        #quick-move { background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; text-align: center; }
+        #target-input { width: 100px; font-size: 20px; text-align: center; }
 
         #button-panel {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 15px;
-            border-radius: 20px;
-            flex-grow: 1;
-            overflow-y: auto;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            border: 3px solid #00d2ff;
+            background: rgba(0, 0, 0, 0.6); padding: 15px; border-radius: 20px;
+            flex-grow: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 8px; border: 3px solid #00d2ff;
         }
 
-        button { height: 45px; font-size: 16px; font-weight: bold; cursor: pointer; border: none; border-radius: 8px; background: #fff; }
+        button { height: 45px; font-size: 14px; font-weight: bold; cursor: pointer; border: none; border-radius: 8px; background: #fff; }
         button.active { background: #ff00ff; color: white; }
         .special-btn { background: #ff9a9e; color: #d81b60; }
         
-        #sound-notice { position: absolute; top: 10px; font-size: 14px; color: #ffd700; }
+        #info { position: absolute; top: 10px; font-size: 14px; color: #ffd700; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div id="sound-notice">📢 소리가 안 나면 화면을 아무데나 한 번 클릭해 주세요!</div>
-    <h1>✨ 10,000층 우주 마법 여행 ✨</h1>
+    <div id="info">📢 화면을 클릭하면 소리가 나요! <br> 도착하면 친구들이 작별 인사를 하고 새 친구가 타요!</div>
+    <h1>🚀 100,000층 초우주 여행 🚀</h1>
 
     <div id="game-container">
-        <div id="shaft" id="shaft-box">
+        <div id="shaft">
             <div id="elevator">
                 <div id="display">1</div>
-                <div id="witch-emoji">🧙‍♀️</div>
+                <div id="passenger">🧙‍♀️</div>
             </div>
         </div>
 
         <div id="right-panel">
             <div id="quick-move">
-                숫자 입력: <input type="number" id="target-input" value="1">
-                <button onclick="goMagic()">출발!</button>
+                숫자 입력: <input type="number" id="target-input" value="1" min="1" max="100000">
+                <button onclick="goMagic()" style="width:60px">출발!</button>
             </div>
             <div id="button-panel"></div>
         </div>
     </div>
 
     <script>
+        const passengers = ["🧙‍♀️", "🤖", "🐰", "😊", "🐼", "🦁", "🐱", "🦄", "🧚", "🦖"];
         const panel = document.getElementById('button-panel');
         const elevator = document.getElementById('elevator');
         const display = document.getElementById('display');
-        const shaft = document.getElementById('shaft');
+        const passengerDiv = document.getElementById('passenger');
         let moveTimer;
 
-        // 버튼 생성 (주요 층 + 1~100층)
-        for (let i = 10000; i >= 1; i--) {
-            if (i === 10000 || i % 1000 === 0 || i % 100 === 0 || i <= 100) {
-                const btn = document.createElement('button');
-                btn.innerText = i;
-                if (i % 1000 === 0) btn.className = 'special-btn';
-                btn.onclick = () => {
-                    document.getElementById('target-input').value = i;
-                    moveElevator(i, btn);
-                };
-                panel.appendChild(btn);
-            }
-        }
+        // 버튼 생성 (10만층 대응: 주요 단위만 생성하여 브라우저 부하 방지)
+        const floors = [100000, 90000, 80000, 70000, 60000, 50000, 40000, 30000, 20000, 10000, 5000, 1000, 500, 100, 50, 10, 1];
+        floors.forEach(f => {
+            const btn = document.createElement('button');
+            btn.innerText = f.toLocaleString();
+            if (f % 10000 === 0) btn.className = 'special-btn';
+            btn.onclick = () => {
+                document.getElementById('target-input').value = f;
+                moveElevator(f, btn);
+            };
+            panel.appendChild(btn);
+        });
 
         function goMagic() {
             const floor = parseInt(document.getElementById('target-input').value);
-            if (floor >= 1 && floor <= 10000) moveElevator(floor);
+            if (floor >= 1 && floor <= 100000) moveElevator(floor);
         }
 
         function moveElevator(floor, btn) {
             document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
 
-            // 1. 위치 계산 (정확하게 %로 변환)
-            // 하단 0%에서 상단 85% 사이만 움직이도록 제한 (마녀 머리 안 잘리게)
-            const moveRange = 85; 
-            const targetPos = ((floor - 1) / 9999) * moveRange;
+            // 1. 위치 이동 (10만층 스케일)
+            const targetPos = ((floor - 1) / 99999) * 85; 
             elevator.style.bottom = targetPos + "%";
 
             // 2. 숫자 업데이트
             clearInterval(moveTimer);
-            let current = parseInt(display.innerText);
+            let current = parseInt(display.innerText.replace(/,/g, ''));
             
             moveTimer = setInterval(() => {
-                const step = (floor - current) / 10;
-                if (Math.abs(step) < 0.1) {
+                const diff = floor - current;
+                if (Math.abs(diff) < 1) {
                     current = floor;
-                    display.innerText = current;
+                    display.innerText = current.toLocaleString();
                     clearInterval(moveTimer);
-                    speakMagic(); // 도착 시 음성
+                    arriveAnimation(); // 도착 애니메이션 실행
                 } else {
-                    current += step;
-                    display.innerText = Math.round(current);
+                    current += diff / 12;
+                    display.innerText = Math.round(current).toLocaleString();
                 }
             }, 40);
         }
 
-        function speakMagic() {
-            // 브라우저 음성 엔진 초기화 및 재생
-            window.speechSynthesis.cancel(); 
+        function arriveAnimation() {
+            // 1. 음성 출력
+            window.speechSynthesis.cancel();
             const utter = new SpeechSynthesisUtterance("아이미따미꼬 야옹야옹");
-            utter.lang = 'ko-KR';
-            utter.pitch = 1.8;
-            utter.rate = 1.2;
+            utter.lang = 'ko-KR'; utter.pitch = 1.8;
             window.speechSynthesis.speak(utter);
+
+            // 2. 탑승자 교체 애니메이션
+            // 기존 탑승자 내림
+            passengerDiv.classList.add('exit');
+
+            setTimeout(() => {
+                // 새로운 랜덤 탑승자 선택
+                const nextPassenger = passengers[Math.floor(Math.random() * passengers.length)];
+                passengerDiv.innerText = nextPassenger;
+                
+                // 새로운 탑승자 타기 준비 (왼쪽 바깥으로 이동)
+                passengerDiv.classList.remove('exit');
+                passengerDiv.classList.add('enter');
+
+                // 실제로 타는 모습 보여주기
+                setTimeout(() => {
+                    passengerDiv.classList.remove('enter');
+                }, 50);
+            }, 600);
         }
     </script>
 </body>
