@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>10^999999999층 만물의 근원 엘레베이터</title>
+    <title>절대 차원 엘레베이터</title>
     <style>
         body {
             margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
@@ -13,7 +13,7 @@
         /* 우주 공간 배경 */
         #space {
             position: absolute; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #000000 0%, #03000a 100%);
+            background: radial-gradient(circle at center, #000000 0%, #050510 100%);
             z-index: -1;
         }
 
@@ -23,12 +23,12 @@
             display: flex; flex-direction: column; align-items: center; font-size: 90px;
             filter: drop-shadow(0 0 40px rgba(0, 210, 255, 0.5));
         }
-        .planet span { font-size: 20px; margin-top: 10px; color: #ffd700; font-weight: bold; text-shadow: 2px 2px 5px #000; text-align: center; }
+        .planet span { font-size: 18px; margin-top: 10px; color: #ffd700; font-weight: bold; text-shadow: 2px 2px 5px #000; text-align: center; }
 
         .star { position: absolute; background: white; border-radius: 50%; opacity: 0.8; animation: blink 2s infinite; }
         @keyframes blink { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
 
-        #game-container { display: flex; gap: 20px; align-items: flex-end; height: 85vh; width: 95%; max-width: 1200px; }
+        #game-container { display: flex; gap: 20px; align-items: flex-end; height: 85vh; width: 95%; max-width: 1250px; }
 
         #shaft {
             flex: 1.2; height: 100%; border: 5px solid #ffd700; border-radius: 25px;
@@ -43,10 +43,10 @@
         }
 
         #display {
-            width: 150px; height: 45px; background: #000; color: #00ff00;
+            width: 150px; height: 50px; background: #000; color: #00ff00;
             border: 2px solid #333; display: flex; align-items: center; justify-content: center;
-            font-size: 11px; font-weight: bold; margin-bottom: 8px; font-family: 'Courier New', monospace;
-            text-align: center; line-height: 1.2;
+            font-size: 10px; font-weight: bold; margin-bottom: 8px; font-family: 'Courier New', monospace;
+            text-align: center; line-height: 1.3;
         }
 
         #passenger { font-size: 80px; transition: 0.5s; }
@@ -54,42 +54,46 @@
         .enter { opacity: 0; transform: translateX(-60px) rotate(-20deg); }
 
         #panel {
-            flex: 1; background: rgba(0,0,0,0.85); padding: 20px; border-radius: 25px;
-            display: flex; flex-direction: column; gap: 12px; border: 3px solid #00d2ff;
+            flex: 1; background: rgba(0,0,0,0.85); padding: 15px; border-radius: 25px;
+            display: flex; flex-direction: column; gap: 10px; border: 3px solid #00d2ff;
         }
 
         #button-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
-            overflow-y: auto; max-height: 500px; padding-right: 5px;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+            overflow-y: auto; max-height: 550px; padding-right: 5px;
         }
 
-        button { height: 60px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s; }
+        button { height: 55px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s; }
         button:hover { transform: scale(1.05); }
         button.active { background: #ff00ff; color: white; box-shadow: 0 0 15px #ff00ff; }
         
         .special { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; }
-        .mega-btn { background: linear-gradient(45deg, #f1c40f, #e74c3c); color: white; font-size: 17px; }
-        .hyper-btn { background: linear-gradient(45deg, #ff00cc, #3333ff); color: white; font-size: 20px; text-shadow: 0 0 5px #fff; box-shadow: 0 0 20px #ff00cc; }
-        .ultimate-btn { background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); color: white; font-size: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); animation: rainbow 2s infinite linear; }
-        .beyond-btn { background: linear-gradient(45deg, #000000, #4b0082, #0000ff, #ffffff); background-size: 300% 300%; color: #fff; font-size: 18px; text-shadow: 0 0 10px #fff; border: 2px solid #fff; box-shadow: 0 0 30px #fff; animation: galaxy 2s infinite ease-in-out; }
+        .mega-btn { background: linear-gradient(45deg, #f1c40f, #e74c3c); color: white; font-size: 16px; }
+        .hyper-btn { background: linear-gradient(45deg, #ff00cc, #3333ff); color: white; text-shadow: 0 0 5px #fff; box-shadow: 0 0 20px #ff00cc; }
+        .ultimate-btn { background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); animation: rainbow 2s infinite linear; }
+        .beyond-btn { background: linear-gradient(45deg, #000000, #4b0082, #0000ff, #ffffff); background-size: 300% 300%; color: #fff; text-shadow: 0 0 10px #fff; border: 2px solid #fff; box-shadow: 0 0 30px #fff; animation: galaxy 2s infinite ease-in-out; }
+        .omni-btn { background: linear-gradient(135deg, #ffffff, #ffff00, #00ffff, #ff00ff); background-size: 400% 400%; color: #000; font-weight: 900; text-shadow: 0 0 10px #fff; border: 3px solid #fff; box-shadow: 0 0 50px #ffff00, inset 0 0 20px #ffffff; animation: omniWarp 1s infinite alternate; }
         
-        /* 궁극의 10^999999999 버튼 (시공간 붕괴 애니메이션) */
-        .omni-btn {
-            background: linear-gradient(135deg, #ffffff, #ffff00, #00ffff, #ff00ff);
-            background-size: 400% 400%; color: #000; font-size: 20px; font-weight: 900;
-            text-shadow: 0 0 10px #fff; border: 3px solid #fff;
-            box-shadow: 0 0 50px #ffff00, inset 0 0 20px #ffffff;
-            animation: omniWarp 1s infinite alternate;
+        /* 새로운 궁극의 버튼: 절대 차원 (글리치 효과) */
+        .absolute-btn {
+            background: #fff; color: #000; font-size: 14px; font-weight: 900;
+            border: 4px solid #000; box-shadow: 0 0 60px #ffffff, 0 0 20px #00ffff, inset 0 0 30px #ff00ff;
+            animation: glitch 0.5s infinite;
         }
 
         @keyframes rainbow { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
         @keyframes galaxy { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes omniWarp { 
-            0% { transform: scale(1) skewX(0deg); background-position: 0% 50%; box-shadow: 0 0 30px #00ffff; } 
-            100% { transform: scale(1.08) skewX(-2deg); background-position: 100% 50%; box-shadow: 0 0 80px #ffff00; } 
+        @keyframes omniWarp { 0% { transform: scale(1); background-position: 0% 50%; } 100% { transform: scale(1.05); background-position: 100% 50%; } }
+        @keyframes glitch {
+            0% { transform: translate(0) scale(1); filter: invert(0%); }
+            20% { transform: translate(-2px, 2px) scale(1.02); filter: invert(20%); }
+            40% { transform: translate(-2px, -2px) scale(1); filter: invert(0%); }
+            60% { transform: translate(2px, 2px) scale(1.02); filter: invert(50%); }
+            80% { transform: translate(2px, -2px) scale(1); filter: invert(0%); }
+            100% { transform: translate(0) scale(1); filter: invert(10%); }
         }
 
-        input { font-size: 20px; width: 100%; padding: 12px; box-sizing: border-box; text-align: center; border-radius: 10px; border: 2px solid #00d2ff; background: #111; color: white; }
+        input { font-size: 18px; width: 100%; padding: 10px; box-sizing: border-box; text-align: center; border-radius: 10px; border: 2px solid #00d2ff; background: #111; color: white; }
     </style>
 </head>
 <body>
@@ -106,7 +110,8 @@
     <div id="p-multiverse" class="planet" style="top: -1600vh; font-size: 140px;">💫<span>멀티버스 (100T 층)</span></div>
     <div id="p-infinity" class="planet" style="top: -1900vh; font-size: 160px;">♾️<span>차원의 끝 (999T 층)</span></div>
     <div id="p-beyond" class="planet" style="top: -2400vh; font-size: 200px;">🌟<span>빛의 세계 (10^999 층)</span></div>
-    <div id="p-omni" class="planet" style="top: -3000vh; font-size: 250px;">💠<span>만물의 근원<br>(10^999999999 층)</span></div>
+    <div id="p-omni" class="planet" style="top: -3000vh; font-size: 250px;">💠<span>만물의 근원<br>(10^9억승 층)</span></div>
+    <div id="p-absolute" class="planet" style="top: -3800vh; font-size: 300px;">👁️‍🗨️<span>절대 차원<br>(상상력의 끝)</span></div>
 
     <div id="game-container">
         <div id="shaft">
@@ -118,10 +123,11 @@
 
         <div id="panel">
             <input type="text" id="target-input" value="1" placeholder="가고 싶은 층">
-            <button onclick="goMagic()" style="background: #00ff00; color: black; font-size: 18px;">초공간 워프 가동!</button>
+            <button onclick="goMagic()" style="background: #00ff00; color: black; font-size: 18px; padding: 10px;">초차원 워프 가동!</button>
             
             <div id="button-grid">
-                <button class="omni-btn" onclick="clickBtn('10^999999999', this)">10의 9억...승<br>(10^999,999,999)</button>
+                <button class="absolute-btn" onclick="clickBtn('ABSOLUTE', this)" style="grid-column: span 2; height: 80px;">10의 (10의 (10의 (10의 100승)승)승)승<br>🔥상상력의 끝🔥</button>
+                <button class="omni-btn" onclick="clickBtn('10^999999999', this)">10의 9억...승</button>
                 <button class="beyond-btn" onclick="clickBtn('10^999', this)">10의 999승</button>
                 <button class="ultimate-btn" onclick="clickBtn(999000000000000, this)">999T (999조)</button>
                 <button class="hyper-btn" onclick="clickBtn(100000000000000, this)">100T (100조)</button>
@@ -130,7 +136,8 @@
                 <button class="mega-btn" onclick="clickBtn(1000000000, this)">1B (십억)</button>
                 <button class="mega-btn" onclick="clickBtn(100000000, this)">100M (일억)</button>
                 <button class="special" onclick="clickBtn(10000000, this)">10M (천만)</button>
-                <button class="active" onclick="clickBtn(1, this)">1</button>
+                <button class="special" onclick="clickBtn(1000000, this)">1M (백만)</button>
+                <button onclick="clickBtn(10000, this)">10,000</button>
             </div>
         </div>
     </div>
@@ -138,6 +145,7 @@
     <script>
         const MAGIC_INF = '10^999';
         const OMNI_INF = '10^999999999';
+        const ABSOLUTE_INF = 'ABSOLUTE';
 
         const planets = [
             { id: 'p-moon', floor: 1000000 },
@@ -150,7 +158,8 @@
             { id: 'p-multiverse', floor: 100000000000000 },
             { id: 'p-infinity', floor: 999000000000000 },
             { id: 'p-beyond', floor: MAGIC_INF },
-            { id: 'p-omni', floor: OMNI_INF }
+            { id: 'p-omni', floor: OMNI_INF },
+            { id: 'p-absolute', floor: ABSOLUTE_INF }
         ];
 
         // 별 만들기
@@ -167,19 +176,21 @@
 
         // 엘레베이터 위치 시각화 비율 공식
         function getVisualPos(f) {
-            if (f === OMNI_INF) return 85;     // 최고 꼭대기
-            if (f === MAGIC_INF) return 78;    // 그 아래
-            return Math.pow(f / 999000000000000, 0.1) * 71; 
+            if (f === ABSOLUTE_INF) return 88; // 최고 꼭대기
+            if (f === OMNI_INF) return 81;
+            if (f === MAGIC_INF) return 74;
+            return Math.pow(f / 999000000000000, 0.09) * 67; 
         }
 
         function clickBtn(floor, btn) {
-            document.getElementById('target-input').value = floor;
+            document.getElementById('target-input').value = (floor === ABSOLUTE_INF) ? "절대 차원" : floor;
             moveElevator(floor, btn);
         }
 
         function goMagic() {
             const val = document.getElementById('target-input').value;
-            if (val === '10^999999999' || val === '10의999999999승') moveElevator(OMNI_INF);
+            if (val.includes('100승') || val === '절대 차원') moveElevator(ABSOLUTE_INF);
+            else if (val === '10^999999999' || val === '10의999999999승') moveElevator(OMNI_INF);
             else if (val === '10^999' || val === '10의999승') moveElevator(MAGIC_INF);
             else moveElevator(parseInt(val.replace(/,/g, '')));
         }
@@ -195,23 +206,25 @@
             planets.forEach(p => {
                 const pEl = document.getElementById(p.id);
                 const pPos = getVisualPos(p.floor);
-                let offset = (pPos - elPos) * 6.5; 
+                let offset = (pPos - elPos) * 7.5; 
                 pEl.style.top = (40 - offset) + "vh"; 
             });
 
-            // 특수 문자열 워프 (10^999 또는 10^999999999)
-            if (floor === MAGIC_INF || floor === OMNI_INF) {
+            // 특수 문자열 워프 (초공간 연출)
+            if (floor === MAGIC_INF || floor === OMNI_INF || floor === ABSOLUTE_INF) {
                 let ticks = 0;
                 const timer = setInterval(() => {
                     ticks++;
-                    if (ticks > 60) { // 3초간 숫자 폭주
+                    if (ticks > 70) { // 3.5초간 숫자 폭주
                         clearInterval(timer);
                         displayFloor(floor);
                         arrive(floor);
                     } else {
-                        // 미친듯이 숫자가 변하는 초공간 연출
-                        const randomPower = Math.floor(Math.random() * 999999999);
-                        document.getElementById('display').innerText = `10^${randomPower}\n(차원 도약 중!)`;
+                        // 미친듯이 기호와 숫자가 섞여서 지나가는 연출
+                        const chars = "∞?!*^&#@109";
+                        let chaos = "";
+                        for(let i=0; i<8; i++) chaos += chars.charAt(Math.floor(Math.random() * chars.length));
+                        document.getElementById('display').innerText = `[${chaos}]\n초월 중...`;
                     }
                 }, 50);
                 return;
@@ -237,7 +250,8 @@
 
         function displayFloor(f) {
             const d = document.getElementById('display');
-            if(f === OMNI_INF) d.innerText = "10^999,999,999\n(만물의 근원)";
+            if(f === ABSOLUTE_INF) d.innerText = "10^10^10^10^100\n(절대 차원)";
+            else if(f === OMNI_INF) d.innerText = "10^999,999,999\n(만물의 근원)";
             else if(f === MAGIC_INF) d.innerText = "10^999\n(빛의 세계)";
             else if(f >= 999000000000000) d.innerText = "999,000,000,000,000\n(999T)";
             else if(f >= 100000000000000) d.innerText = f.toLocaleString() + "\n(100T)";
@@ -255,7 +269,8 @@
             window.speechSynthesis.cancel();
             
             let floorText = floor;
-            if (floor === OMNI_INF) floorText = "십의, 구억, 구천구백구십구만, 구천구백구십구 승"; // 또박또박 쉼표 추가!
+            if (floor === ABSOLUTE_INF) floorText = "십의, 십의, 십의, 십의 백승, 승, 승, 승"; // AI가 재미있게 읽을 수 있는 조합!
+            else if (floor === OMNI_INF) floorText = "십의, 구억, 구천구백구십구만, 구천구백구십구 승";
             else if (floor === MAGIC_INF) floorText = "십의 구백구십구승";
             else if (floor === 999000000000000) floorText = "구백구십구조";
             else if (floor === 100000000000000) floorText = "백조";
@@ -267,16 +282,15 @@
             else if (floor === 10000000) floorText = "천만";
             else if (floor === 1000000) floorText = "백만";
 
-            // AI가 아주 길게 읽어줍니다!
             const m = new SpeechSynthesisUtterance(`띵동, ${floorText} 층 입니다 아이미따미꼬 야옹야옹`);
-            m.lang = 'ko-KR'; m.pitch = 1.8; m.rate = 1.0; // 너무 빠르면 뭉개질까봐 속도를 살짝 낮춤
+            m.lang = 'ko-KR'; m.pitch = 1.8; m.rate = 1.0; 
             window.speechSynthesis.speak(m);
 
             const p = document.getElementById('passenger');
             p.classList.add('exit');
             setTimeout(() => {
-                // 만물의 근원에서는 요술봉, 보석, 우주선 등 특별한 이모지만 나옴!
-                const friends = ["💎", "💠", "🪄", "🔮", "👑", "🛸", "👼", "✨"];
+                // 상상력의 끝에서는 글자 자체가 나오거나 우주의 눈 등장!
+                const friends = ["👁️‍🗨️", "🌌", "♾️", "⚛️", "🧬", "🌟", "👼", "👑"];
                 p.innerText = friends[Math.floor(Math.random()*friends.length)];
                 p.classList.remove('exit');
                 p.classList.add('enter');
