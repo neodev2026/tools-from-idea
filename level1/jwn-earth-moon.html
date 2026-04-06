@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>지구-달 충돌: 최종 완성본</title>
+    <title>지구-달 충돌: 리얼리티 극대화 (쓰나미 애니메이션 강화)</title>
     <style>
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -30,62 +30,72 @@
         #city {
             position: absolute; bottom: 0; left: 0;
             width: 100%; height: 50%;
-            /* 완벽한 밤 도시 이미지 적용 및 어둡게 처리 */
             background-image: url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=2000&q=80');
             background-size: cover; background-position: center top;
             filter: brightness(0.6) contrast(1.2);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1;
-            overflow: hidden; /* 도시 밖으로 물이나 용암이 넘치지 않게 */
+            /* 중요: 도시 영역 밖으로 물이나 용암이 나가지 않게 가둠 */
+            overflow: hidden; 
         }
 
-        /* 달 (독립된 레이어로 분리하여 가려짐 방지) */
+        /* 달 (독립 레이어로 빼내어 숨는 현상 방지) */
         #moon {
             position: absolute;
-            top: 10%; left: 80%; /* 상단 우측에서 시작 */
+            top: 10%; left: 80%;
             width: 60px; height: 60px;
             background-image: url('https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_poles_1k.jpg');
             background-size: cover; border-radius: 50%;
             box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
             transform: translate(-50%, -50%) scale(1);
-            z-index: 50; /* 하늘과 도시보다 무조건 위에 오도록 설정 */
+            z-index: 50; 
         }
 
-        /* 달 낙하 애니메이션: 우측 상단 -> 하단 중앙 */
         @keyframes crash-path {
             0% { top: 10%; left: 80%; transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
-            80% { filter: brightness(2) drop-shadow(0 0 20px #ff4500); } /* 닿기 시작할 때 붉게 달아오름 */
+            80% { filter: brightness(2) drop-shadow(0 0 20px #ff4500); } 
             100% { top: 75%; left: 50%; transform: translate(-50%, -50%) scale(25); filter: brightness(5); }
         }
         .crashing { animation: crash-path 30s cubic-bezier(0.7, 0, 1, 0.4) forwards; }
 
-        /* 쓰나미 (물 차오름) */
+        /* 🔥 개선된 쓰나미 파도 애니메이션 */
         #tsunami {
-            position: absolute; bottom: 0; left: 0;
-            width: 100%; height: 0%;
-            background: linear-gradient(to top, rgba(0, 10, 30, 0.95), rgba(10, 70, 150, 0.8));
-            backdrop-filter: blur(3px);
+            position: absolute; bottom: -100%; left: 0;
+            width: 100%; height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=2000&q=80');
+            /* 이미지를 가로로 2배 늘려서 이동할 공간을 확보 */
+            background-size: 200% 100%; 
+            background-position: right bottom; /* 오른쪽 끝에서 시작 */
+            opacity: 0.85;
             z-index: 10;
-            transition: height 5s linear; /* 5초 동안 천천히 차오름 */
+            /* 위로 차오름(bottom)과 동시에 가로로 지나감(background-position) */
+            transition: bottom 5s ease-out, background-position 5s linear;
+            filter: hue-rotate(-10deg) brightness(0.6) contrast(1.2);
+        }
+        
+        /* 자바스크립트에서 클래스를 추가하면 파도가 차오르며 지나갑니다 */
+        .tsunami-active {
+            bottom: 0 !important;
+            background-position: left bottom !important; /* 왼쪽으로 쓸고 지나감 */
         }
 
-        /* 용암 (출렁임 효과) */
+        /* 용암 */
         #lava-ocean {
-            position: absolute; bottom: -10%; left: -5%;
-            width: 110%; height: 0%;
-            background: linear-gradient(to top, #4a0000 0%, #ff2a00 80%, #ff8c00 100%);
+            position: absolute; bottom: -120%; left: -10%;
+            width: 120%; height: 120%;
+            background-image: url('https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?auto=format&fit=crop&w=2000&q=80');
+            background-size: cover; background-position: center;
             z-index: 20;
-            transition: height 1s cubic-bezier(0.1, 0.8, 0.1, 1);
-            transform-origin: bottom center;
+            transition: bottom 1s cubic-bezier(0.1, 0.8, 0.1, 1);
+            filter: saturate(1.8) contrast(1.5);
         }
-        /* 용암 출렁이는 애니메이션 */
         @keyframes lava-slosh {
-            0% { transform: skewY(1.5deg) scaleY(1); }
-            100% { transform: skewY(-1.5deg) scaleY(1.1); }
+            0% { transform: skewY(1deg) scaleY(1) translateY(0); }
+            100% { transform: skewY(-1deg) scaleY(1.05) translateY(-20px); }
         }
         .sloshing { animation: lava-slosh 1.5s infinite alternate ease-in-out; }
 
-        /* 충돌 섬광 및 화산 폭발광 */
+        /* 충돌 섬광 */
         #flash {
             position: absolute; top: 0; left: 0;
             width: 100%; height: 100%;
@@ -95,7 +105,7 @@
             transition: opacity 0.5s;
         }
 
-        /* 지진 효과 */
+        /* 지진 흔들림 */
         .earthquake { animation: shake-hard 0.1s infinite; }
         @keyframes shake-hard {
             0%, 100% { transform: translate(0, 0); }
@@ -104,7 +114,7 @@
             75% { transform: translate(-6px, -6px); }
         }
 
-        /* 우주 시점 */
+        /* 우주 시점 엔딩 */
         #space-view {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; display: none; flex-direction: column;
@@ -130,7 +140,7 @@
             text-align: center;
         }
         button {
-            padding: 15px 40px; font-size: 1.2rem; cursor: pointer;
+            padding: 15px 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer;
             background: rgba(255, 69, 0, 0.8); color: white; border: 2px solid #ff4500;
             border-radius: 30px; backdrop-filter: blur(5px); transition: 0.3s;
         }
@@ -175,7 +185,6 @@
         const spaceView = document.getElementById('space-view');
         const endMsg = document.getElementById('end-msg');
 
-        let animationFrameId;
         let startTime;
         let isTsunamiTriggered = false;
         let isCollisionTriggered = false;
@@ -186,75 +195,63 @@
             moon.classList.add('crashing');
 
             startTime = Date.now();
-            updateTimer(); // 타이머 루프 시작
+            requestAnimationFrame(updateTimer); 
         });
 
-        // requestAnimationFrame을 활용한 정밀한 타이머 및 이벤트 트리거
         function updateTimer() {
             const elapsed = (Date.now() - startTime) / 1000;
             const remaining = Math.max(0, 30 - elapsed).toFixed(2);
-            
             timerDisplay.innerText = remaining;
 
-            // 1. 충돌 5초 전 (25초 경과): 달이 도시에 닿기 시작할 때
+            // 1. 충돌 5초 전 (25초 경과): 지진 시작 & 쓰나미가 지나감
             if (elapsed >= 25 && !isTsunamiTriggered) {
                 isTsunamiTriggered = true;
-                triggerPreCollision();
+                document.body.classList.add('earthquake');
+                timerDisplay.style.color = "#ff4500";
+                
+                // 클래스를 추가하여 쓰나미 애니메이션 트리거 (차오름 + 지나감)
+                tsunami.classList.add('tsunami-active');
             }
 
-            // 2. 충돌 시점 (30초 경과)
+            // 2. 충돌 시점 (30초 경과): 화산/용암 분출
             if (elapsed >= 30 && !isCollisionTriggered) {
                 isCollisionTriggered = true;
                 timerDisplay.innerText = "0.00";
-                triggerFinalCollision();
-                return; // 루프 종료
+                
+                // 완전 충돌 이펙트
+                flash.style.opacity = '1';
+                moon.style.display = 'none'; 
+                
+                // 용암이 쓰나미 위로 분출하며 출렁임
+                lavaOcean.style.bottom = '0';
+                lavaOcean.classList.add('sloshing');
+
+                timerDisplay.style.display = 'none';
+
+                // 3초 후 우주 뷰로 전환
+                setTimeout(() => {
+                    wrapper.style.opacity = '0'; 
+                    document.body.classList.remove('earthquake');
+                    
+                    setTimeout(() => {
+                        wrapper.style.display = 'none';
+                        spaceView.style.display = 'flex'; 
+                        
+                        setTimeout(() => {
+                            endMsg.style.opacity = '1';
+                            resetBtn.style.display = 'inline-block';
+                        }, 5000);
+
+                    }, 1500); 
+                }, 3000); 
+
+                return; 
             }
 
-            animationFrameId = requestAnimationFrame(updateTimer);
+            requestAnimationFrame(updateTimer);
         }
 
-        // 도시에 닿기 시작할 때 (지진 + 쓰나미)
-        function triggerPreCollision() {
-            document.body.classList.add('earthquake');
-            timerDisplay.style.color = "#ff4500";
-            
-            // 쓰나미가 100% 높이까지 서서히 차오름
-            tsunami.style.height = '100%';
-        }
-
-        // 완전 충돌 시점 (화산 폭발 + 용암 출렁임)
-        function triggerFinalCollision() {
-            // 강렬한 섬광
-            flash.style.opacity = '1';
-            moon.style.display = 'none'; // 충돌했으므로 달 숨김
-            
-            // 용암이 쓰나미 위로 분출하며 차오름
-            lavaOcean.style.height = '120%';
-            lavaOcean.classList.add('sloshing');
-
-            // UI 숨김
-            timerDisplay.style.display = 'none';
-
-            // 3초 후 지상 붕괴 및 우주 시점 전환
-            setTimeout(() => {
-                wrapper.style.opacity = '0'; // 지상 화면 페이드아웃
-                document.body.classList.remove('earthquake');
-                
-                setTimeout(() => {
-                    wrapper.style.display = 'none';
-                    spaceView.style.display = 'flex'; // 우주 시점 오픈
-                    
-                    // 5초간 우주에서 폭발 관찰 후 종료 버튼 등장
-                    setTimeout(() => {
-                        endMsg.style.opacity = '1';
-                        resetBtn.style.display = 'inline-block';
-                    }, 5000);
-
-                }, 1500); // 페이드아웃 대기 시간
-            }, 3000); // 용암 연출 3초간 감상
-        }
-
-        // 초기화
+        // 초기화 버튼
         resetBtn.addEventListener('click', () => location.reload());
     </script>
 </body>
