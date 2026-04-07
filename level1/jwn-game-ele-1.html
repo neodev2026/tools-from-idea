@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>진짜 우주 끝판왕 엘레베이터</title>
+    <title>진짜 진짜 끝판왕 엘레베이터</title>
     <style>
         body {
             margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
@@ -13,7 +13,7 @@
         /* 우주 공간 배경 */
         #space {
             position: absolute; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #000000 0%, #030308 100%);
+            background: radial-gradient(circle at center, #000000 0%, #000511 100%);
             z-index: -1;
         }
 
@@ -28,7 +28,23 @@
         .star { position: absolute; background: white; border-radius: 50%; opacity: 0.8; animation: blink 2s infinite; }
         @keyframes blink { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
 
-        #game-container { display: flex; gap: 20px; align-items: flex-end; height: 85vh; width: 95%; max-width: 1300px; }
+        /* 지진(화면 흔들림) 효과 */
+        .earthquake { animation: shake 0.1s infinite !important; }
+        @keyframes shake {
+            0% { transform: translate(2px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(0px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(2px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(2px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        #game-container { display: flex; gap: 20px; align-items: flex-end; height: 85vh; width: 95%; max-width: 1300px; transition: 0.1s; }
 
         #shaft {
             flex: 1.2; height: 100%; border: 5px solid #ffd700; border-radius: 25px;
@@ -74,24 +90,23 @@
         .beyond-btn { background: linear-gradient(45deg, #000000, #4b0082, #0000ff, #ffffff); background-size: 300% 300%; color: #fff; text-shadow: 0 0 10px #fff; border: 2px solid #fff; box-shadow: 0 0 30px #fff; animation: galaxy 2s infinite ease-in-out; }
         .omni-btn { background: linear-gradient(135deg, #ffffff, #ffff00, #00ffff, #ff00ff); background-size: 400% 400%; color: #000; font-weight: 900; text-shadow: 0 0 10px #fff; border: 3px solid #fff; box-shadow: 0 0 50px #ffff00; animation: omniWarp 1s infinite alternate; }
         .absolute-btn { background: #fff; color: #000; font-size: 14px; font-weight: 900; border: 4px solid #000; box-shadow: 0 0 60px #ffffff; animation: glitch 0.5s infinite; }
+        .omega-btn { background: linear-gradient(90deg, #ff0000, #ffffff, #0000ff, #ffffff, #ff0000); background-size: 400% 400%; color: #000; font-size: 15px; font-weight: 900; border: 5px dashed #000; box-shadow: 0 0 80px #ffffff, inset 0 0 40px #ff0000; animation: omegaExplosion 0.2s infinite; }
         
-        /* 👑 끝판왕 (오메가) 버튼 애니메이션: 시스템 폭주 효과 */
-        .omega-btn {
-            background: linear-gradient(90deg, #ff0000, #ffffff, #0000ff, #ffffff, #ff0000);
-            background-size: 400% 400%; color: #000; font-size: 15px; font-weight: 900;
-            border: 5px dashed #000; box-shadow: 0 0 80px #ffffff, inset 0 0 40px #ff0000;
-            animation: omegaExplosion 0.2s infinite;
+        /* 🚨 진짜 진짜 끝판왕 버튼 (화면 파괴 효과) */
+        .true-omega-btn {
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff0000, #000000);
+            background-size: 500% 500%; color: #fff; font-size: 16px; font-weight: 900;
+            border: 6px solid #fff; text-shadow: 0 0 10px #000, 0 0 20px #ff0000;
+            box-shadow: 0 0 100px #ff00ff, inset 0 0 50px #ffff00;
+            animation: trueOmega 0.1s infinite;
         }
 
         @keyframes rainbow { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
         @keyframes galaxy { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         @keyframes omniWarp { 0% { transform: scale(1); background-position: 0% 50%; } 100% { transform: scale(1.05); background-position: 100% 50%; } }
         @keyframes glitch { 0% { transform: translate(0); filter: invert(0%); } 20% { transform: translate(-2px, 2px); filter: invert(20%); } 40% { transform: translate(-2px, -2px); filter: invert(0%); } 60% { transform: translate(2px, 2px); filter: invert(50%); } 80% { transform: translate(2px, -2px); filter: invert(0%); } 100% { transform: translate(0); filter: invert(10%); } }
-        @keyframes omegaExplosion {
-            0% { transform: scale(1) rotate(1deg); filter: invert(0%); background-position: 0% 50%; }
-            50% { transform: scale(1.05) rotate(-1deg); filter: invert(100%); background-position: 100% 50%; }
-            100% { transform: scale(1) rotate(1deg); filter: invert(0%); background-position: 0% 50%; }
-        }
+        @keyframes omegaExplosion { 0% { transform: scale(1) rotate(1deg); filter: invert(0%); background-position: 0% 50%; } 50% { transform: scale(1.05) rotate(-1deg); filter: invert(100%); background-position: 100% 50%; } 100% { transform: scale(1) rotate(1deg); filter: invert(0%); background-position: 0% 50%; } }
+        @keyframes trueOmega { 0% { transform: scale(1); filter: hue-rotate(0deg); } 50% { transform: scale(1.1) rotate(2deg); filter: hue-rotate(180deg); } 100% { transform: scale(1); filter: hue-rotate(360deg); } }
 
         input { font-size: 18px; width: 100%; padding: 10px; box-sizing: border-box; text-align: center; border-radius: 10px; border: 2px solid #00d2ff; background: #111; color: white; }
     </style>
@@ -110,10 +125,11 @@
     <div id="p-multiverse" class="planet" style="top: -1600vh; font-size: 140px;">💫<span>멀티버스 (100T 층)</span></div>
     <div id="p-infinity" class="planet" style="top: -1900vh; font-size: 160px;">♾️<span>차원의 끝 (999T 층)</span></div>
     <div id="p-beyond" class="planet" style="top: -2400vh; font-size: 200px;">🌟<span>빛의 세계 (10^999 층)</span></div>
-    <div id="p-omni" class="planet" style="top: -3000vh; font-size: 250px;">💠<span>만물의 근원<br>(10^9억승 층)</span></div>
-    <div id="p-absolute" class="planet" style="top: -3800vh; font-size: 300px;">👁️‍🗨️<span>절대 차원<br>(상상력의 끝)</span></div>
+    <div id="p-omni" class="planet" style="top: -3000vh; font-size: 250px;">💠<span>만물의 근원 (10^9억승 층)</span></div>
+    <div id="p-absolute" class="planet" style="top: -3800vh; font-size: 300px;">👁️‍🗨️<span>절대 차원</span></div>
+    <div id="p-omega" class="planet" style="top: -4800vh; font-size: 350px;">⚪<span>태초의 빛</span></div>
     
-    <div id="p-omega" class="planet" style="top: -4800vh; font-size: 350px;">⚪<span>태초의 빛<br>(진짜 우주 끝판왕)</span></div>
+    <div id="p-true-omega" class="planet" style="top: -6000vh; font-size: 450px;">🌈<span>상상 초월의 우주<br>(진짜 진짜 끝!)</span></div>
 
     <div id="game-container">
         <div id="shaft">
@@ -125,13 +141,14 @@
 
         <div id="panel">
             <input type="text" id="target-input" value="1" placeholder="가고 싶은 층">
-            <button onclick="goMagic()" style="background: #00ff00; color: black; font-size: 16px; padding: 10px;">👑 시스템 한계 돌파 워프!</button>
+            <button onclick="goMagic()" style="background: #00ff00; color: black; font-size: 16px; padding: 10px;">🚨 한계 돌파 초공간 워프!</button>
             
             <div id="button-grid">
-                <button class="omega-btn" onclick="clickBtn('OMEGA', this)" style="grid-column: span 2; height: 90px;">
-                    👑 끝판왕: 10의 (10의... 10번 중첩) 100승<br>⚠️ 누르면 우주가 하얗게 변함 ⚠️
+                <button class="true-omega-btn" onclick="clickBtn('TRUE_OMEGA', this)" style="grid-column: span 2; height: 100px;">
+                    🚨 우주 파괴 끝판왕 🚨<br>10의 (11번 중첩) 101승<br>(화면 지진 주의!)
                 </button>
-                <button class="absolute-btn" onclick="clickBtn('ABSOLUTE', this)" style="grid-column: span 2; height: 60px;">10의 10의 10의 10의 100승 (절대차원)</button>
+                <button class="omega-btn" onclick="clickBtn('OMEGA', this)" style="grid-column: span 2; height: 60px;">태초의 빛 (10의 10번 중첩 100승)</button>
+                <button class="absolute-btn" onclick="clickBtn('ABSOLUTE', this)" style="grid-column: span 2; height: 50px;">절대 차원</button>
                 <button class="omni-btn" onclick="clickBtn('10^999999999', this)">10의 9억...승</button>
                 <button class="beyond-btn" onclick="clickBtn('10^999', this)">10의 999승</button>
                 <button class="ultimate-btn" onclick="clickBtn(999000000000000, this)">999T (999조)</button>
@@ -151,6 +168,7 @@
         const OMNI_INF = '10^999999999';
         const ABSOLUTE_INF = 'ABSOLUTE';
         const OMEGA_INF = 'OMEGA';
+        const TRUE_OMEGA_INF = 'TRUE_OMEGA';
 
         const planets = [
             { id: 'p-moon', floor: 1000000 },
@@ -165,7 +183,8 @@
             { id: 'p-beyond', floor: MAGIC_INF },
             { id: 'p-omni', floor: OMNI_INF },
             { id: 'p-absolute', floor: ABSOLUTE_INF },
-            { id: 'p-omega', floor: OMEGA_INF }
+            { id: 'p-omega', floor: OMEGA_INF },
+            { id: 'p-true-omega', floor: TRUE_OMEGA_INF }
         ];
 
         // 별 만들기
@@ -182,15 +201,17 @@
 
         // 엘레베이터 위치 시각화 비율 공식
         function getVisualPos(f) {
-            if (f === OMEGA_INF) return 92;    // 끝판왕 꼭대기!
-            if (f === ABSOLUTE_INF) return 86;
-            if (f === OMNI_INF) return 80;
-            if (f === MAGIC_INF) return 74;
-            return Math.pow(f / 999000000000000, 0.08) * 65; 
+            if (f === TRUE_OMEGA_INF) return 96; // 진짜 최고 꼭대기
+            if (f === OMEGA_INF) return 90;
+            if (f === ABSOLUTE_INF) return 84;
+            if (f === OMNI_INF) return 78;
+            if (f === MAGIC_INF) return 72;
+            return Math.pow(f / 999000000000000, 0.07) * 62; 
         }
 
         function clickBtn(floor, btn) {
-            if (floor === OMEGA_INF) document.getElementById('target-input').value = "끝판왕 우주의 끝";
+            if (floor === TRUE_OMEGA_INF) document.getElementById('target-input').value = "상상 초월의 우주";
+            else if (floor === OMEGA_INF) document.getElementById('target-input').value = "태초의 빛";
             else if (floor === ABSOLUTE_INF) document.getElementById('target-input').value = "절대 차원";
             else document.getElementById('target-input').value = floor;
             moveElevator(floor, btn);
@@ -198,7 +219,8 @@
 
         function goMagic() {
             const val = document.getElementById('target-input').value;
-            if (val.includes('끝판왕') || val === 'OMEGA') moveElevator(OMEGA_INF);
+            if (val.includes('상상') || val === 'TRUE_OMEGA') moveElevator(TRUE_OMEGA_INF);
+            else if (val.includes('태초') || val === 'OMEGA') moveElevator(OMEGA_INF);
             else if (val.includes('절대') || val === 'ABSOLUTE') moveElevator(ABSOLUTE_INF);
             else if (val === '10^999999999' || val === '10의999999999승') moveElevator(OMNI_INF);
             else if (val === '10^999' || val === '10의999승') moveElevator(MAGIC_INF);
@@ -216,28 +238,39 @@
             planets.forEach(p => {
                 const pEl = document.getElementById(p.id);
                 const pPos = getVisualPos(p.floor);
-                let offset = (pPos - elPos) * 8.0; 
+                let offset = (pPos - elPos) * 8.5; 
                 pEl.style.top = (40 - offset) + "vh"; 
             });
 
+            // 화면 지진 효과 제거 (초기화)
+            document.body.classList.remove('earthquake');
+            document.body.style.backgroundColor = "#000";
+
             // 특수 문자열 워프 (초공간 연출)
-            if (floor === MAGIC_INF || floor === OMNI_INF || floor === ABSOLUTE_INF || floor === OMEGA_INF) {
+            if (floor === MAGIC_INF || floor === OMNI_INF || floor === ABSOLUTE_INF || floor === OMEGA_INF || floor === TRUE_OMEGA_INF) {
+                
+                // 진짜 끝판왕을 누르면 화면 전체 지진 발생!
+                if(floor === TRUE_OMEGA_INF) {
+                    document.body.classList.add('earthquake');
+                }
+
                 let ticks = 0;
                 const timer = setInterval(() => {
                     ticks++;
-                    if (ticks > 80) { // 4초간 시스템 폭주
+                    if (ticks > 90) { // 4.5초간 시스템 완전 폭주
                         clearInterval(timer);
+                        document.body.classList.remove('earthquake'); // 지진 끝
+                        document.body.style.backgroundColor = (floor === TRUE_OMEGA_INF) ? "#fff" : "#000"; // 끝판왕 도착시 화면 새하얗게!
                         displayFloor(floor);
                         arrive(floor);
                     } else {
-                        // 엘리베이터 시스템이 고장난 것 같은 연출
-                        const chars = "SYSTEMOVERLOAD!@#%^&*";
+                        const chars = "SYSTEM_FAILURE_ERROR_99999";
                         let chaos = "";
                         for(let i=0; i<8; i++) chaos += chars.charAt(Math.floor(Math.random() * chars.length));
-                        document.getElementById('display').innerText = `[${chaos}]\n한계 돌파 중!!`;
+                        document.getElementById('display').innerText = `[${chaos}]\n우주 붕괴 중!!`;
                         
-                        // 끝판왕 버튼을 눌렀을 때 배경이 미친듯이 깜빡임
-                        if(floor === OMEGA_INF) {
+                        // 배경 깜빡임 효과
+                        if(floor === OMEGA_INF || floor === TRUE_OMEGA_INF) {
                             document.body.style.backgroundColor = (ticks % 2 === 0) ? "#fff" : "#000";
                         }
                     }
@@ -264,9 +297,9 @@
         }
 
         function displayFloor(f) {
-            document.body.style.backgroundColor = "#000"; // 배경색 초기화
             const d = document.getElementById('display');
-            if(f === OMEGA_INF) d.innerText = "10^10^10.. (10번)\n(태초의 빛)";
+            if(f === TRUE_OMEGA_INF) d.innerText = "10^10... (11번) ^101\n(상상 초월)";
+            else if(f === OMEGA_INF) d.innerText = "10^10^10.. (10번)\n(태초의 빛)";
             else if(f === ABSOLUTE_INF) d.innerText = "10^10^10^10^100\n(절대 차원)";
             else if(f === OMNI_INF) d.innerText = "10^999,999,999\n(만물의 근원)";
             else if(f === MAGIC_INF) d.innerText = "10^999\n(빛의 세계)";
@@ -286,7 +319,9 @@
             window.speechSynthesis.cancel();
             
             let floorText = floor;
-            if (floor === OMEGA_INF) floorText = "십의, 십의, 십의, 십의, 십의, 십의, 십의, 십의, 십의, 십의 백승, 승, 승, 승, 승, 승, 승, 승, 승, 승"; // 10번 반복!
+            // 🚨 11번 중첩 + 101승의 미친듯한 AI 안내방송
+            if (floor === TRUE_OMEGA_INF) floorText = "십의, 십의, 십의, 십의, 십의, 십의, 십의, 십의, 십의, 십의, 십의, 백일승, 승, 승, 승, 승, 승, 승, 승, 승, 승, 승"; 
+            else if (floor === OMEGA_INF) floorText = "십의, 십의, 십의, 십의, 십의, 십의, 십의, 십의, 십의, 십의 백승, 승, 승, 승, 승, 승, 승, 승, 승, 승";
             else if (floor === ABSOLUTE_INF) floorText = "십의, 십의, 십의, 십의 백승, 승, 승, 승"; 
             else if (floor === OMNI_INF) floorText = "십의, 구억, 구천구백구십구만, 구천구백구십구 승";
             else if (floor === MAGIC_INF) floorText = "십의 구백구십구승";
@@ -307,8 +342,8 @@
             const p = document.getElementById('passenger');
             p.classList.add('exit');
             setTimeout(() => {
-                // 끝판왕 층에서는 아주 작고 신비로운 요정이나 별만 등장
-                const friends = ["⚪", "🤍", "👼", "👑", "🕊️", "🌟"];
+                // 상상 초월의 세계에서는 무지개와 풍선 등 가장 순수하고 귀여운 것들이 나옵니다
+                const friends = ["🌈", "🎈", "✨", "🤍", "🦄", "👼", "🎁"];
                 p.innerText = friends[Math.floor(Math.random()*friends.length)];
                 p.classList.remove('exit');
                 p.classList.add('enter');
