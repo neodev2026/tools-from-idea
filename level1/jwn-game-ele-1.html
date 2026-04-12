@@ -2,13 +2,13 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>새로운 우주 탄생 엘레베이터</title>
+    <title>절대 무한 엘레베이터 (최종 진화)</title>
     <style>
         body {
             margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
             background: #000; font-family: 'Malgun Gothic', sans-serif; color: white; overflow: hidden;
             cursor: pointer; transition: background 1s, filter 1s;
-            transform-origin: center center; /* 화면 회전의 중심점 */
+            transform-origin: center center;
         }
 
         #space {
@@ -39,26 +39,27 @@
         .system-error { animation: glitchScreen 0.1s infinite !important; }
         .zero-gravity { animation: floatAway 4s forwards ease-in-out !important; pointer-events: none; }
         .spin-crazy { animation: spinOut 3s forwards cubic-bezier(0.5, 0, 0.5, 1) !important; }
-
-        /* 🌈 웜홀 효과 (화면 전체 회전) */
         .wormhole-effect { animation: bodyWormhole 6s cubic-bezier(0.5, 0, 0.5, 1) forwards !important; }
         .new-universe-bg { background: linear-gradient(45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb) !important; background-size: 400% 400% !important; animation: gradientBG 5s ease infinite !important; }
         
+        /* 👑 최후의 폭주 (절대 무한) 애니메이션 */
+        .omniverse-collapse { animation: ultimateChaos 0.1s infinite, zoomInOut 1s infinite alternate !important; }
+        .omniverse-bg { background: radial-gradient(circle, #ffffff 0%, #fff7b0 40%, #ffd700 80%, #ff8c00 100%) !important; animation: goldenGlow 3s infinite alternate !important; }
+
         @keyframes shake { 0% { transform: translate(2px, 1px) rotate(0deg); } 50% { transform: translate(-3px, -2px) rotate(-1deg); } 100% { transform: translate(3px, -2px) rotate(1deg); } }
         @keyframes crazyShake { 0% { transform: translate(5px, 5px) rotate(2deg) scale(1.02); } 50% { transform: translate(-5px, -5px) rotate(-2deg) scale(0.98); } 100% { transform: translate(5px, 5px) rotate(1deg) scale(1.02); } }
         @keyframes colorBurst { 0% { filter: invert(0%) hue-rotate(0deg); } 50% { filter: invert(100%) hue-rotate(180deg); } 100% { filter: invert(0%) hue-rotate(360deg); } }
         @keyframes glitchScreen { 0% { filter: hue-rotate(0deg); transform: translate(0); } 50% { filter: hue-rotate(90deg) invert(20%); transform: translate(10px, -10px) skewX(20deg); } 100% { filter: hue-rotate(0deg); transform: translate(0); } }
         @keyframes floatAway { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-500px) rotate(45deg) scale(0.5); opacity: 0; } }
         @keyframes spinOut { 0% { transform: translateX(-50%) rotate(0deg) scale(1); } 100% { transform: translateX(-50%) rotate(7200deg) scale(0); opacity: 0; } }
-        
-        @keyframes bodyWormhole { 
-            0% { transform: scale(1) rotate(0deg); filter: hue-rotate(0deg) blur(0px); } 
-            50% { transform: scale(0.01) rotate(1800deg); filter: hue-rotate(180deg) blur(20px); opacity: 0.5; } 
-            100% { transform: scale(1) rotate(3600deg); filter: hue-rotate(360deg) blur(0px); opacity: 1; } 
-        }
+        @keyframes bodyWormhole { 0% { transform: scale(1) rotate(0deg); filter: hue-rotate(0deg) blur(0px); } 50% { transform: scale(0.01) rotate(1800deg); filter: hue-rotate(180deg) blur(20px); opacity: 0.5; } 100% { transform: scale(1) rotate(3600deg); filter: hue-rotate(360deg) blur(0px); opacity: 1; } }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        @keyframes ultimateChaos { 0% { filter: invert(0%) contrast(100%) hue-rotate(0deg); transform: translate(10px, -10px) skew(10deg); } 50% { filter: invert(100%) contrast(500%) hue-rotate(180deg); transform: translate(-10px, 10px) skew(-10deg); } 100% { filter: invert(0%) contrast(100%) hue-rotate(360deg); transform: translate(10px, -10px) skew(10deg); } }
+        @keyframes zoomInOut { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+        @keyframes goldenGlow { 0% { filter: brightness(1) contrast(1); } 100% { filter: brightness(1.5) contrast(1.2); } }
 
-        #game-container { display: flex; gap: 20px; align-items: flex-end; height: 85vh; width: 95%; max-width: 1300px; transition: 0.1s; }
+        #game-container { display: flex; gap: 20px; align-items: flex-end; height: 85vh; width: 95%; max-width: 1400px; transition: 0.1s; transform-origin: center center; }
 
         #shaft {
             flex: 1.2; height: 100%; border: 5px solid #ffd700; border-radius: 25px;
@@ -103,7 +104,7 @@
 
         #button-grid {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
-            overflow-y: auto; max-height: 550px; padding-right: 5px;
+            overflow-y: auto; max-height: 600px; padding-right: 5px;
         }
 
         button { height: 50px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
@@ -114,7 +115,16 @@
         .mega-btn { background: linear-gradient(45deg, #f1c40f, #e74c3c); color: white; }
         .hyper-btn { background: linear-gradient(45deg, #ff00cc, #3333ff); color: white; box-shadow: 0 0 10px #ff00cc; }
         
-        .new-universe-btn { background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); background-size: 600% 600%; color: #fff; font-size: 16px; font-weight: 900; border: 6px solid #fff; text-shadow: 0 0 10px #000, 0 0 20px #fff; box-shadow: 0 0 100px #fff, inset 0 0 50px #fff; animation: hyperRainbow 1s infinite linear; }
+        /* 👑 절대 무한 (최종 진화) 버튼 */
+        .omniverse-btn { 
+            background: linear-gradient(135deg, #ffffff, #ffd700, #ffffff); background-size: 200% 200%;
+            color: #000; font-size: 18px; font-weight: 900; border: 8px solid #ffd700; 
+            text-shadow: 0 0 10px #fff; box-shadow: 0 0 150px #ffd700, inset 0 0 50px #ffffff; 
+            animation: goldPulse 0.1s infinite alternate; 
+        }
+        @keyframes goldPulse { 0% { transform: scale(1); filter: brightness(1); } 100% { transform: scale(1.03); filter: brightness(1.5); } }
+
+        .new-universe-btn { background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); background-size: 600% 600%; color: #fff; font-size: 15px; font-weight: 900; border: 5px solid #fff; text-shadow: 0 0 10px #000; box-shadow: 0 0 80px #fff; animation: hyperRainbow 1s infinite linear; }
         .singularity-btn { background: radial-gradient(circle, #ffffff 0%, #00ffff 20%, #ff00ff 50%, #000000 100%); background-size: 200% 200%; color: #fff; border: 5px dashed #fff; text-shadow: 0 0 10px #000; box-shadow: 0 0 50px #fff; animation: singularityPulse 0.5s infinite alternate; }
         .error-btn { background: #000; color: #0f0; font-family: monospace; border: 4px solid #0f0; text-shadow: 0 0 10px #0f0; box-shadow: inset 0 0 20px #0f0; animation: errorGlitch 0.2s infinite; }
         .universe-breaker-btn { background: linear-gradient(135deg, #000, #ff0000, #000, #ff00ff, #000); background-size: 1000% 1000%; color: #fff; border: 6px double #fff; box-shadow: 0 0 80px #ff0000; animation: universeBreaker 0.05s infinite; }
@@ -136,23 +146,14 @@
 
     <div id="p-15" class="planet" style="top: 85vh; font-size: 60px;">🏫<span>15층 (비밀!)</span></div>
     <div id="p-moon" class="planet" style="top: -10vh;">🌙<span>달 (1M 층)</span></div>
-    <div id="p-earth" class="planet" style="top: -100vh;">🌍<span>지구 (10M 층)</span></div>
     <div id="p-sun" class="planet" style="top: -300vh;">☀️<span>태양 (100M 층)</span></div>
-    <div id="p-uranus" class="planet" style="top: -500vh;">🌀<span>천왕성 (1B 층)</span></div>
-    <div id="p-saturn" class="planet" style="top: -800vh;">🪐<span>토성 (100B 층)</span></div>
     <div id="p-galaxy" class="planet" style="top: -1000vh;">🌌<span>블랙홀 (1T 층)</span></div>
-    <div id="p-bigbang" class="planet" style="top: -1300vh; font-size: 120px;">🎆<span>빅뱅 (10T 층)</span></div>
-    <div id="p-multiverse" class="planet" style="top: -1600vh; font-size: 140px;">💫<span>멀티버스 (100T 층)</span></div>
-    <div id="p-infinity" class="planet" style="top: -1900vh; font-size: 160px;">♾️<span>차원의 끝 (999T)</span></div>
-    <div id="p-beyond" class="planet" style="top: -2400vh; font-size: 200px;">🌟<span>빛의 세계</span></div>
-    <div id="p-omni" class="planet" style="top: -3000vh; font-size: 250px;">💠<span>만물의 근원</span></div>
-    <div id="p-absolute" class="planet" style="top: -3800vh; font-size: 300px;">👁️‍🗨️<span>절대 차원</span></div>
-    <div id="p-omega" class="planet" style="top: -4800vh; font-size: 350px;">⚪<span>태초의 빛</span></div>
-    <div id="p-true-omega" class="planet" style="top: -6000vh; font-size: 450px;">🌈<span>상상 초월의 우주</span></div>
-    <div id="p-universe-break" class="planet" style="top: -8000vh; font-size: 600px;">💥<span>숫자의 끝</span></div>
-    <div id="p-error" class="planet" style="top: -10000vh; font-size: 700px; color: #0f0; filter: none;">💻<span style="color:#0f0;">에러: 게임 밖</span></div>
-    <div id="p-singularity" class="planet" style="top: -13000vh; font-size: 800px; filter: drop-shadow(0 0 200px #fff);">🕳️<span style="color:#fff;">특이점 (무)</span></div>
-    <div id="p-new-universe" class="planet" style="top: -16000vh; font-size: 900px; filter: drop-shadow(0 0 300px #ff00ff);">🌈<span style="color:#fff; font-size: 40px; text-shadow: 0 0 20px #fff;">새로운 무지개 우주</span></div>
+    <div id="p-universe-break" class="planet" style="top: -4000vh; font-size: 300px;">💥<span>숫자의 끝</span></div>
+    <div id="p-error" class="planet" style="top: -6000vh; font-size: 400px; color: #0f0; filter: none;">💻<span style="color:#0f0;">에러 탈출</span></div>
+    <div id="p-singularity" class="planet" style="top: -8500vh; font-size: 500px; filter: drop-shadow(0 0 200px #fff);">🕳️<span style="color:#fff;">특이점 (무)</span></div>
+    <div id="p-new-universe" class="planet" style="top: -12000vh; font-size: 700px; filter: drop-shadow(0 0 300px #ff00ff);">🌈<span style="color:#fff; text-shadow: 0 0 20px #fff;">새로운 우주</span></div>
+    
+    <div id="p-omniverse" class="planet" style="top: -16000vh; font-size: 900px; filter: drop-shadow(0 0 500px #ffd700);">👑<span style="color:#fff; font-size: 50px; text-shadow: 0 0 30px #ffd700;">절대 무한의 세계</span></div>
 
     <div id="game-container">
         <div id="shaft">
@@ -165,16 +166,17 @@
 
         <div id="panel">
             <input type="text" id="target-input" value="1" placeholder="가고 싶은 층">
-            <button onclick="goMagic()" style="background: #00ff00; color: black; font-size: 16px; padding: 10px;">✨ 시공간 초월 워프 가동!</button>
+            <button onclick="goMagic()" style="background: #00ff00; color: black; font-size: 16px; padding: 10px;">👑 최후의 엔진 가동!</button>
             
             <div id="button-grid">
-                <button class="new-universe-btn" onclick="clickBtn('NEW_UNIVERSE', this)" style="grid-column: span 2; height: 120px;">
-                    🌈 무지개 우주 탄생 (빅 바운스) 🌈<br>2000T의 1000의 10승<br>✨ 화면 전체가 빙글빙글 웜홀 돌파!
+                <button class="omniverse-btn" onclick="clickBtn('OMNIVERSE', this)" style="grid-column: span 2; height: 140px;">
+                    👑 모든 차원의 끝 (절대 무한) 👑<br>10000T의 100000의 10승<br>✨ 이 버튼이 엘리베이터의 진짜 마지막입니다!
                 </button>
-                <button class="singularity-btn" onclick="clickBtn('SINGULARITY', this)" style="grid-column: span 2; height: 80px;">🕳️ 절대 특이점 (차원 붕괴)</button>
-                <button class="error-btn" onclick="clickBtn('SYSTEM_ERROR', this)" style="grid-column: span 2; height: 70px;">[ERROR] 20^1000^1000 게임 탈출</button>
-                <button class="universe-breaker-btn" onclick="clickBtn('UNIVERSE_BREAK', this)" style="grid-column: span 2; height: 60px;">💥 숫자의 끝 (우주 폭발)</button>
-                <button class="math-trick-btn" onclick="clickBtn('MATH_TRICK', this)" style="grid-column: span 2; height: 50px;">🔥 폭발 주의?! 15^1^100</button>
+                <button class="new-universe-btn" onclick="clickBtn('NEW_UNIVERSE', this)" style="grid-column: span 2; height: 90px;">🌈 무지개 우주 (2000T의 1000의 10승)</button>
+                <button class="singularity-btn" onclick="clickBtn('SINGULARITY', this)" style="grid-column: span 2; height: 70px;">🕳️ 절대 특이점 (차원 붕괴)</button>
+                <button class="error-btn" onclick="clickBtn('SYSTEM_ERROR', this)" style="grid-column: span 2; height: 60px;">[ERROR] 20^1000^1000 게임 탈출</button>
+                <button class="universe-breaker-btn" onclick="clickBtn('UNIVERSE_BREAK', this)" style="grid-column: span 2; height: 50px;">💥 숫자의 끝 (우주 폭발)</button>
+                <button class="math-trick-btn" onclick="clickBtn('MATH_TRICK', this)" style="grid-column: span 2; height: 40px;">🔥 15^1^100 폭발 주의?!</button>
                 
                 <button class="hyper-btn" onclick="clickBtn('10^999', this)">10의 999승</button>
                 <button class="hyper-btn" onclick="clickBtn(999000000000000, this)">999조</button>
@@ -193,36 +195,23 @@
     <script>
         const MATH_TRICK = 'MATH_TRICK';
         const MAGIC_INF = '10^999';
-        const OMNI_INF = '10^999999999';
-        const ABSOLUTE_INF = 'ABSOLUTE';
-        const OMEGA_INF = 'OMEGA';
-        const TRUE_OMEGA_INF = 'TRUE_OMEGA';
         const UNIVERSE_BREAK_INF = 'UNIVERSE_BREAK';
         const SYSTEM_ERROR_INF = 'SYSTEM_ERROR';
         const SINGULARITY_INF = 'SINGULARITY';
         const NEW_UNIVERSE_INF = 'NEW_UNIVERSE';
+        const OMNIVERSE_INF = 'OMNIVERSE';
 
-        // 🌟 모든 행성 배열 복구 🌟
         const planets = [
             { id: 'p-15', floor: 15 },
             { id: 'p-moon', floor: 1000000 },
-            { id: 'p-earth', floor: 10000000 },
             { id: 'p-sun', floor: 100000000 },
-            { id: 'p-uranus', floor: 1000000000 },
-            { id: 'p-saturn', floor: 100000000000 },
             { id: 'p-galaxy', floor: 1000000000000 },
-            { id: 'p-bigbang', floor: 10000000000000 },
-            { id: 'p-multiverse', floor: 100000000000000 },
-            { id: 'p-infinity', floor: 999000000000000 },
             { id: 'p-beyond', floor: MAGIC_INF },
-            { id: 'p-omni', floor: OMNI_INF },
-            { id: 'p-absolute', floor: ABSOLUTE_INF },
-            { id: 'p-omega', floor: OMEGA_INF },
-            { id: 'p-true-omega', floor: TRUE_OMEGA_INF },
             { id: 'p-universe-break', floor: UNIVERSE_BREAK_INF },
             { id: 'p-error', floor: SYSTEM_ERROR_INF },
             { id: 'p-singularity', floor: SINGULARITY_INF },
-            { id: 'p-new-universe', floor: NEW_UNIVERSE_INF }
+            { id: 'p-new-universe', floor: NEW_UNIVERSE_INF },
+            { id: 'p-omniverse', floor: OMNIVERSE_INF }
         ];
 
         let globalTimer = null; 
@@ -257,15 +246,12 @@
         }
 
         function getVisualPos(f) {
-            if (f === NEW_UNIVERSE_INF) return 100;
-            if (f === SINGULARITY_INF) return 96; 
-            if (f === SYSTEM_ERROR_INF) return 92; 
-            if (f === UNIVERSE_BREAK_INF) return 88; 
-            if (f === TRUE_OMEGA_INF) return 85; 
-            if (f === OMEGA_INF) return 82;
-            if (f === ABSOLUTE_INF) return 79;
-            if (f === OMNI_INF) return 76;
-            if (f === MAGIC_INF) return 73;
+            if (f === OMNIVERSE_INF) return 100;
+            if (f === NEW_UNIVERSE_INF) return 96;
+            if (f === SINGULARITY_INF) return 92; 
+            if (f === SYSTEM_ERROR_INF) return 88; 
+            if (f === UNIVERSE_BREAK_INF) return 84; 
+            if (f === MAGIC_INF) return 72;
             if (f <= 15) return 5; 
             return Math.pow(f / 999000000000000, 0.05) * 55; 
         }
@@ -277,7 +263,8 @@
 
         function goMagic() {
             const val = document.getElementById('target-input').value;
-            if (val === 'NEW_UNIVERSE' || val.includes('탄생') || val.includes('무지개')) moveElevator(NEW_UNIVERSE_INF);
+            if (val === 'OMNIVERSE' || val.includes('절대')) moveElevator(OMNIVERSE_INF);
+            else if (val === 'NEW_UNIVERSE' || val.includes('무지개')) moveElevator(NEW_UNIVERSE_INF);
             else if (val === 'MATH_TRICK' || val === '15^1^100') moveElevator(MATH_TRICK);
             else if (val === 'SYSTEM_ERROR' || val.includes('에러')) moveElevator(SYSTEM_ERROR_INF);
             else if (val === 'UNIVERSE_BREAK' || val.includes('폭발')) moveElevator(UNIVERSE_BREAK_INF);
@@ -292,15 +279,17 @@
 
             if (globalTimer) clearInterval(globalTimer);
             
-            document.body.classList.remove('earthquake', 'universe-break', 'system-error', 'new-universe-bg', 'wormhole-effect');
+            document.body.classList.remove('earthquake', 'universe-break', 'system-error', 'new-universe-bg', 'wormhole-effect', 'omniverse-collapse', 'omniverse-bg');
             document.body.style.backgroundColor = "#000";
             document.body.style.filter = "none";
             document.getElementById('panel').classList.remove('zero-gravity');
             document.getElementById('elevator').classList.remove('spin-crazy');
+            document.getElementById('game-container').classList.remove('wormhole-effect'); 
             document.getElementById('elevator').style.opacity = 1;
             document.getElementById('shaft').style.opacity = 1;
             document.getElementById('elevator').style.transform = "translateX(-50%)";
             document.getElementById('speech-bubble').classList.remove('show-bubble');
+            document.getElementById('passenger').style.filter = "none";
             stopMatrix();
 
             if (floor === MATH_TRICK) {
@@ -325,7 +314,6 @@
             const elPos = getVisualPos(floor);
             document.getElementById('elevator').style.bottom = elPos + "%";
             
-            // 🌟 에러 방지용 안전 로직 추가 🌟
             planets.forEach(p => {
                 const pEl = document.getElementById(p.id);
                 if(pEl) {
@@ -335,25 +323,27 @@
                 }
             });
 
-            if (floor === MAGIC_INF || floor === UNIVERSE_BREAK_INF || floor === SYSTEM_ERROR_INF || floor === SINGULARITY_INF || floor === NEW_UNIVERSE_INF || floor === TRUE_OMEGA_INF || floor === OMEGA_INF || floor === ABSOLUTE_INF || floor === OMNI_INF) {
+            if (floor === MAGIC_INF || floor === UNIVERSE_BREAK_INF || floor === SYSTEM_ERROR_INF || floor === SINGULARITY_INF || floor === NEW_UNIVERSE_INF || floor === OMNIVERSE_INF) {
                 
                 if(floor === UNIVERSE_BREAK_INF) document.body.classList.add('universe-break');
                 if(floor === SYSTEM_ERROR_INF) document.body.classList.add('system-error');
                 if(floor === SINGULARITY_INF) { document.body.classList.add('earthquake'); document.body.style.backgroundColor = "#fff"; document.body.style.filter = "invert(100%)"; }
+                if(floor === NEW_UNIVERSE_INF) document.body.classList.add('wormhole-effect');
                 
-                // 🌀 화면 전체 웜홀 이펙트!
-                if(floor === NEW_UNIVERSE_INF) {
-                    document.body.classList.add('wormhole-effect');
+                // 👑 절대 무한 (최후의 폭주 효과)
+                if(floor === OMNIVERSE_INF) {
+                    document.body.classList.add('omniverse-collapse');
                 }
 
                 let ticks = 0;
-                const maxTicks = (floor === NEW_UNIVERSE_INF) ? 160 : (floor === SINGULARITY_INF) ? 140 : (floor === SYSTEM_ERROR_INF ? 120 : 90);
+                // 최후의 층은 무려 200번 (10초) 동안 폭주!
+                const maxTicks = (floor === OMNIVERSE_INF) ? 200 : (floor === NEW_UNIVERSE_INF) ? 160 : (floor === SINGULARITY_INF) ? 140 : (floor === SYSTEM_ERROR_INF ? 120 : 90);
                 
                 globalTimer = setInterval(() => {
                     ticks++;
                     if (ticks > maxTicks) { 
                         clearInterval(globalTimer);
-                        document.body.classList.remove('earthquake', 'universe-break', 'system-error', 'wormhole-effect'); 
+                        document.body.classList.remove('earthquake', 'universe-break', 'system-error', 'wormhole-effect', 'omniverse-collapse'); 
                         
                         if (floor === SYSTEM_ERROR_INF) startMatrix();
                         else if (floor === SINGULARITY_INF) {
@@ -362,8 +352,13 @@
                             document.getElementById('shaft').style.opacity = 0; 
                             document.getElementById('elevator').classList.add('spin-crazy');
                         } 
-                        else if (floor === NEW_UNIVERSE_INF) {
-                            document.body.classList.add('new-universe-bg');
+                        else if (floor === NEW_UNIVERSE_INF) document.body.classList.add('new-universe-bg');
+                        else if (floor === OMNIVERSE_INF) {
+                            // 폭주가 끝나고 눈부신 황금빛 신의 우주로 변경
+                            document.body.style.filter = "none";
+                            document.body.style.transform = "none";
+                            document.body.classList.add('omniverse-bg');
+                            document.getElementById('passenger').style.filter = "drop-shadow(0 0 20px #fff)";
                         }
                         else if (floor === UNIVERSE_BREAK_INF) document.body.style.backgroundColor = "#fff"; 
                         else document.body.style.backgroundColor = "#000"; 
@@ -376,6 +371,9 @@
                             document.getElementById('display').innerText = `[∞NULL∞]\n차원 소멸 중!`;
                         } else if (floor === NEW_UNIVERSE_INF) {
                             document.getElementById('display').innerText = `[차원 재창조]\n웜홀 돌파 중!!`;
+                        } else if (floor === OMNIVERSE_INF) {
+                            document.getElementById('display').innerText = `[👑최종 한계👑]\n절대 무한 돌파!!`;
+                            if(ticks % 5 === 0) document.body.style.backgroundColor = (Math.random() > 0.5) ? "#fff" : "#ffd700";
                         } else {
                             document.getElementById('display').innerText = `[에러]\n우주 폭발 중!!`;
                             if(floor === UNIVERSE_BREAK_INF) document.body.style.backgroundColor = (ticks % 2 === 0) ? "#fff" : "#000";
@@ -414,14 +412,11 @@
             const d = document.getElementById('display');
             d.style.color = (f === SYSTEM_ERROR_INF) ? "#0f0" : "#00ff00";
             
-            if(f === NEW_UNIVERSE_INF) d.innerText = "2000T^1000^10\n(새로운 우주)";
+            if(f === OMNIVERSE_INF) { d.innerText = "👑 절대 무한 👑\n(게임의 진짜 끝)"; d.style.color = "#ffd700"; }
+            else if(f === NEW_UNIVERSE_INF) d.innerText = "2000T^1000^10\n(새로운 우주)";
             else if(f === SINGULARITY_INF) d.innerText = "999T^1000000\n(절대 무)";
             else if(f === SYSTEM_ERROR_INF) d.innerText = "20^1000^1000\n(탈출 성공)";
             else if(f === UNIVERSE_BREAK_INF) d.innerText = "10^10...^10000\n(숫자의 끝)";
-            else if(f === TRUE_OMEGA_INF) d.innerText = "10^10...^101\n(상상 초월)";
-            else if(f === OMEGA_INF) d.innerText = "10^10^10...\n(태초의 빛)";
-            else if(f === ABSOLUTE_INF) d.innerText = "10^10^10^10^100\n(절대 차원)";
-            else if(f === OMNI_INF) d.innerText = "10^999,999,999\n(만물의 근원)";
             else if(f === MAGIC_INF) d.innerText = "10^999\n(빛의 세계)";
             else if(f === 15) d.innerText = "15\n(수학의 비밀!)";
             else d.innerText = f.toLocaleString();
@@ -431,7 +426,7 @@
             const bubble = document.getElementById('speech-bubble');
             bubble.innerHTML = visibleText;
             bubble.classList.add('show-bubble');
-            setTimeout(() => { bubble.classList.remove('show-bubble'); }, 5000);
+            setTimeout(() => { bubble.classList.remove('show-bubble'); }, 6000);
 
             const elevator = document.getElementById('elevator');
             elevator.style.boxShadow = "0 0 50px 20px #fff";
@@ -463,14 +458,11 @@
             let bubbleText = `💬 띵동! ${floor.toLocaleString()}층!`;
             let pitch = 1.8; let rate = 1.1;
 
-            if (floor === NEW_UNIVERSE_INF) { speakText = "이천조의 천의 십승! 축하합니다! 웜홀을 통과하여 새로운 무지개 우주가 태어났습니다!"; bubbleText = "🌈 새로운 무지개 우주가<br>탄생했습니다! 축하해요!"; pitch = 2.0; }
+            if (floor === OMNIVERSE_INF) { speakText = "경고, 경고. 우주의 한계를 완전히 초과했습니다. 엘리베이터가 모든 시뮬레이션을 종료하고 절대적 무한의 세계로 진입합니다. 축하합니다! 게임의 진짜 끝에 도달했습니다!"; bubbleText = "👑 축하합니다! 👑<br>엘리베이터의 진짜 마지막,<br>절대 무한에 도달했습니다!"; pitch = 1.2; rate = 1.0; }
+            else if (floor === NEW_UNIVERSE_INF) { speakText = "이천조의 천의 십승! 축하합니다! 웜홀을 통과하여 새로운 무지개 우주가 태어났습니다!"; bubbleText = "🌈 새로운 무지개 우주가<br>탄생했습니다! 축하해요!"; pitch = 2.0; }
             else if (floor === SINGULARITY_INF) { speakText = "삐리리리... 계산 불가... 특이점에 도달했습니다. 안녕히 계세요."; bubbleText = "💬 특이점 도달.<br>모든 것이 사라졌습니다."; pitch = 0.5; rate = 0.8; }
             else if (floor === SYSTEM_ERROR_INF) { speakText = "삐리리리! 입력하신 숫자가 너무 커서 게임이 터졌습니다! 개발자 방으로 탈출했습니다! 메롱!"; bubbleText = "💻 에러 발생!<br>게임 개발자의 방으로 탈출!"; pitch = 2.0; }
             else if (floor === UNIVERSE_BREAK_INF) { speakText = "십의, 십의, 십의, 십의, 십의, 만승, 승, 승, 승!"; bubbleText = "💥 숫자의 끝에<br>도착했습니다!"; }
-            else if (floor === TRUE_OMEGA_INF) { speakText = "십의, 십의, 십의, 십의, 십의, 백일승!"; bubbleText = "🌈 상상 초월의 우주입니다!"; }
-            else if (floor === OMEGA_INF) { speakText = "십의, 십의, 십의, 백승!"; bubbleText = "⚪ 태초의 빛입니다!"; }
-            else if (floor === ABSOLUTE_INF) { speakText = "십의, 십의, 십의, 십의 백승!"; bubbleText = "👁️‍🗨️ 절대 차원입니다!"; }
-            else if (floor === OMNI_INF) { speakText = "십의 구억 구천구백 승!"; bubbleText = "💠 만물의 근원입니다!"; }
             else if (floor === MAGIC_INF) { speakText = "십의 구백구십구승"; bubbleText = "🌟 빛의 세계입니다!"; }
             else if (floor >= 1000000000000) { speakText = "엄청나게 높은 층입니다"; bubbleText = "💬 우주 층입니다!"; }
 
@@ -485,6 +477,7 @@
                     let friends = ["💥", "🔥", "⚡", "🌀", "🤯", "🚀"];
                     if (floor === SYSTEM_ERROR_INF) friends = ["👨‍💻", "🤖", "👾", "💻", "🔌"];
                     if (floor === NEW_UNIVERSE_INF) friends = ["👼", "🦄", "🌈", "✨", "💖", "🕊️"];
+                    if (floor === OMNIVERSE_INF) friends = ["👑", "🌞", "🏆", "🌟", "✨"];
                     p.innerText = friends[Math.floor(Math.random()*friends.length)];
                     p.classList.remove('exit'); p.classList.add('enter');
                     setTimeout(() => p.classList.remove('enter'), 50);
