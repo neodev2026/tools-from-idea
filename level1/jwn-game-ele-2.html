@@ -2,209 +2,277 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>엘리베이터 몬스터 게임</title>
+    <title>슈퍼 엘리베이터: 몬스터 습격!</title>
     <style>
-        body {
-            margin: 0;
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            background-color: #f0f0f0;
+        body { margin: 0; font-family: 'Nanum Gothic', sans-serif; display: flex; height: 100vh; overflow: hidden; background-color: #222; }
+        
+        /* 왼쪽: 게임 영역 */
+        #game-area {
+            flex: 2; position: relative;
+            background: linear-gradient(to bottom, #001f3f, #0074D9);
+            border-right: 8px solid #444; overflow: hidden;
         }
 
-        /* 왼쪽: 엘리베이터 영역 */
-        #game-area {
-            flex: 2;
-            position: relative;
-            background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
-            border-right: 5px solid #333;
-            overflow: hidden;
+        /* 배경 흐르는 물체 */
+        .bg-item {
+            position: absolute; font-size: 20px; z-index: 1;
+            opacity: 0.5; pointer-events: none;
+        }
+
+        #elevator-shaft {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            width: 140px; height: 100%; background: rgba(255,255,255,0.05);
         }
 
         #elevator {
-            width: 100px;
-            height: 120px;
-            background-color: #95a5a6;
-            border: 4px solid #34495e;
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 40px;
-            border-radius: 10px;
-            z-index: 10;
-            transition: bottom 0.5s ease;
+            width: 100px; height: 130px; background-color: #95a5a6;
+            border: 4px solid #34495e; position: absolute;
+            bottom: 10px; left: 50%; transform: translateX(-50%);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 50px; border-radius: 12px; z-index: 10;
+            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+
+        /* 엘리베이터 흔들림 애니메이션 */
+        @keyframes shake {
+            0% { transform: translateX(-50%) rotate(0deg); }
+            25% { transform: translateX(-55%) rotate(-5deg); }
+            50% { transform: translateX(-45%) rotate(5deg); }
+            75% { transform: translateX(-52%) rotate(-2deg); }
+            100% { transform: translateX(-50%) rotate(0deg); }
+        }
+        .shaking { animation: shake 0.3s linear; }
 
         .monster {
-            position: absolute;
-            font-size: 50px;
-            cursor: pointer;
-            user-select: none;
-            z-index: 5;
+            position: absolute; font-size: 50px; cursor: pointer;
+            user-select: none; z-index: 20; will-change: transform;
         }
 
-        /* 오른쪽: 정보 및 버튼 영역 */
+        .explosion {
+            position: absolute; font-size: 60px; pointer-events: none;
+            z-index: 25; animation: pop 0.4s ease-out forwards;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        /* 오른쪽: UI 영역 */
         #ui-area {
-            flex: 1;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #fff;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            flex: 1; padding: 20px; display: flex; flex-direction: column;
+            align-items: center; background-color: #fff; border-left: 4px solid #ddd;
         }
 
-        h2 { color: #2c3e50; margin-bottom: 10px; }
-        .info { font-size: 1.2rem; margin-bottom: 20px; text-align: center; }
+        .floor-btn {
+            width: 100%; padding: 18px; margin: 8px 0; font-size: 1.1rem;
+            font-weight: bold; border: none; border-radius: 15px;
+            background: #FF851B; color: white; cursor: pointer;
+            box-shadow: 0 4px #cf6e15; transition: 0.1s;
+        }
+        .floor-btn:active { transform: translateY(2px); box-shadow: 0 2px #cf6e15; }
+        .floor-btn:disabled { background: #ccc; box-shadow: none; }
         
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-        }
-
-        button {
-            padding: 15px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            border-radius: 10px;
-            background-color: #3498db;
-            color: white;
-            transition: background 0.3s;
-        }
-
-        button:hover { background-color: #2980b9; }
-        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
-
-        #message {
-            margin-top: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #e67e22;
-            text-align: center;
-        }
+        #display { font-size: 1.3rem; margin: 15px; padding: 15px; border: 4px solid #333; border-radius: 15px; background: #eee; width: 85%; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div id="game-area">
-        <div id="elevator">🛗</div>
-    </div>
+<div id="game-area">
+    <div id="elevator-shaft"></div>
+    <div id="elevator">🛗</div>
+</div>
 
-    <div id="ui-area">
-        <h2>엘리베이터 게임</h2>
-        <div class="info">
-            현재 층: <span id="current-floor">1층</span><br>
-            잡은 몬스터: <span id="score">0</span> / 10
-        </div>
+<div id="ui-area">
+    <h2 style="color: #0074D9; margin-top: 0;">🚀 몬스터 엘리베이터</h2>
+    <div id="display">
+        현재 층: <b><span id="current-floor">1층</span></b><br>
+        👾 물리친 몬스터: <span id="score">0</span> / 10
+    </div>
+    <button class="floor-btn" onclick="startJourney('Aschaffenburg')">Aschaffenburg</button>
+    <button class="floor-btn" onclick="startJourney('Frankfurt')">Frankfurt</button>
+    <button class="floor-btn" onclick="startJourney('100000T')">100000T</button>
+    <p style="font-size: 0.9rem; color: #666; margin-top: 20px;">몬스터가 엘리베이터에 닿기 전에<br>터치해서 잡아주세요!</p>
+</div>
+
+<script>
+    const elevator = document.getElementById('elevator');
+    const gameArea = document.getElementById('game-area');
+    const floorText = document.getElementById('current-floor');
+    const scoreText = document.getElementById('score');
+    
+    let score = 0;
+    let isMoving = false;
+    let bgInterval;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(freq, type, duration, vol=0.1) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    const soundPop = () => playSound(500, 'sine', 0.2);
+    const soundHit = () => playSound(100, 'sawtooth', 0.4, 0.2); // 충돌음
+    const soundArrive = () => {
+        playSound(523, 'triangle', 0.5);
+        setTimeout(() => playSound(659, 'triangle', 0.5), 150);
+    };
+
+    function startJourney(dest) {
+        if (isMoving) return;
+        isMoving = true;
+        score = 0;
+        scoreText.innerText = score;
+        elevator.style.bottom = "10px";
         
-        <div class="btn-group">
-            <button onclick="goToFloor('Aschaffenburg')">Aschaffenburg 가기</button>
-            <button onclick="goToFloor('Frankfurt')">Frankfurt 가기</button>
-            <button onclick="goToFloor('100000T')">100000T 가기</button>
-        </div>
+        bgInterval = setInterval(createBgItem, 250);
+        
+        const monsterTimer = setInterval(() => {
+            if (score >= 10) {
+                clearInterval(monsterTimer);
+                clearInterval(bgInterval);
+                finishJourney(dest);
+                return;
+            }
+            createMonster();
+        }, 1300);
+    }
 
-        <div id="message">층 버튼을 눌러주세요!</div>
-    </div>
+    function createBgItem() {
+        const items = ['⭐', '🌙', '☀️', '☁️', '🛸'];
+        const span = document.createElement('div');
+        span.className = 'bg-item';
+        span.innerText = items[Math.floor(Math.random() * items.length)];
+        span.style.left = Math.random() * 90 + "%";
+        span.style.top = "-50px";
+        gameArea.appendChild(span);
 
-    <script>
-        const elevator = document.getElementById('elevator');
-        const gameArea = document.getElementById('game-area');
-        const scoreDisplay = document.getElementById('score');
-        const floorDisplay = document.getElementById('current-floor');
-        const message = document.getElementById('message');
-        const buttons = document.querySelectorAll('button');
+        let top = -50;
+        const move = setInterval(() => {
+            top += 12;
+            span.style.top = top + "px";
+            if (top > window.innerHeight || !isMoving) {
+                clearInterval(move);
+                span.remove();
+            }
+        }, 30);
+    }
 
-        let score = 0;
-        let isMoving = false;
-        const monsters = ['👾', '👻', '👹', '🎃', '👽', '👿'];
+    function createMonster() {
+        const m = document.createElement('div');
+        m.className = 'monster';
+        m.innerText = ['👾', '👻', '👽', '👹', '💀'][Math.floor(Math.random() * 5)];
+        
+        // 1. 전체 엘리베이터 영역(왼쪽 화면)의 랜덤한 x좌표에서 생성
+        m.style.left = Math.random() * (gameArea.clientWidth - 60) + "px";
+        m.style.top = "-60px";
+        gameArea.appendChild(m);
 
-        function goToFloor(floorName) {
-            if (isMoving) return;
-            
-            // 초기화
-            isMoving = true;
-            score = 0;
-            scoreDisplay.innerText = score;
-            message.innerText = floorName + "층으로 출발!";
-            buttons.forEach(btn => btn.disabled = true);
-            
-            // 엘리베이터를 바닥으로 리셋 (부드럽게)
-            elevator.style.bottom = "10px";
-            
-            // 몬스터 생성 시작
-            startMonsterWave(floorName);
-        }
+        let top = -60;
+        let left = parseFloat(m.style.left);
+        let isDashing = false;
 
-        function startMonsterWave(floorName) {
-            const spawnInterval = setInterval(() => {
-                if (score >= 10) {
-                    clearInterval(spawnInterval);
-                    finishTrip(floorName);
+        const move = setInterval(() => {
+            if (!isDashing) {
+                top += 2.5; // 서서히 내려옴
+                left += Math.sin(top / 30) * 2; // 좌우 흔들림
+                
+                // 2. 바닥 근처까지 내려오면 돌진 준비
+                if (top > gameArea.clientHeight - 200) {
+                    isDashing = true;
+                }
+            } else {
+                // 엘리베이터 위치를 향해 빠르게 돌진!
+                const rect = elevator.getBoundingClientRect();
+                const targetX = rect.left + rect.width / 2 - 25;
+                const targetY = rect.top;
+
+                left += (targetX - left) * 0.1;
+                top += (targetY - top) * 0.1;
+
+                // 엘리베이터에 닿았을 때
+                if (Math.abs(left - targetX) < 20 && Math.abs(top - targetY) < 20) {
+                    triggerHit(m, move);
                     return;
                 }
-                createMonster();
-            }, 1500); // 1.5초마다 몬스터 등장
-        }
+            }
 
-        function createMonster() {
-            const monster = document.createElement('div');
-            monster.className = 'monster';
-            monster.innerText = monsters[Math.floor(Math.random() * monsters.length)];
-            
-            // 랜덤 가로 위치
-            monster.style.left = Math.random() * (gameArea.clientWidth - 50) + "px";
-            monster.style.top = "-50px";
-            
-            gameArea.appendChild(monster);
+            m.style.top = top + "px";
+            m.style.left = left + "px";
 
-            // 몬스터 내려오기 애니메이션
-            let topPos = -50;
-            const fallInterval = setInterval(() => {
-                topPos += 2;
-                monster.style.top = topPos + "px";
+            if (top > gameArea.clientHeight) {
+                clearInterval(move);
+                m.remove();
+            }
+        }, 25);
 
-                // 엘리베이터에 닿거나 화면 밖으로 나가면 제거 (여기선 단순화)
-                if (topPos > gameArea.clientHeight) {
-                    clearInterval(fallInterval);
-                    monster.remove();
-                }
-            }, 20);
+        m.onclick = () => {
+            score++;
+            scoreText.innerText = score;
+            createExplosion(m.style.left, m.style.top, '💥');
+            soundPop();
+            elevator.style.bottom = (score * 8.5) + "%";
+            clearInterval(move);
+            m.remove();
+        };
+    }
 
-            // 몬스터 터치 이벤트
-            monster.addEventListener('mousedown', () => {
-                score++;
-                scoreDisplay.innerText = score;
-                
-                // 엘리베이터 조금씩 상승
-                const currentBottom = parseInt(elevator.style.bottom);
-                elevator.style.bottom = (currentBottom + (gameArea.clientHeight / 12)) + "px";
-                
-                clearInterval(fallInterval);
-                monster.remove();
-                
-                if (score === 10) {
-                    message.innerText = "도착했습니다!";
-                }
-            });
-        }
+    function triggerHit(monster, interval) {
+        clearInterval(interval);
+        monster.remove();
+        
+        // 폭발 이펙트와 소리
+        createExplosion(monster.style.left, monster.style.top, '🔥');
+        soundHit();
 
-        function finishTrip(floorName) {
-            isMoving = false;
-            floorDisplay.innerText = floorName + "층";
-            elevator.style.bottom = (gameArea.clientHeight - 130) + "px"; // 맨 위에 고정
-            buttons.forEach(btn => btn.disabled = false);
-            message.innerText = "🎉 " + floorName + " 도착! 🎉";
-        }
-    </script>
+        // 엘리베이터 흔들림 효과
+        elevator.classList.add('shaking');
+        setTimeout(() => elevator.classList.remove('shaking'), 300);
+    }
+
+    function createExplosion(x, y, emoji) {
+        const ex = document.createElement('div');
+        ex.className = 'explosion';
+        ex.innerText = emoji;
+        ex.style.left = x;
+        ex.style.top = y;
+        gameArea.appendChild(ex);
+        setTimeout(() => ex.remove(), 400);
+    }
+
+    function finishJourney(dest) {
+        soundArrive();
+        floorText.innerText = dest;
+        isMoving = false;
+        elevator.style.bottom = "85%";
+        
+        // 손님 등장 애니메이션
+        setTimeout(() => {
+            const p = document.createElement('div');
+            p.style.position = 'absolute';
+            p.style.fontSize = '45px';
+            p.style.bottom = '86%';
+            p.style.left = '50%';
+            p.style.transform = 'translateX(-50%)';
+            p.style.transition = 'all 1.5s ease-in';
+            p.innerText = ['👦', '👧', '🐶', '🐱'][Math.floor(Math.random()*4)];
+            gameArea.appendChild(p);
+
+            setTimeout(() => {
+                p.style.left = '110%'; // 화면 밖으로 나감
+                setTimeout(() => p.remove(), 1500);
+            }, 500);
+        }, 500);
+    }
+</script>
+
 </body>
 </html>
