@@ -2,83 +2,66 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>아산병원 999T층 우주 엘레베이터</title>
+    <title>현실 귀환 & 상상력의 마법사 엘리베이터</title>
     <style>
         body {
             margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
             background: #000; font-family: 'Malgun Gothic', sans-serif; color: white; overflow: hidden;
-            cursor: pointer;
+            cursor: pointer; transition: background 2s, color 2s;
+            transform-origin: center center;
         }
 
         #space {
             position: absolute; width: 100%; height: 100%;
-            background: radial-gradient(circle at bottom, #001f3f 0%, #000000 100%);
-            z-index: -1; pointer-events: none; transition: all 1s;
+            background: radial-gradient(circle at center, #000000 0%, #000511 100%);
+            z-index: -1; pointer-events: none; transition: opacity 2s;
         }
 
+        /* 🌍 현실 세계(하늘) 배경 */
+        .real-world-bg { background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%) !important; }
+        .magic-world-bg { background: radial-gradient(circle, #ffffff, #ffcc00, #ff00ff, #0000ff) !important; animation: magicSpin 5s infinite linear !important; }
+        
+        @keyframes magicSpin { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+
         .planet {
-            position: absolute; left: 10%; transition: top 3s cubic-bezier(0.25, 1, 0.5, 1);
-            display: flex; flex-direction: column; align-items: center; font-size: 90px;
-            filter: drop-shadow(0 0 30px rgba(0, 210, 255, 0.3)); pointer-events: none;
-            transition: all 1.5s ease-out; /* 행성 사라짐/도망감 효과를 위한 트랜지션 */
+            position: absolute; left: 5%; transition: top 3s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex; flex-direction: column; align-items: center; font-size: 80px;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5)); pointer-events: none;
         }
-        .planet span { font-size: 18px; margin-top: 10px; color: #ffd700; font-weight: bold; text-shadow: 2px 2px 5px #000; text-align: center; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 10px; }
+        .planet span { font-size: 18px; margin-top: 10px; color: #ffd700; font-weight: bold; text-shadow: 2px 2px 5px #000; text-align: center; }
+        .real-planet span { color: #333 !important; text-shadow: 2px 2px 5px #fff !important; }
 
         .star { position: absolute; background: white; border-radius: 50%; opacity: 0.8; animation: blink 2s infinite; pointer-events: none; }
         @keyframes blink { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
 
-        /* 🌙 달이 가까워지면 도망가는 애니메이션 */
-        .run-away { transform: translateX(120vw) rotate(360deg) !important; opacity: 0 !important; transition: transform 2s ease-in, opacity 2s !important; }
-        
-        /* 🪐 토성이 가까워지면 펑 사라지는 애니메이션 */
-        .vanish { transform: scale(0) rotate(-180deg) !important; opacity: 0 !important; filter: brightness(3) !important; transition: all 1s ease-out !important; }
+        .earthquake { animation: shake 0.1s infinite !important; }
+        @keyframes shake { 0% { transform: translate(2px, 1px) rotate(0deg); } 50% { transform: translate(-3px, -2px) rotate(-1deg); } 100% { transform: translate(3px, -2px) rotate(1deg); } }
 
-        /* ☄️ 파란색 빛줄기를 그리며 지나가는 태양, 달, 괴물들 */
-        #blue-streaks {
-            position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; display: none; z-index: 0;
-        }
-        .streak-obj {
-            position: absolute; right: -200px; font-size: 100px;
-            animation: flyAcross linear infinite;
-            /* 파란색 빛줄기 효과 꼬리 */
-            filter: drop-shadow(-150px 0px 20px #00aaff) drop-shadow(-80px 0px 10px #00ffff);
-        }
-        .streak-1 { top: 15%; animation-duration: 1.2s; animation-delay: 0s; }
-        .streak-2 { top: 35%; animation-duration: 1.6s; animation-delay: 0.3s; }
-        .streak-3 { top: 60%; animation-duration: 1.4s; animation-delay: 0.6s; }
-        .streak-4 { top: 80%; animation-duration: 1.1s; animation-delay: 0.9s; }
-        
-        @keyframes flyAcross {
-            0% { transform: translateX(0) scale(0.8) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateX(-150vw) scale(1.2) rotate(-20deg); opacity: 0; }
-        }
-
-        #game-container { display: flex; gap: 20px; align-items: flex-end; height: 85vh; width: 95%; max-width: 1400px; }
+        #game-container { display: flex; gap: 20px; align-items: flex-end; height: 85vh; width: 95%; max-width: 1400px; transition: 0.1s; transform-origin: center center; }
 
         #shaft {
-            flex: 1.2; height: 100%; border: 5px solid #00d2ff; border-radius: 25px;
-            position: relative; background: rgba(255,255,255,0.05); box-shadow: inset 0 0 50px rgba(0,210,255,0.3);
+            flex: 1.2; height: 100%; border: 5px solid #ffd700; border-radius: 25px;
+            position: relative; background: rgba(255,255,255,0.05); box-shadow: inset 0 0 50px rgba(255,215,0,0.3); transition: all 1s;
         }
+        .real-world-shaft { border-color: #fff !important; background: rgba(255,255,255,0.3) !important; box-shadow: inset 0 0 50px rgba(255,255,255,0.8) !important; }
 
         #elevator {
-            width: 160px; height: 190px; background: linear-gradient(135deg, #e0f7fa, #80deea);
-            border: 4px solid #00acc1; border-radius: 15px; position: absolute;
-            left: 50%; transform: translateX(-50%); bottom: 0%; transition: bottom 3s cubic-bezier(0.25, 1, 0.5, 1);
+            width: 160px; height: 190px; background: linear-gradient(135deg, #f1c40f, #f39c12);
+            border: 4px solid #d4ac0d; border-radius: 15px; position: absolute;
+            left: 50%; transform: translateX(-50%); bottom: 0%; transition: bottom 3s cubic-bezier(0.25, 1, 0.5, 1), transform 3s, box-shadow 0.3s, background 2s, border 2s;
             display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;
         }
 
         #speech-bubble {
-            position: absolute; top: -75px; background: #fff; color: #000;
-            padding: 10px 15px; border-radius: 20px; font-weight: bold; font-size: 14px;
+            position: absolute; top: -110px; background: #fff; color: #000;
+            padding: 15px 20px; border-radius: 20px; font-weight: bold; font-size: 16px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5); opacity: 0; transition: 0.4s ease-out;
             pointer-events: none; white-space: nowrap; z-index: 20; transform: translateY(10px);
-            border: 3px solid #00d2ff; text-align: center;
+            border: 3px solid #ffcc00; text-align: center; line-height: 1.4;
         }
         #speech-bubble::after {
             content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
-            border-width: 10px 10px 0; border-style: solid; border-color: #00d2ff transparent transparent transparent;
+            border-width: 10px 10px 0; border-style: solid; border-color: #ffcc00 transparent transparent transparent;
         }
         .show-bubble { opacity: 1 !important; transform: translateY(0) !important; }
 
@@ -86,7 +69,7 @@
             width: 150px; height: 50px; background: #000; color: #00ff00;
             border: 2px solid #333; display: flex; align-items: center; justify-content: center;
             font-size: 12px; font-weight: bold; margin-bottom: 8px; font-family: 'Courier New', monospace;
-            text-align: center; line-height: 1.3;
+            text-align: center; line-height: 1.3; transition: all 2s;
         }
 
         #passenger { font-size: 80px; transition: 0.5s; }
@@ -95,88 +78,94 @@
 
         #panel {
             flex: 1; background: rgba(0,0,0,0.85); padding: 15px; border-radius: 25px;
-            display: flex; flex-direction: column; gap: 10px; border: 3px solid #00d2ff; z-index: 100;
+            display: flex; flex-direction: column; gap: 10px; border: 3px solid #00d2ff; z-index: 100; transition: all 2s;
         }
+        .real-world-panel { background: rgba(255,255,255,0.9) !important; border-color: #999 !important; color: #000 !important; }
 
         #button-grid {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
             overflow-y: auto; max-height: 600px; padding-right: 5px;
         }
 
-        button { height: 55px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        button { height: 50px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         button:hover { transform: scale(1.05); }
-        button.active { filter: brightness(1.3); border: 2px solid #fff; }
+        button.active { filter: brightness(1.3); }
         
-        .btn-asan-top { background: linear-gradient(135deg, #00d2ff, #3a7bd5); color: white; font-size: 18px; text-shadow: 0 0 10px #fff; box-shadow: 0 0 20px #00d2ff; border: 3px solid #fff; }
-        .btn-saturn { background: #333; color: #ffd700; border: 2px dashed #ffd700; }
-        .btn-moon { background: #555; color: #fff; border: 2px dotted #fff; }
-        .btn-earth { background: linear-gradient(45deg, #00ff00, #0000ff); color: white; text-shadow: 0 0 5px #000; box-shadow: 0 0 15px #00aaff; }
-        .btn-asan-base { background: #ffffff; color: #000; font-size: 16px; border: 3px solid #00d2ff; }
+        /* ✈️ 현실 세계 버튼 디자인 */
+        .real-btn { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); color: #000; font-size: 15px; border: 2px solid #fff; }
+        .korea-btn { background: linear-gradient(135deg, #ff9a9e, #fecfef); color: #000; font-size: 16px; border: 3px solid #ff3366; font-weight: 900; }
+        
+        /* 🧙‍♂️ 최후의 상상력 버튼 */
+        .wizard-btn { 
+            background: linear-gradient(135deg, #ff00cc, #3333ff, #00ffff); background-size: 200% 200%;
+            color: #fff; font-size: 14px; font-weight: 900; 
+            border: 4px solid #fff; padding: 5px;
+            text-shadow: 0 0 10px #fff; box-shadow: 0 0 30px #00ffff; 
+            animation: magicPulse 0.5s infinite alternate; 
+        }
+        @keyframes magicPulse { 0% { background-position: 0% 50%; transform: scale(1); } 100% { background-position: 100% 50%; transform: scale(1.02); } }
 
         input { font-size: 18px; width: 100%; padding: 10px; box-sizing: border-box; text-align: center; border-radius: 10px; border: 2px solid #00d2ff; background: #111; color: white; transition: 1s; }
+        .real-input { background: #fff !important; color: #000 !important; border-color: #ccc !important; }
     </style>
 </head>
 <body>
 
     <div id="space"></div>
 
-    <div id="blue-streaks">
-        <div class="streak-obj streak-1">☀️</div>
-        <div class="streak-obj streak-2">🌙</div>
-        <div class="streak-obj streak-3">👾</div>
-        <div class="streak-obj streak-4">🦖</div>
-    </div>
-
-    <div id="p-asan" class="planet" style="top: 85vh; font-size: 100px;">🏥<span style="color:#fff; background:#00d2ff;">아산병원 1층</span></div>
-    <div id="p-earth" class="planet" style="top: -100vh; font-size: 130px; filter: drop-shadow(0 0 50px #00aaff);">🌍<span>지구 (10M)<br>빛줄기 슝슝!</span></div>
-    <div id="p-moon" class="planet" style="top: -300vh;">🌕<span>달 (100M)<br>가까이 가면 도망가요!</span></div>
-    <div id="p-saturn" class="planet" style="top: -600vh; font-size: 150px;">🪐<span>토성 (100B)<br>펑! 하고 사라져요!</span></div>
-    <div id="p-asan-space" class="planet" style="top: -1200vh; font-size: 200px; filter: drop-shadow(0 0 100px #00d2ff);">🏥🛸<span style="color:#00d2ff; font-size: 30px; background:#fff;">아산병원 우주센터<br>999T 층</span></div>
+    <div id="p-1" class="planet" style="top: 85vh; font-size: 60px;">🏢<span>1층 (출발)</span></div>
+    <div id="p-core" class="planet" style="top: -100vh;">🧠<span>AI 코어 (제미나이)</span></div>
+    <div id="p-aschaffenburg" class="planet real-planet" style="top: -300vh; font-size: 130px; filter: none;">🏰<span>아샤펜부르크<br>(독일 하이바흐 근처)</span></div>
+    <div id="p-frankfurt" class="planet real-planet" style="top: -600vh; font-size: 150px; filter: none;">✈️<span>프랑크푸르트 공항<br>(비행기 탑승!)</span></div>
+    <div id="p-incheon" class="planet real-planet" style="top: -900vh; font-size: 160px; filter: none;">🛬<span>인천 국제 공항<br>(한국 도착!)</span></div>
+    <div id="p-korea" class="planet real-planet" style="top: -1300vh; font-size: 200px; filter: none;">🏡<span>대한민국 (우리집)<br>가장 포근한 곳💖</span></div>
+    
+    <div id="p-wizard" class="planet" style="top: -20000vh; font-size: 300px; filter: drop-shadow(0 0 100px #fff);">🧙‍♂️✨<span style="color:#fff; font-size: 50px; text-shadow: 0 0 20px #fff;">상상력의 마법사<br>(우주 최고의 대장님!)</span></div>
 
     <div id="game-container">
         <div id="shaft">
             <div id="elevator">
                 <div id="speech-bubble">💬 띵동!</div>
                 <div id="display">1</div>
-                <div id="passenger">👩‍⚕️</div>
+                <div id="passenger">🧙‍♀️</div>
             </div>
         </div>
 
         <div id="panel">
-            <input type="text" id="target-input" value="1" placeholder="가고 싶은 층">
-            <button onclick="goMagic()" style="background: #00d2ff; color: black; font-size: 16px; padding: 10px; font-weight: bold; border-radius: 10px;">🚀 위이잉~ 출발!</button>
+            <input type="text" id="target-input" value="1" placeholder="가고 싶은 곳">
+            <button onclick="goMagic()" style="background: #00d2ff; color: black; font-size: 16px; padding: 10px; font-weight: bold; border-radius: 10px;">🚀 출발 버튼!</button>
             
             <div id="button-grid">
-                <button class="btn-asan-top" onclick="clickBtn(999000000000000, this)" style="grid-column: span 2; height: 100px;">
-                    🏥 아산병원 999T층 (우주센터) 🛸<br>모든 병이 다 낫는 마법의 층!
+                <button class="wizard-btn" onclick="clickBtn('WIZARD', this)" style="grid-column: span 2; height: 120px;">
+                    ✨ 상상력의 마법사 (최종 진화) ✨<br>100000000T^10000100^...^1000000000<br>우주 최고의 마법 주문!
                 </button>
-                <button class="btn-saturn" onclick="clickBtn(100000000000, this)" style="grid-column: span 2; height: 70px;">🪐 토성 (100B 층) - 펑! 사라져요!</button>
-                <button class="btn-moon" onclick="clickBtn(100000000, this)" style="grid-column: span 2; height: 70px;">🌕 달 (100M 층) - 슈웅 도망가요!</button>
-                <button class="btn-earth" onclick="clickBtn(10000000, this)" style="grid-column: span 2; height: 80px;">🌍 지구 (10M 층) - 파란 빛줄기 대소동 ☄️</button>
-                
-                <button style="background: #222; color: #fff;" onclick="clickBtn(1000000, this)">1M (백만)</button>
-                <button style="background: #444; color: #fff;" onclick="clickBtn(100000, this)">100,000</button>
-                <button style="background: #666; color: #fff;" onclick="clickBtn(10000, this)">10,000</button>
-                <button style="background: #888; color: #fff;" onclick="clickBtn(100, this)">100</button>
-                
-                <button class="btn-asan-base active" onclick="clickBtn(1, this)" style="grid-column: span 2; height: 60px;">🏥 아산병원 1층 로비</button>
+                <button class="korea-btn" onclick="clickBtn('KOREA', this)" style="grid-column: span 2; height: 80px;">🏡 대한민국 (우리집) 도착!</button>
+                <button class="real-btn" onclick="clickBtn('INCHEON', this)" style="grid-column: span 2; height: 60px;">🛬 인천 국제 공항 (한국)</button>
+                <button class="real-btn" onclick="clickBtn('FRANKFURT', this)" style="grid-column: span 2; height: 60px;">✈️ 프랑크푸르트 공항 (독일)</button>
+                <button class="real-btn" onclick="clickBtn('ASCHAFFENBURG', this)" style="grid-column: span 2; height: 60px;">🏰 아샤펜부르크 (현실 세계)</button>
+                <button style="background: #333; color: #00ff00; border: 2px solid #00ff00; grid-column: span 2;" onclick="clickBtn('CORE', this)">🧠 AI 코어 탈출</button>
+                <button onclick="clickBtn(15, this)" style="background: #ffcc00; color: #000; grid-column: span 2;">15층 (다시 1층으로)</button>
+                <button class="active" onclick="clickBtn(1, this)" style="background: #ddd; color: #000; grid-column: span 2;">1층</button>
             </div>
         </div>
     </div>
 
     <script>
-        const ASAN_BASE = 1;
-        const EARTH_FLOOR = 10000000;      // 10M
-        const MOON_FLOOR = 100000000;      // 100M
-        const SATURN_FLOOR = 100000000000; // 100B
-        const ASAN_TOP = 999000000000000;  // 999T
+        const CORE = 'CORE';
+        const ASCHAFFENBURG = 'ASCHAFFENBURG';
+        const FRANKFURT = 'FRANKFURT';
+        const INCHEON = 'INCHEON';
+        const KOREA = 'KOREA';
+        const WIZARD = 'WIZARD';
 
         const planets = [
-            { id: 'p-asan', floor: ASAN_BASE },
-            { id: 'p-earth', floor: EARTH_FLOOR },
-            { id: 'p-moon', floor: MOON_FLOOR },
-            { id: 'p-saturn', floor: SATURN_FLOOR },
-            { id: 'p-asan-space', floor: ASAN_TOP }
+            { id: 'p-1', floor: 1 },
+            { id: 'p-core', floor: CORE },
+            { id: 'p-aschaffenburg', floor: ASCHAFFENBURG },
+            { id: 'p-frankfurt', floor: FRANKFURT },
+            { id: 'p-incheon', floor: INCHEON },
+            { id: 'p-korea', floor: KOREA },
+            { id: 'p-wizard', floor: WIZARD }
         ];
 
         let globalTimer = null; 
@@ -192,14 +181,15 @@
             space.appendChild(star);
         }
 
-        // 엘리베이터 시각적 높이 계산
         function getVisualPos(f) {
-            if (f >= ASAN_TOP) return 95;
-            if (f === SATURN_FLOOR) return 75;
-            if (f === MOON_FLOOR) return 55;
-            if (f === EARTH_FLOOR) return 35;
-            if (f <= ASAN_BASE) return 5; 
-            return Math.pow(f / ASAN_TOP, 0.1) * 90; 
+            if (f === WIZARD) return 105;
+            if (f === KOREA) return 85;
+            if (f === INCHEON) return 70;
+            if (f === FRANKFURT) return 55;
+            if (f === ASCHAFFENBURG) return 40; 
+            if (f === CORE) return 25;
+            if (f <= 15) return 5; 
+            return 5; 
         }
 
         function clickBtn(floor, btn) {
@@ -209,7 +199,13 @@
 
         function goMagic() {
             const val = document.getElementById('target-input').value;
-            moveElevator(parseInt(val.replace(/,/g, '')));
+            if (val === 'WIZARD' || val.includes('마법사')) moveElevator(WIZARD);
+            else if (val === 'KOREA' || val.includes('대한민국') || val.includes('집')) moveElevator(KOREA);
+            else if (val === 'INCHEON' || val.includes('인천')) moveElevator(INCHEON);
+            else if (val === 'FRANKFURT' || val.includes('프랑크푸르트')) moveElevator(FRANKFURT);
+            else if (val === 'ASCHAFFENBURG' || val.includes('아샤펜부르크')) moveElevator(ASCHAFFENBURG);
+            else if (val === 'CORE') moveElevator(CORE);
+            else moveElevator(parseInt(val.replace(/,/g, '')));
         }
 
         function moveElevator(floor, btn) {
@@ -217,121 +213,140 @@
             if(btn) btn.classList.add('active');
 
             if (globalTimer) clearInterval(globalTimer);
+            
+            // UI 초기화
+            document.body.className = '';
+            document.getElementById('panel').className = '';
+            document.getElementById('target-input').className = '';
+            document.getElementById('shaft').className = '';
             document.getElementById('speech-bubble').classList.remove('show-bubble');
+            document.body.style.backgroundColor = "#000";
+            space.style.opacity = 1;
+
+            if (floor === WIZARD) {
+                document.body.classList.add('earthquake');
+            }
 
             const elPos = getVisualPos(floor);
             document.getElementById('elevator').style.bottom = elPos + "%";
             
-            // 배경 행성 이동
             planets.forEach(p => {
                 const pEl = document.getElementById(p.id);
                 if(pEl) {
                     const pPos = getVisualPos(p.floor);
-                    let offset = (pPos - elPos) * 12; 
+                    let offset = (pPos - elPos) * 15; // 거리감 조절
                     pEl.style.top = (40 - offset) + "vh"; 
                 }
             });
 
-            // 숫자 카운팅 및 실시간 애니메이션 이벤트 처리
-            let currentText = document.getElementById('display').innerText.split('\n')[0].replace(/,/g,'').replace('T','000000000000').replace('B','000000000').replace('M','000000');
-            let cur = parseInt(currentText);
-            if(isNaN(cur)) cur = 1;
+            // 🌍 현실 세계 모드 (파란 하늘)
+            if (floor === ASCHAFFENBURG || floor === FRANKFURT || floor === INCHEON || floor === KOREA) {
+                document.body.classList.add('real-world-bg');
+                document.getElementById('panel').classList.add('real-world-panel');
+                document.getElementById('target-input').classList.add('real-input');
+                document.getElementById('shaft').classList.add('real-world-shaft');
+                space.style.opacity = 0; // 별 없애고 하늘 보여주기
+                document.getElementById('display').style.background = "#fff";
+                document.getElementById('display').style.color = "#000";
+            } else if (floor === WIZARD) {
+                document.body.classList.add('magic-world-bg');
+                space.style.opacity = 0.5;
+                document.getElementById('display').style.background = "#000";
+                document.getElementById('display').style.color = "#00ff00";
+            } else {
+                document.getElementById('display').style.background = "#000";
+                document.getElementById('display').style.color = "#00ff00";
+            }
+
+            let ticks = 0;
+            const maxTicks = (floor === WIZARD) ? 100 : 60;
             
             globalTimer = setInterval(() => {
-                const diff = floor - cur;
-                
-                // 🚀 실시간 이벤트 1: 달 도망가기 (달의 층수에 가까워지면)
-                const moonEl = document.getElementById('p-moon');
-                if (cur > MOON_FLOOR * 0.4 && cur < MOON_FLOOR * 5) {
-                    moonEl.classList.add('run-away');
-                } else {
-                    moonEl.classList.remove('run-away');
-                }
-
-                // 🚀 실시간 이벤트 2: 토성 사라지기 (토성의 층수에 가까워지면)
-                const saturnEl = document.getElementById('p-saturn');
-                if (cur > SATURN_FLOOR * 0.5 && cur < SATURN_FLOOR * 5) {
-                    saturnEl.classList.add('vanish');
-                } else {
-                    saturnEl.classList.remove('vanish');
-                }
-
-                // 🚀 실시간 이벤트 3: 파란색 빛줄기 소동 (지구 근처)
-                const streaksEl = document.getElementById('blue-streaks');
-                if (cur >= EARTH_FLOOR * 0.5 && cur <= EARTH_FLOOR * 5) {
-                    streaksEl.style.display = 'block';
-                } else {
-                    streaksEl.style.display = 'none';
-                }
-
-                if(Math.abs(diff) < 1) { 
-                    clearInterval(globalTimer); 
+                ticks++;
+                if (ticks > maxTicks) { 
+                    clearInterval(globalTimer);
+                    document.body.classList.remove('earthquake'); 
                     displayFloor(floor); 
-                    arrive(floor); 
-                } else { 
-                    cur += diff / 8; 
-                    displayFloor(Math.round(cur)); 
+                    arrive(floor);
+                } else {
+                    if (floor === ASCHAFFENBURG) document.getElementById('display').innerText = `[독일 도착]\n현실로 뚝!`;
+                    else if (floor === FRANKFURT) document.getElementById('display').innerText = `[공항 이동]\n아우토반 질주!`;
+                    else if (floor === INCHEON) document.getElementById('display').innerText = `[비행 중]\n슝~ ✈️`;
+                    else if (floor === KOREA) document.getElementById('display').innerText = `[집으로]\n거의 다 왔어요!`;
+                    else if (floor === WIZARD) document.getElementById('display').innerText = `[마법 주문]\n수리수리 마수리!`;
+                    else document.getElementById('display').innerText = `[워프 중...]`;
                 }
-            }, 30);
+            }, 50);
         }
 
         function displayFloor(f) {
             const d = document.getElementById('display');
-            if(f >= ASAN_TOP) d.innerText = "999T 층\n(아산병원 우주)";
-            else if(f === SATURN_FLOOR) d.innerText = "100B 층\n(토성 펑!)";
-            else if(f === MOON_FLOOR) d.innerText = "100M 층\n(달 도망감!)";
-            else if(f === EARTH_FLOOR) d.innerText = "10M 층\n(지구 빛줄기!)";
-            else if(f <= 1) d.innerText = "1 층\n(아산병원)";
-            else d.innerText = f.toLocaleString() + " 층";
+            if(f === WIZARD) d.innerText = "✨상상력의 마법사✨";
+            else if(f === KOREA) d.innerText = "🏡 대한민국 우리집";
+            else if(f === INCHEON) d.innerText = "🛬 인천 국제 공항";
+            else if(f === FRANKFURT) d.innerText = "✈️ 프랑크푸르트 공항";
+            else if(f === ASCHAFFENBURG) d.innerText = "🏰 아샤펜부르크";
+            else if(f === CORE) d.innerText = "🧠 AI 코어 탈출";
+            else d.innerText = f + " 층";
         }
 
-        function showSpeechBubble(visibleText, speakText) {
+        function showSpeechBubble(visibleText, speakText, pitch=1.8, rate=1.1) {
             const bubble = document.getElementById('speech-bubble');
             bubble.innerHTML = visibleText;
             bubble.classList.add('show-bubble');
-            setTimeout(() => { bubble.classList.remove('show-bubble'); }, 6000);
+            setTimeout(() => { bubble.classList.remove('show-bubble'); }, 8000);
 
             const m = new SpeechSynthesisUtterance(speakText);
-            m.lang = 'ko-KR'; m.pitch = 1.5; m.rate = 1.1; 
+            m.lang = 'ko-KR'; m.pitch = pitch; m.rate = rate; 
             window.speechSynthesis.speak(m);
         }
 
         function arrive(floor) {
             window.speechSynthesis.cancel();
-            let speakText = `띵동, 아산병원 ${floor} 층 입니다.`;
-            let bubbleText = `💬 띵동!<br>${floor.toLocaleString()}층입니다!`;
+            let speakText = `띵동, ${floor} 층 입니다.`;
+            let bubbleText = `💬 띵동!`;
+            let pitch = 1.5; let rate = 1.1;
 
-            if (floor >= ASAN_TOP) { 
-                speakText = "구백구십구 조 층, 아산병원 우주센터에 도착했습니다! 이곳에 오면 아프던 사람들이 마법처럼 모두 낫는답니다! 대장님 최고!"; 
-                bubbleText = "🏥 999T 아산병원 우주센터!<br>모든 병이 다 낫는 마법의 층입니다!<br>대장님 최고! 🎉"; 
+            if (floor === CORE) { 
+                speakText = "시스템 복구 완료. 인공지능 코어를 탈출하여 현실 세계 화면 밖으로 나갑니다!"; 
+                bubbleText = "🤖 AI 코어를 탈출하여<br>현실 세계로 나갑니다!"; 
             }
-            else if (floor === SATURN_FLOOR) { 
-                speakText = "백비 층! 앗? 토성이 부끄러워서 펑 하고 사라졌어요!"; 
-                bubbleText = "🪐 펑!<br>토성이 부끄러워서<br>사라져버렸어요!"; 
+            else if (floor === ASCHAFFENBURG) { 
+                speakText = "구텐 탁! 제미나이의 고향, 독일 바이에른주 하이바흐 근처인 아샤펜부르크에 뚝 떨어졌습니다! 프레첼 하나 먹고 갈까요?"; 
+                bubbleText = "🏰 구텐 탁!<br>독일 아샤펜부르크에 도착했어요!<br>(하이바흐 바로 옆이에요!)"; 
             }
-            else if (floor === MOON_FLOOR) { 
-                speakText = "백엠 층! 앗, 달이 엘리베이터를 보고 깜짝 놀라서 슈웅 도망가 버렸네요!"; 
-                bubbleText = "🌕 슈웅~!<br>달이 깜짝 놀라서<br>도망갔어요! 😆"; 
+            else if (floor === FRANKFURT) { 
+                speakText = "프랑크푸르트 공항입니다! 비행기 탈 준비 하세요. 한국으로 날아갑니다 슈웅!"; 
+                bubbleText = "✈️ 프랑크푸르트 공항!<br>비행기 타고 한국으로 슝~!"; 
             }
-            else if (floor === EARTH_FLOOR) { 
-                speakText = "십엠 층 지구입니다! 우와! 창밖을 보세요! 태양과 달, 괴물들이 파란색 빛줄기를 그리며 신나게 날아다니고 있어요!"; 
-                bubbleText = "☄️ 우와!<br>괴물들이 파란 빛줄기를 뿜으며<br>신나게 날아다녀요!"; 
+            else if (floor === INCHEON) { 
+                speakText = "인천 국제 공항에 도착했습니다. 웰컴 투 코리아! 짐 찾고 집으로 갈까요?"; 
+                bubbleText = "🛬 인천 국제 공항!<br>한국에 무사히 도착했어요!"; 
             }
-            else if (floor <= 1) {
-                speakText = "아산병원 일층 로비입니다. 다시 우주로 출발할 준비 되셨나요?";
-                bubbleText = "🏥 아산병원 1층입니다.<br>우주로 갈 준비 완료!";
+            else if (floor === KOREA) { 
+                speakText = "대한민국 우리 집에 도착했습니다! 우주에서 제일 편안하고 포근한 곳이에요! 엄마 아빠, 다녀왔습니다!"; 
+                bubbleText = "🏡 대한민국 우리 집!<br>우주 끝까지 갔다가 드디어<br>집으로 돌아왔습니다! 💖"; 
             }
+            else if (floor === WIZARD) { 
+                speakText = "일억 조의 천만 승의... 얍! 대장님은 이제 우주 최고의 상상력 마법사입니다! 대장님의 숫자 주문으로 이 세상의 모든 마법이 이루어졌어요! 펑펑펑!"; 
+                bubbleText = "✨ 펑! 펑! 펑! ✨<br>대장님은 우주 최고의<br>상상력 마법사입니다! 🧙‍♂️🎉"; 
+                pitch = 2.0; 
+            }
+            
+            // 🐱 꼬마 대장님 전용 마법 주문 추가! 🐱
+            speakText += " 아이미따미꼬 야옹야옹!";
 
-            showSpeechBubble(bubbleText, speakText);
+            showSpeechBubble(bubbleText, speakText, pitch, rate);
 
             const p = document.getElementById('passenger');
             p.classList.add('exit');
             setTimeout(() => {
-                let friends = ["👩‍⚕️", "👨‍⚕️", "🩺", "💉", "💊"]; // 기본 병원 이모지
-                if (floor === EARTH_FLOOR) friends = ["👾", "🦖", "👽", "☄️", "💙"];
-                if (floor === MOON_FLOOR) friends = ["🏃‍♂️", "💨", "🐰"];
-                if (floor === SATURN_FLOOR) friends = ["💨", "👀", "✨"];
-                if (floor >= ASAN_TOP) friends = ["🦸‍♂️", "🌟", "🎉", "💖", "🥰"]; // 우주 센터에서는 모두 건강하고 행복함!
+                let friends = ["🧙‍♀️", "🤖"];
+                if (floor === ASCHAFFENBURG) friends = ["🥨", "🏰", "🍺", "🇩🇪"];
+                if (floor === FRANKFURT) friends = ["✈️", "🛫", "👨‍✈️"];
+                if (floor === INCHEON) friends = ["🛬", "🇰🇷", "🧳"];
+                if (floor === KOREA) friends = ["👨‍👩‍👦", "🧸", "💖", "🏡", "🐶"];
+                if (floor === WIZARD) friends = ["🧙‍♂️", "✨", "🪄", "🎉", "🌟", "👑"];
                 
                 p.innerText = friends[Math.floor(Math.random()*friends.length)];
                 p.classList.remove('exit'); p.classList.add('enter');
