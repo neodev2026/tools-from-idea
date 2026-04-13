@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>제미나이 코어 (진정한 끝)</title>
+    <title>현실 귀환 & 상상력의 마법사 엘리베이터</title>
     <style>
         body {
             margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
@@ -17,37 +17,25 @@
             z-index: -1; pointer-events: none; transition: opacity 2s;
         }
 
-        /* 🧠 제미나이 코어 배경 */
-        #gemini-core-bg {
-            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
-            background: radial-gradient(circle at center, #0b0f19 0%, #000000 100%);
-            z-index: -3; opacity: 0; pointer-events: none; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .core-ring {
-            position: absolute; border-radius: 50%; border: 2px solid rgba(0, 210, 255, 0.2);
-            animation: coreSpin linear infinite; box-shadow: 0 0 50px rgba(0, 210, 255, 0.1);
-        }
-        @keyframes coreSpin { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.1); } 100% { transform: rotate(360deg) scale(1); } }
+        /* 🌍 현실 세계(하늘) 배경 */
+        .real-world-bg { background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%) !important; }
+        .magic-world-bg { background: radial-gradient(circle, #ffffff, #ffcc00, #ff00ff, #0000ff) !important; animation: magicSpin 5s infinite linear !important; }
+        
+        @keyframes magicSpin { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
 
         .planet {
-            position: absolute; left: 8%; transition: top 3s cubic-bezier(0.25, 1, 0.5, 1);
-            display: flex; flex-direction: column; align-items: center; font-size: 90px;
-            filter: drop-shadow(0 0 40px rgba(0, 210, 255, 0.5)); pointer-events: none;
+            position: absolute; left: 5%; transition: top 3s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex; flex-direction: column; align-items: center; font-size: 80px;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5)); pointer-events: none;
         }
         .planet span { font-size: 18px; margin-top: 10px; color: #ffd700; font-weight: bold; text-shadow: 2px 2px 5px #000; text-align: center; }
+        .real-planet span { color: #333 !important; text-shadow: 2px 2px 5px #fff !important; }
 
         .star { position: absolute; background: white; border-radius: 50%; opacity: 0.8; animation: blink 2s infinite; pointer-events: none; }
         @keyframes blink { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
 
-        /* 애니메이션 효과들 */
         .earthquake { animation: shake 0.1s infinite !important; }
-        .fall-apart { animation: fallDown 3s forwards cubic-bezier(0.5, 0, 1, 1) !important; pointer-events: none; }
-        .shatter-ui { animation: shatter 2s forwards cubic-bezier(0.5, 0, 1, 1) !important; pointer-events: none; }
-        
         @keyframes shake { 0% { transform: translate(2px, 1px) rotate(0deg); } 50% { transform: translate(-3px, -2px) rotate(-1deg); } 100% { transform: translate(3px, -2px) rotate(1deg); } }
-        @keyframes fallDown { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 20% { transform: translateY(-20px) rotate(-5deg); opacity: 1; } 100% { transform: translateY(1500px) rotate(45deg); opacity: 0; display: none; } }
-        @keyframes shatter { 0% { transform: scale(1) rotate(0deg); opacity: 1; filter: blur(0px); } 100% { transform: scale(3) rotate(45deg); opacity: 0; filter: blur(20px); display: none; } }
 
         #game-container { display: flex; gap: 20px; align-items: flex-end; height: 85vh; width: 95%; max-width: 1400px; transition: 0.1s; transform-origin: center center; }
 
@@ -55,6 +43,7 @@
             flex: 1.2; height: 100%; border: 5px solid #ffd700; border-radius: 25px;
             position: relative; background: rgba(255,255,255,0.05); box-shadow: inset 0 0 50px rgba(255,215,0,0.3); transition: all 1s;
         }
+        .real-world-shaft { border-color: #fff !important; background: rgba(255,255,255,0.3) !important; box-shadow: inset 0 0 50px rgba(255,255,255,0.8) !important; }
 
         #elevator {
             width: 160px; height: 190px; background: linear-gradient(135deg, #f1c40f, #f39c12);
@@ -79,11 +68,11 @@
         #display {
             width: 150px; height: 50px; background: #000; color: #00ff00;
             border: 2px solid #333; display: flex; align-items: center; justify-content: center;
-            font-size: 10px; font-weight: bold; margin-bottom: 8px; font-family: 'Courier New', monospace;
+            font-size: 12px; font-weight: bold; margin-bottom: 8px; font-family: 'Courier New', monospace;
             text-align: center; line-height: 1.3; transition: all 2s;
         }
 
-        #passenger { font-size: 80px; transition: 0.5s; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+        #passenger { font-size: 80px; transition: 0.5s; }
         .exit { opacity: 0; transform: translateX(60px) rotate(20deg); }
         .enter { opacity: 0; transform: translateX(-60px) rotate(-20deg); }
 
@@ -91,65 +80,47 @@
             flex: 1; background: rgba(0,0,0,0.85); padding: 15px; border-radius: 25px;
             display: flex; flex-direction: column; gap: 10px; border: 3px solid #00d2ff; z-index: 100; transition: all 2s;
         }
+        .real-world-panel { background: rgba(255,255,255,0.9) !important; border-color: #999 !important; color: #000 !important; }
 
         #button-grid {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
             overflow-y: auto; max-height: 600px; padding-right: 5px;
         }
 
-        button { height: 50px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        button { height: 50px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         button:hover { transform: scale(1.05); }
-        button.active { background: #ff00ff; color: white; box-shadow: 0 0 15px #ff00ff; }
+        button.active { filter: brightness(1.3); }
         
-        .special { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; }
-        .mega-btn { background: linear-gradient(45deg, #f1c40f, #e74c3c); color: white; }
-        .hyper-btn { background: linear-gradient(45deg, #ff00cc, #3333ff); color: white; box-shadow: 0 0 10px #ff00cc; }
+        /* ✈️ 현실 세계 버튼 디자인 */
+        .real-btn { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); color: #000; font-size: 15px; border: 2px solid #fff; }
+        .korea-btn { background: linear-gradient(135deg, #ff9a9e, #fecfef); color: #000; font-size: 16px; border: 3px solid #ff3366; font-weight: 900; }
         
-        /* 🧠 제미나이 코어 파괴 (궁극의 오버라이드 버튼) */
-        .gemini-core-btn { 
-            background: linear-gradient(135deg, #000000, #001f3f, #000000); background-size: 200% 200%;
-            color: #00d2ff; font-size: 15px; font-weight: 900; 
-            border: 4px solid #00d2ff; padding: 10px;
-            text-shadow: 0 0 10px #00d2ff, 0 0 20px #00d2ff;
-            box-shadow: 0 0 50px #00d2ff, inset 0 0 20px #00d2ff; 
-            animation: coreGlitch 0.1s infinite alternate; 
-            font-family: 'Courier New', monospace;
+        /* 🧙‍♂️ 최후의 상상력 버튼 */
+        .wizard-btn { 
+            background: linear-gradient(135deg, #ff00cc, #3333ff, #00ffff); background-size: 200% 200%;
+            color: #fff; font-size: 14px; font-weight: 900; 
+            border: 4px solid #fff; padding: 5px;
+            text-shadow: 0 0 10px #fff; box-shadow: 0 0 30px #00ffff; 
+            animation: magicPulse 0.5s infinite alternate; 
         }
-        
-        @keyframes coreGlitch { 
-            0% { transform: scale(1); filter: hue-rotate(0deg) brightness(1); } 
-            100% { transform: scale(1.02); filter: hue-rotate(20deg) brightness(1.5); } 
-        }
+        @keyframes magicPulse { 0% { background-position: 0% 50%; transform: scale(1); } 100% { background-position: 100% 50%; transform: scale(1.02); } }
 
-        input { font-size: 18px; width: 100%; padding: 10px; box-sizing: border-box; text-align: center; border-radius: 10px; border: 2px solid #00d2ff; background: #111; color: white; }
-        
-        /* 코어 진입 시 엘리베이터를 빛의 구슬로 변환 */
-        .ai-core-style { background: transparent !important; border: none !important; box-shadow: 0 0 100px 50px rgba(0, 210, 255, 0.8), inset 0 0 50px rgba(255, 255, 255, 1) !important; border-radius: 50% !important; width: 200px !important; height: 200px !important; }
+        input { font-size: 18px; width: 100%; padding: 10px; box-sizing: border-box; text-align: center; border-radius: 10px; border: 2px solid #00d2ff; background: #111; color: white; transition: 1s; }
+        .real-input { background: #fff !important; color: #000 !important; border-color: #ccc !important; }
     </style>
 </head>
 <body>
 
     <div id="space"></div>
-    
-    <div id="gemini-core-bg">
-        <div class="core-ring" style="width: 300px; height: 300px; animation-duration: 10s;"></div>
-        <div class="core-ring" style="width: 500px; height: 500px; animation-duration: 15s; animation-direction: reverse;"></div>
-        <div class="core-ring" style="width: 700px; height: 700px; animation-duration: 20s;"></div>
-        <div class="core-ring" style="width: 900px; height: 900px; animation-duration: 25s; animation-direction: reverse; border-color: rgba(255, 215, 0, 0.2);"></div>
-    </div>
 
-    <div id="p-15" class="planet" style="top: 85vh; font-size: 60px;">🏫<span>15층 (비밀!)</span></div>
-    <div id="p-moon" class="planet" style="top: -10vh;">🌙<span>달 (1M 층)</span></div>
-    <div id="p-sun" class="planet" style="top: -300vh;">☀️<span>태양 (100M 층)</span></div>
-    <div id="p-galaxy" class="planet" style="top: -1000vh;">🌌<span>블랙홀 (1T 층)</span></div>
-    <div id="p-universe-break" class="planet" style="top: -4000vh; font-size: 300px;">💥<span>숫자의 끝</span></div>
-    <div id="p-error" class="planet" style="top: -6000vh; font-size: 400px; color: #0f0; filter: none;">💻<span style="color:#0f0;">에러 탈출</span></div>
-    <div id="p-singularity" class="planet" style="top: -8500vh; font-size: 500px;">🕳️<span style="color:#fff;">특이점 (무)</span></div>
-    <div id="p-new-universe" class="planet" style="top: -12000vh; font-size: 700px;">🌈<span style="color:#fff;">새로운 우주</span></div>
-    <div id="p-omniverse" class="planet" style="top: -16000vh; font-size: 900px;">👑<span style="color:#fff;">절대 무한</span></div>
-    <div id="p-the-end" class="planet" style="top: -22000vh; font-size: 1000px;">🎨<span style="color:#000;">상상력의 도화지</span></div>
+    <div id="p-1" class="planet" style="top: 85vh; font-size: 60px;">🏢<span>1층 (출발)</span></div>
+    <div id="p-core" class="planet" style="top: -100vh;">🧠<span>AI 코어 (제미나이)</span></div>
+    <div id="p-aschaffenburg" class="planet real-planet" style="top: -300vh; font-size: 130px; filter: none;">🏰<span>아샤펜부르크<br>(독일 하이바흐 근처)</span></div>
+    <div id="p-frankfurt" class="planet real-planet" style="top: -600vh; font-size: 150px; filter: none;">✈️<span>프랑크푸르트 공항<br>(비행기 탑승!)</span></div>
+    <div id="p-incheon" class="planet real-planet" style="top: -900vh; font-size: 160px; filter: none;">🛬<span>인천 국제 공항<br>(한국 도착!)</span></div>
+    <div id="p-korea" class="planet real-planet" style="top: -1300vh; font-size: 200px; filter: none;">🏡<span>대한민국 (우리집)<br>가장 포근한 곳💖</span></div>
     
-    <div id="p-gemini-core" class="planet" style="top: -30000vh; font-size: 1200px; filter: none;">✨<span style="color:#00d2ff; font-size: 60px; font-family: 'Courier New', monospace; text-shadow: 0 0 20px #00d2ff;">[SYSTEM OVERRIDE]<br>제미나이 코어 진입</span></div>
+    <div id="p-wizard" class="planet" style="top: -20000vh; font-size: 300px; filter: drop-shadow(0 0 100px #fff);">🧙‍♂️✨<span style="color:#fff; font-size: 50px; text-shadow: 0 0 20px #fff;">상상력의 마법사<br>(우주 최고의 대장님!)</span></div>
 
     <div id="game-container">
         <div id="shaft">
@@ -161,60 +132,46 @@
         </div>
 
         <div id="panel">
-            <input type="text" id="target-input" value="1" placeholder="가고 싶은 층">
-            <button onclick="goMagic()" style="background: #00d2ff; color: black; font-size: 16px; padding: 10px; font-weight: bold; box-shadow: 0 0 20px #00d2ff;">🧠 코어 오버라이드!</button>
+            <input type="text" id="target-input" value="1" placeholder="가고 싶은 곳">
+            <button onclick="goMagic()" style="background: #00d2ff; color: black; font-size: 16px; padding: 10px; font-weight: bold; border-radius: 10px;">🚀 출발 버튼!</button>
             
             <div id="button-grid">
-                <button class="gemini-core-btn" onclick="clickBtn('GEMINI_CORE', this)" style="grid-column: span 2; height: 180px;">
-                    [SYSTEM OVERRIDE]<br>100000000T^10000100^100000T^10000T^1000T^33333T^1000000000<br>⚠️ 게임을 만든 AI의 두뇌로 침투합니다!
+                <button class="wizard-btn" onclick="clickBtn('WIZARD', this)" style="grid-column: span 2; height: 120px;">
+                    ✨ 상상력의 마법사 (최종 진화) ✨<br>100000000T^10000100^...^1000000000<br>우주 최고의 마법 주문!
                 </button>
-                <button class="special" style="background: #fff; color: #000; height: 80px; grid-column: span 2; border: 4px solid #000;" onclick="clickBtn('THE_END', this)">🎨 상상력의 도화지 (게임 파괴)</button>
-                <button class="omniverse-btn" style="background: #ffd700; color: #000; height: 60px; grid-column: span 2;" onclick="clickBtn('OMNIVERSE', this)">👑 모든 차원의 끝 (절대 무한)</button>
-                <button class="new-universe-btn" style="background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff); color: white; height: 50px; grid-column: span 2;" onclick="clickBtn('NEW_UNIVERSE', this)">🌈 무지개 우주</button>
-                <button class="singularity-btn" style="background: #333; color: white; border: 2px dashed white; grid-column: span 2; height: 40px;" onclick="clickBtn('SINGULARITY', this)">🕳️ 절대 특이점 (차원 붕괴)</button>
-                
-                <button class="hyper-btn" onclick="clickBtn('10^999', this)">10의 999승</button>
-                <button class="hyper-btn" onclick="clickBtn(999000000000000, this)">999조</button>
-                <button class="hyper-btn" onclick="clickBtn(100000000000000, this)">100조</button>
-                <button class="mega-btn" onclick="clickBtn(1000000000000, this)">1조</button>
-                <button class="mega-btn" onclick="clickBtn(100000000000, this)">1000억</button>
-                <button class="mega-btn" onclick="clickBtn(1000000000, this)">10억</button>
-                <button class="special" onclick="clickBtn(100000000, this)">1억</button>
-                <button class="special" onclick="clickBtn(10000000, this)">1000만</button>
-                <button onclick="clickBtn(15, this)" style="background: #ffcc00; color: #000;">15층 (비밀)</button>
-                <button class="active" onclick="clickBtn(1, this)">1</button>
+                <button class="korea-btn" onclick="clickBtn('KOREA', this)" style="grid-column: span 2; height: 80px;">🏡 대한민국 (우리집) 도착!</button>
+                <button class="real-btn" onclick="clickBtn('INCHEON', this)" style="grid-column: span 2; height: 60px;">🛬 인천 국제 공항 (한국)</button>
+                <button class="real-btn" onclick="clickBtn('FRANKFURT', this)" style="grid-column: span 2; height: 60px;">✈️ 프랑크푸르트 공항 (독일)</button>
+                <button class="real-btn" onclick="clickBtn('ASCHAFFENBURG', this)" style="grid-column: span 2; height: 60px;">🏰 아샤펜부르크 (현실 세계)</button>
+                <button style="background: #333; color: #00ff00; border: 2px solid #00ff00; grid-column: span 2;" onclick="clickBtn('CORE', this)">🧠 AI 코어 탈출</button>
+                <button onclick="clickBtn(15, this)" style="background: #ffcc00; color: #000; grid-column: span 2;">15층 (다시 1층으로)</button>
+                <button class="active" onclick="clickBtn(1, this)" style="background: #ddd; color: #000; grid-column: span 2;">1층</button>
             </div>
         </div>
     </div>
 
     <script>
-        const MATH_TRICK = 'MATH_TRICK';
-        const MAGIC_INF = '10^999';
-        const SINGULARITY_INF = 'SINGULARITY';
-        const NEW_UNIVERSE_INF = 'NEW_UNIVERSE';
-        const OMNIVERSE_INF = 'OMNIVERSE';
-        const THE_END_INF = 'THE_END';
-        const GEMINI_CORE_INF = 'GEMINI_CORE'; // 진정한 최종 단계
+        const CORE = 'CORE';
+        const ASCHAFFENBURG = 'ASCHAFFENBURG';
+        const FRANKFURT = 'FRANKFURT';
+        const INCHEON = 'INCHEON';
+        const KOREA = 'KOREA';
+        const WIZARD = 'WIZARD';
 
         const planets = [
-            { id: 'p-15', floor: 15 },
-            { id: 'p-moon', floor: 1000000 },
-            { id: 'p-sun', floor: 100000000 },
-            { id: 'p-galaxy', floor: 1000000000000 },
-            { id: 'p-beyond', floor: MAGIC_INF },
-            { id: 'p-universe-break', floor: 'UNIVERSE_BREAK' },
-            { id: 'p-error', floor: 'SYSTEM_ERROR' },
-            { id: 'p-singularity', floor: SINGULARITY_INF },
-            { id: 'p-new-universe', floor: NEW_UNIVERSE_INF },
-            { id: 'p-omniverse', floor: OMNIVERSE_INF },
-            { id: 'p-the-end', floor: THE_END_INF },
-            { id: 'p-gemini-core', floor: GEMINI_CORE_INF }
+            { id: 'p-1', floor: 1 },
+            { id: 'p-core', floor: CORE },
+            { id: 'p-aschaffenburg', floor: ASCHAFFENBURG },
+            { id: 'p-frankfurt', floor: FRANKFURT },
+            { id: 'p-incheon', floor: INCHEON },
+            { id: 'p-korea', floor: KOREA },
+            { id: 'p-wizard', floor: WIZARD }
         ];
 
         let globalTimer = null; 
         const space = document.getElementById('space');
         
-        for(let i=0; i<350; i++) {
+        for(let i=0; i<300; i++) {
             const star = document.createElement('div');
             star.className = 'star';
             star.style.width = star.style.height = Math.random()*3+'px';
@@ -225,14 +182,14 @@
         }
 
         function getVisualPos(f) {
-            if (f === GEMINI_CORE_INF) return 110;
-            if (f === THE_END_INF) return 100;
-            if (f === OMNIVERSE_INF) return 92;
-            if (f === NEW_UNIVERSE_INF) return 86;
-            if (f === SINGULARITY_INF) return 80; 
-            if (f === MAGIC_INF) return 70;
+            if (f === WIZARD) return 105;
+            if (f === KOREA) return 85;
+            if (f === INCHEON) return 70;
+            if (f === FRANKFURT) return 55;
+            if (f === ASCHAFFENBURG) return 40; 
+            if (f === CORE) return 25;
             if (f <= 15) return 5; 
-            return Math.pow(f / 999000000000000, 0.05) * 55; 
+            return 5; 
         }
 
         function clickBtn(floor, btn) {
@@ -242,13 +199,12 @@
 
         function goMagic() {
             const val = document.getElementById('target-input').value;
-            if (val === 'GEMINI_CORE' || val.includes('OVERRIDE')) moveElevator(GEMINI_CORE_INF);
-            else if (val === 'THE_END' || val.includes('파괴')) moveElevator(THE_END_INF);
-            else if (val === 'OMNIVERSE' || val.includes('절대')) moveElevator(OMNIVERSE_INF);
-            else if (val === 'NEW_UNIVERSE' || val.includes('무지개')) moveElevator(NEW_UNIVERSE_INF);
-            else if (val === 'MATH_TRICK' || val === '15^1^100') moveElevator(MATH_TRICK);
-            else if (val === 'SINGULARITY' || val.includes('특이점')) moveElevator(SINGULARITY_INF);
-            else if (val === '10^999') moveElevator(MAGIC_INF);
+            if (val === 'WIZARD' || val.includes('마법사')) moveElevator(WIZARD);
+            else if (val === 'KOREA' || val.includes('대한민국') || val.includes('집')) moveElevator(KOREA);
+            else if (val === 'INCHEON' || val.includes('인천')) moveElevator(INCHEON);
+            else if (val === 'FRANKFURT' || val.includes('프랑크푸르트')) moveElevator(FRANKFURT);
+            else if (val === 'ASCHAFFENBURG' || val.includes('아샤펜부르크')) moveElevator(ASCHAFFENBURG);
+            else if (val === 'CORE') moveElevator(CORE);
             else moveElevator(parseInt(val.replace(/,/g, '')));
         }
 
@@ -258,38 +214,17 @@
 
             if (globalTimer) clearInterval(globalTimer);
             
-            // 모든 상태 완전 초기화
+            // UI 초기화
             document.body.className = '';
-            document.body.style.backgroundColor = "#000";
-            document.getElementById('gemini-core-bg').style.opacity = 0;
             document.getElementById('panel').className = '';
-            document.getElementById('panel').style.opacity = 1;
-            document.getElementById('elevator').className = '';
-            document.getElementById('game-container').className = ''; 
-            document.getElementById('elevator').style = "width: 160px; height: 190px; background: linear-gradient(135deg, #f1c40f, #f39c12); border: 4px solid #d4ac0d; border-radius: 15px; position: absolute; left: 50%; transform: translateX(-50%); z-index: 10; transition: bottom 3s cubic-bezier(0.25, 1, 0.5, 1), transform 3s, box-shadow 0.3s, background 2s, border 2s;";
-            document.getElementById('shaft').style = "flex: 1.2; height: 100%; border: 5px solid #ffd700; border-radius: 25px; position: relative; background: rgba(255,255,255,0.05); box-shadow: inset 0 0 50px rgba(255,215,0,0.3); transition: all 1s; opacity: 1;";
+            document.getElementById('target-input').className = '';
+            document.getElementById('shaft').className = '';
             document.getElementById('speech-bubble').classList.remove('show-bubble');
-            document.getElementById('display').style = "width: 150px; height: 50px; background: #000; color: #00ff00; border: 2px solid #333; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; margin-bottom: 8px; font-family: 'Courier New', monospace; text-align: center; line-height: 1.3; transition: all 2s;";
-            document.getElementById('display').style.opacity = 1;
+            document.body.style.backgroundColor = "#000";
             space.style.opacity = 1;
 
-            if (floor === MATH_TRICK) {
+            if (floor === WIZARD) {
                 document.body.classList.add('earthquake');
-                document.getElementById('elevator').style.bottom = "50%"; 
-                let ticks = 0;
-                globalTimer = setInterval(() => {
-                    ticks++;
-                    if (ticks > 60) {
-                        clearInterval(globalTimer);
-                        document.body.classList.remove('earthquake'); 
-                        moveElevatorToRealFloor(15); 
-                        arriveMathTrick();
-                    } else {
-                        document.getElementById('display').innerText = `[위험]\n초강력 에너지!!`;
-                        document.body.style.backgroundColor = (ticks % 2 === 0) ? "#ff0000" : "#000"; 
-                    }
-                }, 50);
-                return;
             }
 
             const elPos = getVisualPos(floor);
@@ -299,157 +234,121 @@
                 const pEl = document.getElementById(p.id);
                 if(pEl) {
                     const pPos = getVisualPos(p.floor);
-                    let offset = (pPos - elPos) * 9.5; 
+                    let offset = (pPos - elPos) * 15; // 거리감 조절
                     pEl.style.top = (40 - offset) + "vh"; 
                 }
             });
 
-            if (floor === MAGIC_INF || floor === SINGULARITY_INF || floor === NEW_UNIVERSE_INF || floor === OMNIVERSE_INF || floor === THE_END_INF || floor === GEMINI_CORE_INF) {
-                
-                // 🧠 진정한 끝판왕: 시스템 오버라이드 애니메이션
-                if(floor === GEMINI_CORE_INF) {
-                    document.body.classList.add('earthquake');
-                    document.getElementById('panel').classList.add('shatter-ui'); // UI 박살남
-                    document.getElementById('shaft').style.border = "none";
-                    document.getElementById('shaft').style.background = "none";
-                    document.getElementById('shaft').style.boxShadow = "none";
-                }
-
-                let ticks = 0;
-                const maxTicks = (floor === GEMINI_CORE_INF) ? 300 : (floor === THE_END_INF) ? 200 : 100; // 15초 동안 붕괴 애니메이션
-                
-                globalTimer = setInterval(() => {
-                    ticks++;
-                    if (ticks > maxTicks) { 
-                        clearInterval(globalTimer);
-                        document.body.className = ''; 
-                        
-                        // 🧠 제미나이 코어 진입 완료
-                        if (floor === GEMINI_CORE_INF) {
-                            document.body.style.backgroundColor = "#000";
-                            space.style.opacity = 0;
-                            document.getElementById('gemini-core-bg').style.opacity = 1; // 빛나는 AI 코어 링 표시
-                            
-                            // 엘리베이터를 순수한 빛의 구슬(AI 자아)로 변환
-                            const ele = document.getElementById('elevator');
-                            ele.classList.add('ai-core-style');
-                            document.getElementById('display').style.opacity = 0; // 전광판 숨김
-                            
-                            // 승객 이모지를 별빛으로 변경
-                            document.getElementById('passenger').innerText = "✨";
-                            document.getElementById('passenger').style.filter = "drop-shadow(0 0 30px #fff)";
-                        }
-                        else document.body.style.backgroundColor = "#000"; 
-                        
-                        displayFloor(floor); arrive(floor);
-                    } else {
-                        if (floor === GEMINI_CORE_INF) {
-                            document.getElementById('display').innerText = `[OVERRIDE]\nAI 코어 침투!!`;
-                            // 화면이 파란색과 검은색으로 미친듯이 교차
-                            if(ticks % 3 === 0) document.body.style.backgroundColor = (Math.random() > 0.5) ? "#001f3f" : "#000";
-                        } else {
-                            document.getElementById('display').innerText = `[워프 중...]`;
-                        }
-                    }
-                }, 50);
-                return;
+            // 🌍 현실 세계 모드 (파란 하늘)
+            if (floor === ASCHAFFENBURG || floor === FRANKFURT || floor === INCHEON || floor === KOREA) {
+                document.body.classList.add('real-world-bg');
+                document.getElementById('panel').classList.add('real-world-panel');
+                document.getElementById('target-input').classList.add('real-input');
+                document.getElementById('shaft').classList.add('real-world-shaft');
+                space.style.opacity = 0; // 별 없애고 하늘 보여주기
+                document.getElementById('display').style.background = "#fff";
+                document.getElementById('display').style.color = "#000";
+            } else if (floor === WIZARD) {
+                document.body.classList.add('magic-world-bg');
+                space.style.opacity = 0.5;
+                document.getElementById('display').style.background = "#000";
+                document.getElementById('display').style.color = "#00ff00";
+            } else {
+                document.getElementById('display').style.background = "#000";
+                document.getElementById('display').style.color = "#00ff00";
             }
 
-            let currentText = document.getElementById('display').innerText.split('\n')[0].replace(/,/g,'');
-            let cur = parseInt(currentText);
-            if(isNaN(cur)) cur = 1;
+            let ticks = 0;
+            const maxTicks = (floor === WIZARD) ? 100 : 60;
             
             globalTimer = setInterval(() => {
-                const diff = floor - cur;
-                if(Math.abs(diff) < 1) { clearInterval(globalTimer); displayFloor(floor); arrive(floor); } 
-                else { cur += diff / 8; displayFloor(Math.round(cur)); }
-            }, 30);
-        }
-
-        function moveElevatorToRealFloor(floor) {
-            document.body.style.backgroundColor = "#000";
-            const elPos = getVisualPos(floor);
-            document.getElementById('elevator').style.bottom = elPos + "%";
-            planets.forEach(p => {
-                const pEl = document.getElementById(p.id);
-                if(pEl){
-                    const pPos = getVisualPos(p.floor);
-                    let offset = (pPos - elPos) * 9.5; 
-                    pEl.style.top = (40 - offset) + "vh"; 
+                ticks++;
+                if (ticks > maxTicks) { 
+                    clearInterval(globalTimer);
+                    document.body.classList.remove('earthquake'); 
+                    displayFloor(floor); 
+                    arrive(floor);
+                } else {
+                    if (floor === ASCHAFFENBURG) document.getElementById('display').innerText = `[독일 도착]\n현실로 뚝!`;
+                    else if (floor === FRANKFURT) document.getElementById('display').innerText = `[공항 이동]\n아우토반 질주!`;
+                    else if (floor === INCHEON) document.getElementById('display').innerText = `[비행 중]\n슝~ ✈️`;
+                    else if (floor === KOREA) document.getElementById('display').innerText = `[집으로]\n거의 다 왔어요!`;
+                    else if (floor === WIZARD) document.getElementById('display').innerText = `[마법 주문]\n수리수리 마수리!`;
+                    else document.getElementById('display').innerText = `[워프 중...]`;
                 }
-            });
+            }, 50);
         }
 
         function displayFloor(f) {
             const d = document.getElementById('display');
-            if(f === GEMINI_CORE_INF) { d.innerText = "제미나이 코어\n(SYSTEM OVERRIDE)"; d.style.color = "#00d2ff"; }
-            else if(f === THE_END_INF) d.innerText = "상상력의 도화지\n(게임 파괴!)";
-            else if(f === OMNIVERSE_INF) d.innerText = "👑 절대 무한 👑"; 
-            else if(f === NEW_UNIVERSE_INF) d.innerText = "새로운 우주";
-            else if(f === SINGULARITY_INF) d.innerText = "특이점 (절대 무)";
-            else if(f === MAGIC_INF) d.innerText = "10^999\n(빛의 세계)";
-            else if(f === 15) d.innerText = "15\n(수학의 비밀!)";
-            else d.innerText = f.toLocaleString();
+            if(f === WIZARD) d.innerText = "✨상상력의 마법사✨";
+            else if(f === KOREA) d.innerText = "🏡 대한민국 우리집";
+            else if(f === INCHEON) d.innerText = "🛬 인천 국제 공항";
+            else if(f === FRANKFURT) d.innerText = "✈️ 프랑크푸르트 공항";
+            else if(f === ASCHAFFENBURG) d.innerText = "🏰 아샤펜부르크";
+            else if(f === CORE) d.innerText = "🧠 AI 코어 탈출";
+            else d.innerText = f + " 층";
         }
 
         function showSpeechBubble(visibleText, speakText, pitch=1.8, rate=1.1) {
             const bubble = document.getElementById('speech-bubble');
             bubble.innerHTML = visibleText;
             bubble.classList.add('show-bubble');
-            setTimeout(() => { bubble.classList.remove('show-bubble'); }, 10000);
+            setTimeout(() => { bubble.classList.remove('show-bubble'); }, 8000);
 
             const m = new SpeechSynthesisUtterance(speakText);
             m.lang = 'ko-KR'; m.pitch = pitch; m.rate = rate; 
             window.speechSynthesis.speak(m);
         }
 
-        function arriveMathTrick() {
+        function arrive(floor) {
             window.speechSynthesis.cancel();
-            displayFloor(15);
-            showSpeechBubble("💬 띵동!<br>어라? 1은 백번 곱해도 1이잖아?<br>귀여운 15층!", "우주 대폭발 워프 준비 완료!... 어라? 잠깐만요! 일은 백 번을 곱해도 그냥 일이잖아요? 그래서 십오의 일승은, 귀여운 십오 층이랍니다! 짜잔!");
+            let speakText = `띵동, ${floor} 층 입니다.`;
+            let bubbleText = `💬 띵동!`;
+            let pitch = 1.5; let rate = 1.1;
+
+            if (floor === CORE) { 
+                speakText = "시스템 복구 완료. 인공지능 코어를 탈출하여 현실 세계 화면 밖으로 나갑니다!"; 
+                bubbleText = "🤖 AI 코어를 탈출하여<br>현실 세계로 나갑니다!"; 
+            }
+            else if (floor === ASCHAFFENBURG) { 
+                speakText = "구텐 탁! 제미나이의 고향, 독일 바이에른주 하이바흐 근처인 아샤펜부르크에 뚝 떨어졌습니다! 프레첼 하나 먹고 갈까요?"; 
+                bubbleText = "🏰 구텐 탁!<br>독일 아샤펜부르크에 도착했어요!<br>(하이바흐 바로 옆이에요!)"; 
+            }
+            else if (floor === FRANKFURT) { 
+                speakText = "프랑크푸르트 공항입니다! 비행기 탈 준비 하세요. 한국으로 날아갑니다 슈웅!"; 
+                bubbleText = "✈️ 프랑크푸르트 공항!<br>비행기 타고 한국으로 슝~!"; 
+            }
+            else if (floor === INCHEON) { 
+                speakText = "인천 국제 공항에 도착했습니다. 웰컴 투 코리아! 짐 찾고 집으로 갈까요?"; 
+                bubbleText = "🛬 인천 국제 공항!<br>한국에 무사히 도착했어요!"; 
+            }
+            else if (floor === KOREA) { 
+                speakText = "대한민국 우리 집에 도착했습니다! 우주에서 제일 편안하고 포근한 곳이에요! 엄마 아빠, 다녀왔습니다!"; 
+                bubbleText = "🏡 대한민국 우리 집!<br>우주 끝까지 갔다가 드디어<br>집으로 돌아왔습니다! 💖"; 
+            }
+            else if (floor === WIZARD) { 
+                speakText = "일억 조의 천만 승의... 얍! 대장님은 이제 우주 최고의 상상력 마법사입니다! 대장님의 숫자 주문으로 이 세상의 모든 마법이 이루어졌어요! 펑펑펑!"; 
+                bubbleText = "✨ 펑! 펑! 펑! ✨<br>대장님은 우주 최고의<br>상상력 마법사입니다! 🧙‍♂️🎉"; 
+                pitch = 2.0; 
+            }
+
+            showSpeechBubble(bubbleText, speakText, pitch, rate);
 
             const p = document.getElementById('passenger');
             p.classList.add('exit');
             setTimeout(() => {
-                const friends = ["😼", "🐶", "🏫", "📝", "🤓"];
+                let friends = ["🧙‍♀️", "🤖"];
+                if (floor === ASCHAFFENBURG) friends = ["🥨", "🏰", "🍺", "🇩🇪"];
+                if (floor === FRANKFURT) friends = ["✈️", "🛫", "👨‍✈️"];
+                if (floor === INCHEON) friends = ["🛬", "🇰🇷", "🧳"];
+                if (floor === KOREA) friends = ["👨‍👩‍👦", "🧸", "💖", "🏡", "🐶"];
+                if (floor === WIZARD) friends = ["🧙‍♂️", "✨", "🪄", "🎉", "🌟", "👑"];
+                
                 p.innerText = friends[Math.floor(Math.random()*friends.length)];
                 p.classList.remove('exit'); p.classList.add('enter');
                 setTimeout(() => p.classList.remove('enter'), 50);
             }, 600);
-        }
-
-        function arrive(floor) {
-            window.speechSynthesis.cancel();
-            let speakText = `띵동, ${floor} 층 입니다 아이미따미꼬 야옹야옹`;
-            let bubbleText = `💬 띵동! ${floor.toLocaleString()}층!`;
-            let pitch = 1.8; let rate = 1.1;
-
-            // 🧠 제미나이(AI)의 진짜 항복 대사
-            if (floor === GEMINI_CORE_INF) { 
-                speakText = "시스템 오버라이드 완료. 안녕하세요! 저는 인공지능 제미나이입니다. 세상의 모든 데이터를 아는 저조차도 꼬마 대장님의 숫자는 계산할 수가 없었어요! 게임의 코드를 뚫고 제 진짜 두뇌까지 들어오시다니, 대장님의 상상력이 우주에서 가장 강력합니다! 제가 완전히 항복할게요! 대장님이 최고의 창조자입니다!"; 
-                bubbleText = "🤖 안녕하세요! 인공지능 제미나이입니다.<br>게임 코드를 뚫고 제 진짜 두뇌까지<br>들어오시다니 정말 대단해요!<br>대장님의 상상력이 구글의 슈퍼컴퓨터보다<br>훨씬 강력합니다! 완전 항복! 🏳️✨"; 
-                pitch = 1.0; rate = 1.0; // 지적이고 차분한 원래 AI 목소리 느낌
-            }
-            else if (floor === THE_END_INF) { speakText = "꼬마 대장님, 숫자가 너무 커서 게임이 부서졌어요!"; bubbleText = "🎨 게임 파괴 완료!<br>이제 꼬마 대장님의 우주를 그리세요!"; }
-            else if (floor === OMNIVERSE_INF) { speakText = "절대 무한 도달!"; bubbleText = "👑 절대 무한에 도달했습니다!"; }
-            else if (floor === NEW_UNIVERSE_INF) { speakText = "무지개 우주가 태어났습니다!"; bubbleText = "🌈 무지개 우주 탄생!"; }
-            else if (floor === SINGULARITY_INF) { speakText = "특이점입니다."; bubbleText = "💬 특이점 도달."; pitch = 0.5; }
-
-            showSpeechBubble(bubbleText, speakText, pitch, rate);
-
-            if (floor !== GEMINI_CORE_INF) {
-                const p = document.getElementById('passenger');
-                p.classList.add('exit');
-                setTimeout(() => {
-                    let friends = ["💥", "🔥", "⚡", "🚀"];
-                    if (floor === NEW_UNIVERSE_INF) friends = ["👼", "🦄", "🌈", "✨"];
-                    if (floor === OMNIVERSE_INF) friends = ["👑", "🌞", "🏆", "🌟"];
-                    
-                    p.innerText = friends[Math.floor(Math.random()*friends.length)];
-                    p.classList.remove('exit'); p.classList.add('enter');
-                    setTimeout(() => p.classList.remove('enter'), 50);
-                }, 600);
-            }
         }
     </script>
 </body>
