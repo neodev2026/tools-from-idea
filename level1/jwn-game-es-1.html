@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>알록달록 에스컬레이터 모험!</title>
     <style>
         body {
@@ -12,7 +13,8 @@
             flex-direction: column;
             align-items: center;
             overflow: hidden;
-            user-select: none;
+            user-select: none; /* 텍스트 선택 방지 */
+            -webkit-user-select: none;
         }
 
         h1 {
@@ -27,6 +29,7 @@
             text-align: center;
             margin-bottom: 15px;
             width: 800px;
+            max-width: 95vw;
         }
 
         .message-box {
@@ -40,6 +43,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             min-height: 40px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
@@ -47,12 +51,14 @@
         #game-container {
             position: relative;
             width: 800px;
+            max-width: 95vw;
             height: 650px;
             background-color: #fffaf0;
             border: 10px solid #778899;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            touch-action: none; /* 브라우저 기본 스크롤 방지 */
         }
 
         /* 층별 바닥 */
@@ -65,11 +71,11 @@
             z-index: 5;
         }
 
-        /* 층별 텍스트 설명 영역 (겹침 방지) */
+        /* 층별 텍스트 설명 영역 */
         .floor-desc {
             position: absolute;
             left: 20px;
-            width: 500px; /* 에스컬레이터 영역 침범 불가 */
+            width: calc(100% - 250px);
             font-size: 1.3rem;
             font-weight: bold;
             color: #333;
@@ -78,6 +84,8 @@
             padding: 4px 10px;
             border-radius: 8px;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* 에스컬레이터 트랙 공통 */
@@ -88,42 +96,62 @@
             z-index: 2;
         }
 
-        /* 올라가는 트랙 (전경) */
         .up-esc {
             background: repeating-linear-gradient(90deg, #4682b4, #4682b4 10px, #5f9ea0 10px, #5f9ea0 20px);
             border: 2px solid #2f4f4f;
             z-index: 4;
         }
 
-        /* 내려가는 트랙 (배경 교차) */
         .down-esc {
             background: repeating-linear-gradient(90deg, #a9a9a9, #a9a9a9 10px, #808080 10px, #808080 20px);
             opacity: 0.4;
             z-index: 1;
         }
 
-        /* 탑승 구역 표시 */
         .boarding-zone {
             position: absolute;
-            width: 40px;
-            height: 10px;
+            width: 50px;
+            height: 15px;
             background-color: #ffeb3b;
             border-radius: 50%;
             z-index: 4;
+            box-shadow: 0 0 10px #ffeb3b;
         }
 
-        /* 플레이어 캐릭터 */
+        /* 플레이어 캐릭터 영역 */
         #player {
             position: absolute;
-            width: 50px;
-            height: 50px;
-            font-size: 40px;
+            width: 60px;
+            height: 60px;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 10;
-            /* 걷기용 전환만 설정, 순간이동을 위해 위치(left, bottom) 트랜지션은 JS로 제어 */
+            cursor: grab;
             transition: left 0.1s linear; 
+            touch-action: none; /* 터치 스크롤 방지 */
+        }
+
+        #player:active {
+            cursor: grabbing;
+        }
+
+        /* 가족이 모이는 효과 (오버랩) */
+        .emoji-group {
+            display: inline-flex;
+            align-items: flex-end;
+        }
+
+        .emoji-item {
+            display: inline-block;
+            font-size: 40px;
+            position: relative;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.2));
+        }
+
+        /* 첫 번째 이후의 이모티콘은 왼쪽으로 당겨서 겹치게 만듭니다 */
+        .emoji-item:not(:first-child) {
+            margin-left: -18px; 
         }
 
         /* 컨트롤러 패널 */
@@ -146,15 +174,15 @@
             transition: all 0.1s;
         }
 
-        .action-btn:active {
+        .action-btn:active:not(:disabled) {
             transform: translateY(4px);
             box-shadow: none;
         }
 
         .action-btn:disabled {
-            background-color: #ccc;
-            color: #888;
-            box-shadow: 0 4px 0 #aaa;
+            background-color: #e0e0e0;
+            color: #a0a0a0;
+            box-shadow: 0 4px 0 #c0c0c0;
             cursor: not-allowed;
             transform: none;
         }
@@ -163,6 +191,7 @@
             font-size: 1.2rem;
             color: #555;
             margin-top: 10px;
+            text-align: center;
         }
     </style>
 </head>
@@ -171,7 +200,10 @@
     <h1>🏢 우리 가족 에스컬레이터 여행</h1>
 
     <div id="ui-panel">
-        <div class="message-box" id="msg">안녕! 👶 오른쪽으로 걸어가서 에스컬레이터를 타봐!</div>
+        <div class="message-box" id="msg">
+            <div>안녕! 손가락으로 나를 끌어서 이동해봐!</div>
+            <div id="msg-emoji" class="emoji-group"></div>
+        </div>
     </div>
 
     <div id="game-container">
@@ -182,106 +214,116 @@
         <button id="btn-down" class="action-btn" disabled>🔽 내려가기</button>
     </div>
     <div class="guide-text">
-        조작법: <b>왼쪽(←), 오른쪽(→) 화살표</b>로 걷고, 에스컬레이터 앞에서 <b>버튼</b>(또는 ↑, ↓ 키)을 누르세요.
+        조작법: <b>손가락으로 캐릭터를 쭉 끌어서(드래그)</b> 에스컬레이터 앞으로 가세요!<br>
+        도착하면 <b>올라가기/내려가기</b> 버튼을 눌러요.
     </div>
 
 <script>
+    // 겹치는 이모티콘을 배열로 관리합니다.
     const floorsData = [
-        { f: 1, text: "🛒 1층: 슈퍼마켓에서 출발!", playerEmoji: "👶" },
-        { f: 2, text: "🏠 2층: 우리 집에 왔어요.", playerEmoji: "👶" },
-        { f: 3, text: "👩 3층: 엄마! 안녕!", playerEmoji: "👶👩" },
-        { f: 4, text: "👨 4층: 아빠도 만났어요!", playerEmoji: "👶👩👨" },
-        { f: 5, text: "👦👧 5층: 지원이랑 누나다!", playerEmoji: "👶👩👨👦👧" },
-        { f: 6, text: "👨‍👩‍👧‍👦 6층: 우리 가족 다 모였다! 꺄아~", playerEmoji: "👩👨👦👧👶" },
-        { f: 7, text: "👩‍👧‍👦 7층: 아빠는 잠시 회사로~ (4명)", playerEmoji: "👩👦👧👶" },
-        { f: 8, text: "👩‍👦 8층: 누나도 학원 갔어요. (3명)", playerEmoji: "👩👦👶" },
-        { f: 9, text: "🧸 9층: 우와! 장난감 가게다!!!", playerEmoji: "👩👦👶" },
-        { f: 10, text: "🏢 10층: EDEKA 도착! 참 잘했어요!", playerEmoji: "🎉" }
+        { f: 1, text: "🛒 1층: 슈퍼마켓에서 출발!", emojis: ["👶"] },
+        { f: 2, text: "🏠 2층: 우리 집에 왔어요.", emojis: ["👶"] },
+        { f: 3, text: "👩 3층: 엄마! 안녕!", emojis: ["👩", "👶"] },
+        { f: 4, text: "👨 4층: 아빠도 만났어요!", emojis: ["👨", "👩", "👶"] },
+        { f: 5, text: "👦👧 5층: 지원이랑 누나다!", emojis: ["👨", "👩", "👦", "👧", "👶"] },
+        { f: 6, text: "👨‍👩‍👧‍👦 6층: 우리 가족 다 모였다! 꺄아~", emojis: ["👨", "👩", "👦", "👧", "👶"] },
+        { f: 7, text: "👩‍👧‍👦 7층: 아빠는 잠시 회사로~ (4명)", emojis: ["👩", "👦", "👧", "👶"] },
+        { f: 8, text: "👩‍👦 8층: 누나도 학원 갔어요. (3명)", emojis: ["👩", "👦", "👶"] },
+        { f: 9, text: "🧸 9층: 우와! 장난감 가게다!!!", emojis: ["👩", "👦", "👶"] },
+        { f: 10, text: "🏢 10층: EDEKA 도착! 참 잘했어요!", emojis: ["🎉"] }
     ];
 
     const container = document.getElementById('game-container');
     const msgBox = document.getElementById('msg');
+    const msgBoxText = msgBox.querySelector('div');
+    const msgBoxEmoji = document.getElementById('msg-emoji');
     const btnUp = document.getElementById('btn-up');
     const btnDown = document.getElementById('btn-down');
     
     // 설정값
-    const floorHeight = 60; // 층 간격
-    const startY = 30; // 1층 바닥 위치
-    const escStartX = 600; // 에스컬레이터 시작 X 좌표 (오른쪽 끝 배치)
-    const escWidth = 150; // 에스컬레이터 가로 길이
+    const floorHeight = 60; 
+    const startY = 30; 
+    const containerWidth = 800; // 기준 너비
+    const escStartX = 600; // 에스컬레이터 입구
+    const escWidth = 150; 
     
-    // 대각선 트랙을 위한 피타고라스 계산 및 각도
     const trackLength = Math.sqrt(escWidth * escWidth + floorHeight * floorHeight); 
-    const angle = Math.atan2(floorHeight, escWidth) * (180 / Math.PI); // 약 21.8도
+    const angle = Math.atan2(floorHeight, escWidth) * (180 / Math.PI);
 
-    // 층 생성 및 에스컬레이터 그리기
+    // 층 생성
     floorsData.forEach((data, index) => {
         const floorBottom = startY + (index * floorHeight);
 
-        // 1. 바닥
         const floorDiv = document.createElement('div');
         floorDiv.className = 'floor';
         floorDiv.style.bottom = `${floorBottom}px`;
         container.appendChild(floorDiv);
 
-        // 2. 텍스트 설명 (왼쪽 고정, 에스컬레이터와 겹치지 않음)
         const descDiv = document.createElement('div');
         descDiv.className = 'floor-desc';
         descDiv.style.bottom = `${floorBottom + 20}px`;
         descDiv.innerText = `${data.text}`;
         container.appendChild(descDiv);
 
-        // 3. 에스컬레이터 생성 (맨 위 10층 제외하고 1~9층에서 다음층을 연결)
         if (data.f < 10) {
-            // 탑승 구역 표시 (노란색 동그라미)
             const zone = document.createElement('div');
             zone.className = 'boarding-zone';
-            zone.style.left = `${escStartX + 5}px`;
-            zone.style.bottom = `${floorBottom + 12}px`;
+            zone.style.left = `${escStartX}px`;
+            zone.style.bottom = `${floorBottom + 10}px`;
             container.appendChild(zone);
 
-            // 올라가는 에스컬레이터
             const upEsc = document.createElement('div');
             upEsc.className = 'escalator-track up-esc';
             upEsc.style.width = `${trackLength}px`;
-            upEsc.style.left = `${escStartX}px`;
+            upEsc.style.left = `${escStartX + 20}px`;
             upEsc.style.bottom = `${floorBottom + 15}px`;
             upEsc.style.transformOrigin = `left center`;
             upEsc.style.transform = `rotate(-${angle}deg)`;
             container.appendChild(upEsc);
 
-            // 내려가는 에스컬레이터 (배경에 교차되게 배치)
             const downEsc = document.createElement('div');
             downEsc.className = 'escalator-track down-esc';
             downEsc.style.width = `${trackLength}px`;
-            downEsc.style.left = `${escStartX}px`;
-            downEsc.style.bottom = `${floorBottom + floorHeight + 15}px`; // 위층에서 시작
+            downEsc.style.left = `${escStartX + 20}px`;
+            downEsc.style.bottom = `${floorBottom + floorHeight + 15}px`;
             downEsc.style.transformOrigin = `left center`;
             downEsc.style.transform = `rotate(${angle}deg)`;
             container.appendChild(downEsc);
         }
     });
 
-    // 캐릭터 생성
+    // 플레이어 생성
     const player = document.createElement('div');
     player.id = 'player';
-    player.innerHTML = floorsData[0].playerEmoji;
     container.appendChild(player);
 
     let currentFloor = 1;
     let posX = 50;
     let isRiding = false;
 
-    // 플레이어 위치 및 버튼 상태 업데이트
+    // 가족 이모티콘을 겹치게 렌더링하는 함수
+    function renderEmojis(emojisArray) {
+        let html = '<div class="emoji-group">';
+        emojisArray.forEach((emoji, idx) => {
+            // z-index를 조정하여 뒤에 오는 사람이 앞으로 오게 또는 자연스럽게 겹치게 설정
+            html += `<span class="emoji-item" style="z-index: ${emojisArray.length - idx}">${emoji}</span>`;
+        });
+        html += '</div>';
+        return html;
+    }
+
+    // 화면 및 위치 업데이트
     function updatePosition() {
         if (isRiding) return;
         
         const floorBottom = startY + ((currentFloor - 1) * floorHeight);
         player.style.left = posX + 'px';
-        player.style.bottom = (floorBottom + 15) + 'px'; // 바닥 위에 서있기
+        player.style.bottom = (floorBottom + 15) + 'px';
 
-        // 에스컬레이터 탑승 구역에 도달했는지 확인
-        if (posX === escStartX) {
+        // 탑승 구역 도착 확인 (여유 범위 허용)
+        if (posX >= escStartX - 10) {
+            posX = escStartX; // 입구로 자석처럼 붙기
+            player.style.left = posX + 'px';
             btnUp.disabled = currentFloor === 10;
             btnDown.disabled = currentFloor === 1;
         } else {
@@ -290,9 +332,58 @@
         }
     }
 
+    // 초기 상태 렌더링
+    player.innerHTML = renderEmojis(floorsData[0].emojis);
+    msgBoxEmoji.innerHTML = renderEmojis(floorsData[0].emojis);
     updatePosition();
 
-    // 에스컬레이터 타기 애니메이션
+    // ==========================================
+    // 드래그 & 터치 이벤트 로직
+    // ==========================================
+    let isDragging = false;
+    let startClientX = 0;
+    let initialPosX = 0;
+
+    function startDrag(e) {
+        if (isRiding) return;
+        isDragging = true;
+        // 마우스인지 터치인지 구분
+        startClientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        initialPosX = posX;
+        player.style.transition = 'none'; // 드래그 중에는 즉각 반응하도록 애니메이션 끔
+    }
+
+    function doDrag(e) {
+        if (!isDragging || isRiding) return;
+        e.preventDefault(); // 모바일 화면 스크롤 방지
+        
+        let currentClientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        let deltaX = currentClientX - startClientX;
+        
+        // 새로운 위치 계산 및 제한 (왼쪽 벽 ~ 에스컬레이터 입구)
+        posX = Math.max(20, Math.min(escStartX, initialPosX + deltaX));
+        updatePosition();
+    }
+
+    function endDrag() {
+        isDragging = false;
+        player.style.transition = 'left 0.1s linear'; // 드래그 끝나면 다시 부드러운 애니메이션 복구
+    }
+
+    // 마우스 이벤트
+    player.addEventListener('mousedown', startDrag);
+    window.addEventListener('mousemove', doDrag);
+    window.addEventListener('mouseup', endDrag);
+
+    // 터치 이벤트 (스마트폰/태블릿)
+    player.addEventListener('touchstart', startDrag, { passive: false });
+    window.addEventListener('touchmove', doDrag, { passive: false });
+    window.addEventListener('touchend', endDrag);
+
+
+    // ==========================================
+    // 에스컬레이터 타기 (키보드 및 버튼 이벤트)
+    // ==========================================
     function rideEscalator(direction) {
         if (isRiding) return;
         isRiding = true;
@@ -301,43 +392,43 @@
         btnDown.disabled = true;
 
         const targetFloor = direction === 'up' ? currentFloor + 1 : currentFloor - 1;
-        const targetX = escStartX + escWidth; // 750 (우측 끝으로 이동)
+        const targetX = escStartX + escWidth;
         const targetY = startY + ((targetFloor - 1) * floorHeight) + 15;
 
-        // 1. 대각선으로 이동하는 애니메이션
+        // 1. 대각선 이동 애니메이션
         player.style.transition = 'left 1.5s linear, bottom 1.5s linear';
         player.style.left = targetX + 'px';
         player.style.bottom = targetY + 'px';
 
-        // 2. 애니메이션 완료 후 장면 전환 (순간이동 버그 해결)
+        // 2. 애니메이션 완료 후 다음 층 왼쪽으로 이동
         setTimeout(() => {
-            // 트랜지션 해제 및 투명하게 만들기
             player.style.transition = 'opacity 0.3s ease';
             player.style.opacity = '0';
 
             setTimeout(() => {
-                // 다음 층의 왼쪽 끝으로 조용히 위치 변경 (스르륵 미끄러지는 버그 방지)
                 currentFloor = targetFloor;
-                posX = 50; // 왼쪽 끝 좌표
+                posX = 50; 
                 
-                player.style.transition = 'none'; // 위치 이동 시 애니메이션 끄기
+                player.style.transition = 'none'; 
                 player.style.left = posX + 'px';
                 player.style.bottom = (startY + ((currentFloor - 1) * floorHeight) + 15) + 'px';
                 
-                // 캐릭터 및 메시지 업데이트
+                // 캐릭터 변경 및 오버랩 렌더링
                 const floorInfo = floorsData[currentFloor - 1];
-                msgBox.innerHTML = floorInfo.text + " <br>(" + floorInfo.playerEmoji + ")";
-                player.innerHTML = floorInfo.playerEmoji;
+                msgBoxText.innerText = floorInfo.text;
+                const overlappedHTML = renderEmojis(floorInfo.emojis);
+                
+                msgBoxEmoji.innerHTML = overlappedHTML;
+                player.innerHTML = overlappedHTML;
 
                 if (currentFloor === 10) {
-                    msgBox.style.background = '#ffff00';
-                    msgBox.style.borderColor = '#ff6600';
+                    msgBox.style.background = '#ffffcc';
+                    msgBox.style.borderColor = '#ffaa00';
                 } else {
                     msgBox.style.background = 'white';
                     msgBox.style.borderColor = '#ff99cc';
                 }
 
-                // 위치 렌더링 강제 적용 후 다시 나타나게 하기
                 void player.offsetWidth; 
                 player.style.transition = 'opacity 0.5s ease, left 0.1s linear';
                 player.style.opacity = '1';
@@ -347,23 +438,22 @@
                     updatePosition();
                 }, 500);
 
-            }, 300); // 0.3초 동안 투명해진 상태에서 위치 이동
-        }, 1500); // 1.5초간 에스컬레이터 탑승
+            }, 300);
+        }, 1500);
     }
 
-    // 키보드 입력 및 화면 버튼 이벤트 연결
+    // 키보드 조작 (기존 유지)
     window.addEventListener('keydown', (e) => {
         if (isRiding) return;
-
         if (e.key === 'ArrowLeft') {
-            posX = Math.max(20, posX - 20);
+            posX = Math.max(20, posX - 30);
             updatePosition();
         } else if (e.key === 'ArrowRight') {
-            posX = Math.min(escStartX, posX + 20);
+            posX = Math.min(escStartX, posX + 30);
             updatePosition();
-        } else if (e.key === 'ArrowUp' && posX === escStartX && currentFloor < 10) {
+        } else if (e.key === 'ArrowUp' && posX >= escStartX - 10 && currentFloor < 10) {
             rideEscalator('up');
-        } else if (e.key === 'ArrowDown' && posX === escStartX && currentFloor > 1) {
+        } else if (e.key === 'ArrowDown' && posX >= escStartX - 10 && currentFloor > 1) {
             rideEscalator('down');
         }
     });
