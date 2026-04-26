@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>우주 탐험 숫자 쌓기</title>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Arial', sans-serif; }
+        
+        #viewport {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        #game-background {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgb(135, 206, 235);
+            z-index: -1;
+        }
+
+        #block-container {
+            position: absolute;
+            left: 50%;
+            bottom: 25%; 
+            transform: translateX(-50%) translateY(0px);
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        #counter {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 5rem;
+            font-weight: bold;
+            color: #ff5722;
+            text-shadow: 2px 2px #fff;
+            z-index: 100;
+        }
+
+        /* 중앙 카운트다운 스타일 */
+        #ready-msg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 200;
+            display: none;
+            pointer-events: none;
+        }
+
+        #speed-display {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            color: #555;
+            z-index: 100;
+            background: rgba(255,255,255,0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 25px;
+            border: none;
+            background: #4CAF50;
+            color: white;
+            box-shadow: 0 4px #2E7D32;
+        }
+
+        button:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+
+        .block {
+            width: 100px;
+            height: 100px;
+            border: 4px solid rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 2px;
+            flex-shrink: 0;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 15px;
+        }
+
+        .planet-block {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            font-size: 6rem;
+            border: 8px solid gold;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+            background: radial-gradient(circle, #fff, #999);
+            margin: 20px 0;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="counter">0</div>
+    <div id="ready-msg"></div>
+    <div id="speed-display">속도: 0.50초</div>
+
+    <div id="viewport">
+        <div id="game-background"></div>
+        <div id="block-container"></div>
+    </div>
+
+    <div class="controls">
+        <button id="start-btn">시작!</button>
+        <button id="pause-btn">멈춤</button>
+        <button id="speed-up">🚀 빠르게</button>
+        <button id="speed-down">🐢 느리게</button>
+    </div>
+
+    <script>
+        let count = 0;
+        let timer = null;
+        let delay = 500; 
+        let isWaiting = false; // 카운트다운 중인지 확인
+
+        const container = document.getElementById('block-container');
+        const counterDisplay = document.getElementById('counter');
+        const readyMsg = document.getElementById('ready-msg');
+        const speedDisplay = document.getElementById('speed-display');
+        const background = document.getElementById('game-background');
+        
+        const blockSize = 110; 
+        const planets = { 300: '🌙', 600: '🔴', 900: '🪐', 1200: '🌕', 1500: '☄️', 1800: '☀️' };
+
+        function lerpColor(color1, color2, factor) {
+            const result = color1.map((c, i) => Math.round(c + factor * (color2[i] - c)));
+            return `rgb(${result[0]}, ${result[1]}, ${result[2]})`;
+        }
+
+        function addBlock() {
+            if (isWaiting) return;
+
+            count++;
+            counterDisplay.innerText = count;
+
+            const block = document.createElement('div');
+            
+            if (count % 300 === 0) {
+                // 행성 블럭 등장
+                block.className = 'block planet-block';
+                block.innerText = planets[count] || '⭐';
+                container.appendChild(block);
+                
+                // 시점 이동 (행성 블럭 크기 고려)
+                updateCamera();
+                
+                // 정지 및 카운트다운 시작
+                handlePlanetFound();
+            } else {
+                // 일반 숫자 블럭
+                block.className = 'block';
+                block.innerText = count;
+                const hue = (count * 137.5) % 360;
+                block.style.backgroundColor = `hsl(${hue}, 70%, 60%)`;
+                container.appendChild(block);
+                updateCamera();
+            }
+
+            updateScene(count);
+        }
+
+        function updateCamera() {
+            // 모든 자식 요소의 높이 합산하여 정확한 시점 이동
+            const blocks = container.childNodes;
+            let totalHeight = 0;
+            blocks.forEach(b => totalHeight += b.offsetHeight + 2);
+            container.style.transform = `translateX(-50%) translateY(${totalHeight - 150}px)`;
+        }
+
+        async function handlePlanetFound() {
+            isWaiting = true;
+            clearInterval(timer);
+            timer = null;
+
+            // 3, 2, 1 카운트다운
+            readyMsg.style.display = 'block';
+            for (let i = 3; i > 0; i--) {
+                readyMsg.innerText = i;
+                await new Promise(res => setTimeout(res, 1000));
+            }
+            readyMsg.style.display = 'none';
+
+            isWaiting = false;
+            startTimer(); // 다시 출발
+        }
+
+        function updateScene(c) {
+            const colors = [[135,206,235], [255,126,95], [20,24,82], [10,10,40], [0,0,0]];
+            const stage = Math.floor(c / 300);
+            const factor = (c % 300) / 300;
+            let bgColor = stage < colors.length - 1 ? lerpColor(colors[stage], colors[stage + 1], factor) : 'rgb(0,0,0)';
+            background.style.backgroundColor = bgColor;
+        }
+
+        function startTimer() {
+            if (timer) clearInterval(timer);
+            timer = setInterval(addBlock, delay);
+            speedDisplay.innerText = `속도: ${(delay / 1000).toFixed(2)}초`;
+        }
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            if (!timer && !isWaiting) startTimer();
+        });
+
+        document.getElementById('pause-btn').addEventListener('click', () => {
+            clearInterval(timer);
+            timer = null;
+        });
+
+        document.getElementById('speed-up').addEventListener('click', () => {
+            delay *= 0.8;
+            if (delay < 50) delay = 50;
+            if (timer) startTimer();
+            else speedDisplay.innerText = `속도: ${(delay / 1000).toFixed(2)}초`;
+        });
+
+        document.getElementById('speed-down').addEventListener('click', () => {
+            delay *= 1.2;
+            if (delay > 5000) delay = 5000;
+            if (timer) startTimer();
+            else speedDisplay.innerText = `속도: ${(delay / 1000).toFixed(2)}초`;
+        });
+    </script>
+</body>
+</html>
