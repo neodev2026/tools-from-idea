@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>우주 탐험 숫자 쌓기</title>
+    <title>우주 탐험 숫자 쌓기 (2씩 증가)</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Arial', sans-serif; }
         
@@ -44,7 +44,6 @@
             z-index: 100;
         }
 
-        /* 중앙 카운트다운 스타일 */
         #ready-msg {
             position: fixed;
             top: 50%;
@@ -53,7 +52,7 @@
             font-size: 10rem;
             font-weight: bold;
             color: #ffffff;
-            text-shadow: 0 0 20px rgba(0,0,0,0.5);
+            text-shadow: 0 0 30px rgba(0,0,0,0.7);
             z-index: 200;
             display: none;
             pointer-events: none;
@@ -95,8 +94,6 @@
             color: white;
             box-shadow: 0 4px #2E7D32;
         }
-
-        button:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
 
         .block {
             width: 100px;
@@ -153,7 +150,7 @@
         let count = 0;
         let timer = null;
         let delay = 500; 
-        let isWaiting = false; // 카운트다운 중인지 확인
+        let isWaiting = false;
 
         const container = document.getElementById('block-container');
         const counterDisplay = document.getElementById('counter');
@@ -161,7 +158,6 @@
         const speedDisplay = document.getElementById('speed-display');
         const background = document.getElementById('game-background');
         
-        const blockSize = 110; 
         const planets = { 300: '🌙', 600: '🔴', 900: '🪐', 1200: '🌕', 1500: '☄️', 1800: '☀️' };
 
         function lerpColor(color1, color2, factor) {
@@ -172,24 +168,20 @@
         function addBlock() {
             if (isWaiting) return;
 
-            count++;
+            // 2씩 증가
+            count += 2;
             counterDisplay.innerText = count;
 
             const block = document.createElement('div');
             
+            // 행성 체크 (300의 배수일 때)
             if (count % 300 === 0) {
-                // 행성 블럭 등장
                 block.className = 'block planet-block';
                 block.innerText = planets[count] || '⭐';
                 container.appendChild(block);
-                
-                // 시점 이동 (행성 블럭 크기 고려)
                 updateCamera();
-                
-                // 정지 및 카운트다운 시작
                 handlePlanetFound();
             } else {
-                // 일반 숫자 블럭
                 block.className = 'block';
                 block.innerText = count;
                 const hue = (count * 137.5) % 360;
@@ -202,10 +194,10 @@
         }
 
         function updateCamera() {
-            // 모든 자식 요소의 높이 합산하여 정확한 시점 이동
             const blocks = container.childNodes;
             let totalHeight = 0;
             blocks.forEach(b => totalHeight += b.offsetHeight + 2);
+            // 최상단 블럭이 화면 중앙 근처에 오도록 조정
             container.style.transform = `translateX(-50%) translateY(${totalHeight - 150}px)`;
         }
 
@@ -214,7 +206,6 @@
             clearInterval(timer);
             timer = null;
 
-            // 3, 2, 1 카운트다운
             readyMsg.style.display = 'block';
             for (let i = 3; i > 0; i--) {
                 readyMsg.innerText = i;
@@ -223,11 +214,12 @@
             readyMsg.style.display = 'none';
 
             isWaiting = false;
-            startTimer(); // 다시 출발
+            startTimer();
         }
 
         function updateScene(c) {
             const colors = [[135,206,235], [255,126,95], [20,24,82], [10,10,40], [0,0,0]];
+            // 300 단위로 배경 변화 계산
             const stage = Math.floor(c / 300);
             const factor = (c % 300) / 300;
             let bgColor = stage < colors.length - 1 ? lerpColor(colors[stage], colors[stage + 1], factor) : 'rgb(0,0,0)';
@@ -251,7 +243,7 @@
 
         document.getElementById('speed-up').addEventListener('click', () => {
             delay *= 0.8;
-            if (delay < 50) delay = 50;
+            if (delay < 30) delay = 30;
             if (timer) startTimer();
             else speedDisplay.innerText = `속도: ${(delay / 1000).toFixed(2)}초`;
         });
