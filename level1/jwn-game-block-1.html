@@ -2,11 +2,14 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>대우주 탐험: 행성과 은하</title>
+    <title>절대 중앙 고정: 우주 탐험</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Arial', sans-serif; background: #000; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Arial', sans-serif; background: #000; color: white; }
         
-        #viewport { position: relative; width: 100vw; height: 100vh; overflow: hidden; perspective: 1000px; }
+        #viewport { 
+            position: relative; width: 100vw; height: 100vh; overflow: hidden; 
+            display: flex; justify-content: center; align-items: center;
+        }
 
         #game-background {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -14,25 +17,21 @@
             z-index: -1;
         }
 
+        /* 블럭 컨테이너: 절대 좌표 정렬을 위해 수정 */
         #block-container {
-            position: absolute; left: 50%; bottom: 30%; 
-            transform: translateX(-50%) translateY(0px);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%); /* X축만 중앙 고정 */
             display: flex; flex-direction: column-reverse; align-items: center;
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            will-change: transform;
+            transition: top 0.6s cubic-bezier(0.16, 1, 0.3, 1); /* top 속성으로 이동 */
+            will-change: top;
+            top: 50%; /* 초기 위치 */
         }
 
         #counter {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             font-size: 3.5rem; font-weight: bold; color: #00f2ff;
             text-shadow: 0 0 15px rgba(0, 242, 255, 0.7); z-index: 100;
-        }
-
-        #ready-msg {
-            position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 15rem; font-weight: bold; color: #fff;
-            text-shadow: 0 0 50px #ff00ff; z-index: 200; display: none;
-            pointer-events: none;
         }
 
         .controls {
@@ -47,25 +46,53 @@
         }
 
         .block {
-            width: 200px; height: 60px; border: 1px solid rgba(255,255,255,0.3);
+            width: 220px; height: 60px; border: 1px solid rgba(255,255,255,0.3);
             display: flex; justify-content: center; align-items: center;
             font-size: 1.4rem; font-weight: bold; color: white;
-            margin-bottom: 4px; flex-shrink: 0; border-radius: 8px;
+            margin-bottom: 5px; flex-shrink: 0; border-radius: 8px;
             animation: popIn 0.3s ease-out;
+            box-sizing: border-box;
         }
 
-        /* 행성 및 은하 블럭 전용 스타일 */
         .special-block {
-            width: 300px !important; height: 300px !important;
+            position: relative;
+            width: 380px !important; height: 380px !important;
             border-radius: 50% !important;
-            font-size: 10rem !important; /* 크기를 더 키웠습니다 */
-            border: 10px solid gold !important;
-            background: radial-gradient(circle, #333, #000) !important;
-            box-shadow: 0 0 80px rgba(255, 215, 0, 0.6) !important;
-            margin: 100px 0 !important;
+            font-size: 12rem !important;
+            border: 12px solid gold !important;
+            background: radial-gradient(circle, #444, #000) !important;
+            box-shadow: 0 0 120px rgba(255, 215, 0, 0.6) !important;
+            margin: 200px 0 !important; /* 마진 증가로 이름 공간 확보 */
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
+        }
+
+        /* 행성 정보 박스 (이름 + 카운트다운) */
+        .planet-info {
+            position: absolute;
+            left: calc(100% + 50px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: none; /* 대기 중엔 숨김 */
+            flex-direction: column;
+            align-items: flex-start;
+            white-space: nowrap;
+        }
+
+        .planet-name {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.8);
+            margin-bottom: 10px;
+        }
+
+        .ready-msg {
+            font-size: 10rem;
+            color: #ff00ff;
+            text-shadow: 0 0 40px #ff00ff;
+            font-weight: bold;
         }
 
         .black-hole {
@@ -82,14 +109,12 @@
 
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
         .sucking-out { transition: all 2.5s ease-in; transform: scale(0) rotate(1080deg) !important; opacity: 0; }
     </style>
 </head>
 <body>
 
     <div id="counter">READY</div>
-    <div id="ready-msg"></div>
     <button id="reset-btn">다시 처음 부터</button>
 
     <div id="viewport">
@@ -112,12 +137,21 @@
 
         const container = document.getElementById('block-container');
         const counterDisplay = document.getElementById('counter');
-        const readyMsg = document.getElementById('ready-msg');
         const resetBtn = document.getElementById('reset-btn');
 
-        // 태양계 + 은하계 100개 데이터
-        const solarSystem = ['☀️', '☿️', '♀️', '🌍', '♂️', '♃', '♄', '♅', '♆'];
-        const galaxies = Array.from({length: 100}, () => '🌀');
+        // 태양계 행성 데이터 (이모지 + 이름)
+        const solarSystem = [
+            {id: '☀️', name: '태양'},
+            {id: '☄️', name: '수성'},
+            {id: '✨', name: '금성'},
+            {id: '🌍', name: '지구'},
+            {id: '🔴', name: '화성'},
+            {id: '🟠', name: '목성'},
+            {id: '🪐', name: '토성'},
+            {id: '💎', name: '천왕성'},
+            {id: '🔵', name: '해왕성'}
+        ];
+        const galaxies = Array.from({length: 100}, () => ({id: '🌀', name: '은하계'}));
         const allObjects = [...solarSystem, ...galaxies];
 
         function addBlock() {
@@ -129,56 +163,75 @@
 
             const block = document.createElement('div');
 
-            // 200번째마다 특수 천체 등장 여부 확인
             if (blockCount > 0 && blockCount % 200 === 0) {
                 const objectIdx = (blockCount / 200) - 1;
-                
                 if (objectIdx < allObjects.length) {
-                    // 행성 또는 은하 등장
+                    const obj = allObjects[objectIdx];
                     block.className = 'block special-block';
-                    block.innerHTML = `<span>${allObjects[objectIdx]}</span>`;
+                    // 이름과 카운트다운을 위한 구조 생성
+                    block.innerHTML = `
+                        <span>${obj.id}</span>
+                        <div class="planet-info">
+                            <div class="planet-name">${obj.name}</div>
+                            <div class="ready-msg"></div>
+                        </div>`;
                     container.appendChild(block);
-                    updateCamera(true); // 시점 이동
-                    triggerPause(4);    // 4초 정지
+                    updateCameraAbsolute(block); 
+                    triggerPause(block.querySelector('.planet-info'), 4);
                 } else {
-                    // 모든 천체가 끝난 뒤 다음 200번째에 블랙홀 등장
+                    // 블랙홀 등장
                     block.className = 'block special-block black-hole';
-                    block.innerHTML = `<span>🕳️</span>`;
+                    block.innerHTML = `<span>🕳️</span><div class="planet-info"><div class="planet-name">블랙홀</div><div class="ready-msg"></div></div>`;
                     container.appendChild(block);
-                    updateCamera(true);
+                    updateCameraAbsolute(block);
                     triggerBlackHole();
                 }
             } else {
-                // 일반 숫자 블록
                 block.className = 'block';
                 block.innerText = countValue.toLocaleString();
                 block.style.backgroundColor = `hsl(${(blockCount * 10) % 360}, 60%, 45%)`;
                 container.appendChild(block);
-                updateCamera(false);
+                updateCameraAbsolute(block);
             }
         }
 
-        function updateCamera(isSpecial) {
-            const blocks = container.childNodes;
-            let totalHeight = 0;
-            blocks.forEach(b => {
-                totalHeight += (b.offsetHeight || 0) + 6; // 마진 포함 높이 계산
+        // 새로운 절대 좌표 기반 시점 고정 로직
+        function updateCameraAbsolute(targetBlock) {
+            // 브라우저가 레이아웃을 마친 후 계산하기 위해 requestAnimationFrame 사용
+            requestAnimationFrame(() => {
+                const viewportCenterY = window.innerHeight / 2;
+                
+                // 1. 블럭의 바닥(bottom)을 기준으로 누적된 컨테이너 내부의 절대 높이를 구합니다.
+                //    CSS에서 column-reverse를 사용하므로, targetBlock.offsetTop이 컨테이너 바닥에서의 거리입니다.
+                //    getBoundingClientRect()는 시점에 따라 변하므로 오차가 발생하지만 offsetTop은 고정입니다.
+                const blockTopInsideContainer = targetBlock.offsetTop;
+                const blockHeight = targetBlock.offsetHeight;
+                
+                // 2. 블럭의 중심(center) 좌표를 계산합니다.
+                const blockCenterInsideContainer = blockTopInsideContainer + (blockHeight / 2);
+                
+                // 3. 컨테이너를 이동시켜 블럭의 중심을 뷰포트의 하단에서 중앙까지 끌어올립니다.
+                //    container.style.top = viewportCenterY - blockCenterInsideContainer 가 핵심입니다.
+                //    이전 currentY 계산을 제거하고 절대 좌표로 고정합니다.
+                const targetTop = viewportCenterY - blockCenterInsideContainer;
+                
+                container.style.top = `${targetTop}px`;
             });
-
-            // 행성 블럭일 때는 조금 더 위로 올려서 중앙에 배치
-            const offset = isSpecial ? totalHeight - 250 : totalHeight - 100;
-            container.style.transform = `translateX(-50%) translateY(${offset}px)`;
         }
 
-        async function triggerPause(seconds) {
+        async function triggerPause(infoElement, seconds) {
             isWaiting = true;
             stopTimer();
-            readyMsg.style.display = 'block';
+            // 이름과 카운트다운 표시
+            infoElement.style.display = 'flex';
+            const msgElement = infoElement.querySelector('.ready-msg');
+            
             for (let i = seconds; i > 0; i--) {
-                readyMsg.innerText = i;
+                msgElement.innerText = i;
                 await new Promise(r => setTimeout(r, 1000));
             }
-            readyMsg.style.display = 'none';
+            // 카운트다운 완료 후 이름도 함께 숨김
+            infoElement.style.display = 'none';
             isWaiting = false;
             startTimer();
         }
@@ -186,13 +239,13 @@
         function triggerBlackHole() {
             isWaiting = true;
             stopTimer();
-            document.getElementById('main-controls').style.display = 'none';
+            // 이름 표시 (카운트다운은 안 함)
+            container.querySelector('.black-hole .planet-info').style.display = 'flex';
             
+            document.getElementById('main-controls').style.display = 'none';
             setTimeout(() => {
                 container.classList.add('sucking-out');
-                setTimeout(() => {
-                    resetBtn.style.display = 'block';
-                }, 2500);
+                setTimeout(() => { resetBtn.style.display = 'block'; }, 2500);
             }, 1000);
         }
 
@@ -214,13 +267,11 @@
         };
 
         document.getElementById('speed-up').onclick = () => {
-            delay *= 0.8;
-            if (timer) { stopTimer(); startTimer(); }
+            delay *= 0.8; if (timer) { stopTimer(); startTimer(); }
         };
 
         document.getElementById('speed-down').onclick = () => {
-            delay *= 1.2;
-            if (timer) { stopTimer(); startTimer(); }
+            delay *= 1.2; if (timer) { stopTimer(); startTimer(); }
         };
 
         resetBtn.onclick = () => location.reload();
