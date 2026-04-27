@@ -2,258 +2,211 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>우주 탐험 숫자 쌓기 (1000씩 증가)</title>
+    <title>대우주 탐험: 블랙홀의 끝까지</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Arial', sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Arial', sans-serif; background: #000; }
         
-        #viewport {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            perspective: 1000px;
-        }
+        #viewport { position: relative; width: 100vw; height: 100vh; overflow: hidden; perspective: 1000px; }
 
         #game-background {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgb(135, 206, 235);
-            z-index: -1;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            z-index: -1; transition: all 2s ease;
         }
 
         #block-container {
-            position: absolute;
-            left: 50%;
-            bottom: 25%; 
+            position: absolute; left: 50%; bottom: 25%; 
             transform: translateX(-50%) translateY(0px);
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+            display: flex; flex-direction: column-reverse; align-items: center;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         #counter {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 5rem;
-            font-weight: bold;
-            color: #ff5722;
-            text-shadow: 2px 2px #fff;
-            z-index: 100;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            font-size: 4rem; font-weight: bold; color: #00f2ff;
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.7); z-index: 100;
         }
 
         #ready-msg {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 10rem;
-            font-weight: bold;
-            color: #ffffff;
-            text-shadow: 0 0 30px rgba(0,0,0,0.7);
-            z-index: 200;
-            display: none;
-            pointer-events: none;
-        }
-
-        #speed-display {
-            position: fixed;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.2rem;
-            color: #555;
-            z-index: 100;
-            background: rgba(255,255,255,0.7);
-            padding: 5px 15px;
-            border-radius: 20px;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 12rem; font-weight: bold; color: #fff;
+            text-shadow: 0 0 30px #ff00ff; z-index: 200; display: none;
         }
 
         .controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 100; display: flex; gap: 10px;
         }
 
         button {
-            padding: 12px 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 25px;
-            border: none;
-            background: #4CAF50;
-            color: white;
-            box-shadow: 0 4px #2E7D32;
+            padding: 12px 20px; font-size: 1rem; font-weight: bold; cursor: pointer;
+            border-radius: 25px; border: none; background: #333; color: white;
+            box-shadow: 0 4px #000;
+        }
+
+        #reset-btn {
+            position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);
+            padding: 20px 40px; font-size: 2rem; background: #ff0055;
+            display: none; z-index: 300; border-radius: 50px; cursor: pointer;
         }
 
         .block {
-            width: 150px; /* 네 자리 숫자가 들어갈 수 있게 더 넓혔습니다 */
-            height: 100px;
-            border: 4px solid rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2rem;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 2px;
-            flex-shrink: 0;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border-radius: 15px;
+            width: 180px; height: 80px; border: 2px solid rgba(255,255,255,0.2);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; font-weight: bold; color: white;
+            margin-bottom: 2px; flex-shrink: 0; border-radius: 10px;
+            animation: popIn 0.4s ease-out;
         }
 
-        .planet-block {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            font-size: 7rem;
-            border: 8px solid gold;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
-            background: radial-gradient(circle, #fff, #999);
-            margin: 25px 0;
+        .special-block {
+            width: 250px; height: 250px; border-radius: 50%;
+            font-size: 8rem; border: 10px solid #fff;
+            box-shadow: 0 0 60px rgba(255,255,255,0.5);
+            margin: 50px 0; background: radial-gradient(circle, #444, #000);
         }
 
-        @keyframes popIn {
-            from { transform: scale(0); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        /* 블랙홀 애니메이션 */
+        .black-hole {
+            width: 300px; height: 300px; background: #000; border-radius: 50%;
+            box-shadow: 0 0 100px 20px #fff, 0 0 150px 40px #ff00ff;
+            animation: suck 2s infinite alternate, rotate 5s linear infinite;
         }
+
+        @keyframes suck { from { transform: scale(1); } to { transform: scale(1.2); } }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        .sucking-out {
+            transition: all 2s ease-in; transform: scale(0) rotate(720deg) !important;
+            opacity: 0;
+        }
+
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
     </style>
 </head>
 <body>
 
     <div id="counter">0</div>
     <div id="ready-msg"></div>
-    <div id="speed-display">속도: 0.50초</div>
+    <button id="reset-btn">다시 처음 부터</button>
 
     <div id="viewport">
         <div id="game-background"></div>
         <div id="block-container"></div>
     </div>
 
-    <div class="controls">
-        <button id="start-btn">시작!</button>
-        <button id="pause-btn">멈춤</button>
-        <button id="speed-up">🚀 빠르게</button>
-        <button id="speed-down">🐢 느리게</button>
+    <div class="controls" id="main-controls">
+        <button onclick="toggleGame()">시작/멈춤</button>
+        <button onclick="adjustSpeed(0.8)">🚀 빠르게</button>
+        <button onclick="adjustSpeed(1.2)">🐢 느리게</button>
     </div>
 
     <script>
-        let count = 0;
+        let countValue = 0;
+        let blockCount = 0;
         let timer = null;
-        let delay = 500; 
+        let delay = 500;
         let isWaiting = false;
 
         const container = document.getElementById('block-container');
         const counterDisplay = document.getElementById('counter');
         const readyMsg = document.getElementById('ready-msg');
-        const speedDisplay = document.getElementById('speed-display');
-        const background = document.getElementById('game-background');
-        
-        // 행성 데이터 (숫자가 커진 만큼 기준값 변경)
-        const planets = { 3000: '🌙', 6000: '🔴', 9000: '🪐', 12000: '🌕', 15000: '☄️', 18000: '☀️' };
+        const resetBtn = document.getElementById('reset-btn');
 
-        function lerpColor(color1, color2, factor) {
-            const result = color1.map((c, i) => Math.round(c + factor * (color2[i] - c)));
-            return `rgb(${result[0]}, ${result[1]}, ${result[2]})`;
-        }
+        // 천체 리스트
+        const solarSystem = ['☀️', '☿️', '♀️', '🌍', '♂️', '♃', '♄', '♅', '♆'];
+        const galaxies = Array(100).fill('🌀'); // 은하계 100개
+        const allObjects = [...solarSystem, ...galaxies];
 
         function addBlock() {
             if (isWaiting) return;
 
-            // 1000씩 증가
-            count += 1000;
-            counterDisplay.innerText = count.toLocaleString(); // 천 단위 콤마 추가
+            blockCount++;
+            countValue += 10000;
+            counterDisplay.innerText = countValue.toLocaleString();
 
             const block = document.createElement('div');
             
-            // 행성 체크 (3000의 배수일 때)
-            if (count % 3000 === 0) {
-                block.className = 'block planet-block';
-                block.innerText = planets[count] || '⭐';
-                container.appendChild(block);
-                updateCamera();
-                handlePlanetFound();
+            // 200개마다 행성/은하 등장
+            if (blockCount > 0 && blockCount % 200 === 0) {
+                const objectIdx = (blockCount / 200) - 1;
+                
+                if (objectIdx < allObjects.length) {
+                    block.className = 'block special-block';
+                    block.innerText = allObjects[objectIdx];
+                    container.appendChild(block);
+                    triggerPause(4);
+                } else {
+                    // 블랙홀 등장 (모든 행성+은하 끝난 후 다음 200번째)
+                    block.className = 'block special-block black-hole';
+                    block.innerText = '';
+                    container.appendChild(block);
+                    triggerBlackHole();
+                    return;
+                }
             } else {
                 block.className = 'block';
-                block.innerText = count;
-                const hue = (count * 0.01375) % 360; 
-                block.style.backgroundColor = `hsl(${hue}, 70%, 55%)`;
+                block.innerText = countValue.toLocaleString();
+                block.style.backgroundColor = `hsl(${(blockCount * 5) % 360}, 60%, 40%)`;
                 container.appendChild(block);
-                updateCamera();
             }
 
-            updateScene(count);
+            updateCamera();
         }
 
         function updateCamera() {
             const blocks = container.childNodes;
             let totalHeight = 0;
-            blocks.forEach(b => totalHeight += b.offsetHeight + 2);
-            container.style.transform = `translateX(-50%) translateY(${totalHeight - 150}px)`;
+            blocks.forEach(b => totalHeight += (b.offsetHeight || 0) + 5);
+            container.style.transform = `translateX(-50%) translateY(${totalHeight - 200}px)`;
         }
 
-        async function handlePlanetFound() {
+        async function triggerPause(seconds) {
             isWaiting = true;
-            clearInterval(timer);
-            timer = null;
-
+            stopTimer();
             readyMsg.style.display = 'block';
-            for (let i = 3; i > 0; i--) {
+            for (let i = seconds; i > 0; i--) {
                 readyMsg.innerText = i;
-                await new Promise(res => setTimeout(res, 1000));
+                await new Promise(r => setTimeout(r, 1000));
             }
             readyMsg.style.display = 'none';
-
             isWaiting = false;
             startTimer();
         }
 
-        function updateScene(c) {
-            const colors = [[135,206,235], [255,126,95], [20,24,82], [10,10,40], [0,0,0]];
-            // 3000 단위로 배경 전환
-            const stage = Math.floor(c / 3000);
-            const factor = (c % 3000) / 3000;
-            let bgColor = stage < colors.length - 1 ? lerpColor(colors[stage], colors[stage + 1], factor) : 'rgb(0,0,0)';
-            background.style.backgroundColor = bgColor;
+        function triggerBlackHole() {
+            stopTimer();
+            isWaiting = true;
+            document.getElementById('main-controls').style.display = 'none';
+            
+            setTimeout(() => {
+                container.classList.add('sucking-out');
+                setTimeout(() => {
+                    resetBtn.style.display = 'block';
+                }, 2000);
+            }, 1000);
         }
 
         function startTimer() {
-            if (timer) clearInterval(timer);
-            timer = setInterval(addBlock, delay);
-            speedDisplay.innerText = `속도: ${(delay / 1000).toFixed(2)}초`;
+            if (!timer) timer = setInterval(addBlock, delay);
         }
 
-        document.getElementById('start-btn').addEventListener('click', () => {
-            if (!timer && !isWaiting) startTimer();
-        });
-
-        document.getElementById('pause-btn').addEventListener('click', () => {
+        function stopTimer() {
             clearInterval(timer);
             timer = null;
-        });
+        }
 
-        document.getElementById('speed-up').addEventListener('click', () => {
-            delay *= 0.8;
-            if (delay < 30) delay = 30;
-            if (timer) startTimer();
-            else speedDisplay.innerText = `속도: ${(delay / 1000).toFixed(2)}초`;
-        });
+        function toggleGame() {
+            if (timer) stopTimer(); else startTimer();
+        }
 
-        document.getElementById('speed-down').addEventListener('click', () => {
-            delay *= 1.2;
-            if (delay > 5000) delay = 5000;
-            if (timer) startTimer();
-            else speedDisplay.innerText = `속도: ${(delay / 1000).toFixed(2)}초`;
-        });
+        function adjustSpeed(factor) {
+            delay *= factor;
+            if (timer) { stopTimer(); startTimer(); }
+        }
+
+        resetBtn.onclick = () => {
+            location.reload(); // 간단하게 페이지 새로고침으로 초기화
+        };
     </script>
 </body>
 </html>
