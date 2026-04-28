@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>절대 중앙 고정: 우주 탐험</title>
+    <title>우주의 끝: 통합 컨트롤 시스템</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Arial', sans-serif; background: #000; color: white; }
         
@@ -17,15 +17,13 @@
             z-index: -1;
         }
 
-        /* 블럭 컨테이너: 절대 좌표 정렬을 위해 수정 */
+        /* 블럭 컨테이너 */
         #block-container {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%); /* X축만 중앙 고정 */
+            position: absolute; left: 50%; transform: translateX(-50%);
             display: flex; flex-direction: column-reverse; align-items: center;
-            transition: top 0.6s cubic-bezier(0.16, 1, 0.3, 1); /* top 속성으로 이동 */
-            will-change: top;
-            top: 50%; /* 초기 위치 */
+            transition: top 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: top, transform, opacity;
+            top: 50%;
         }
 
         #counter {
@@ -34,16 +32,20 @@
             text-shadow: 0 0 15px rgba(0, 242, 255, 0.7); z-index: 100;
         }
 
+        /* 컨트롤 버튼 - 항상 최상단에 고정 */
         .controls {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 100; display: flex; gap: 10px;
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 1000; display: flex; gap: 15px;
         }
 
         button {
-            padding: 12px 20px; font-size: 1rem; font-weight: bold; cursor: pointer;
-            border-radius: 25px; border: none; background: #333; color: white;
-            box-shadow: 0 4px #000;
+            padding: 15px 25px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
+            border-radius: 30px; border: 2px solid rgba(255,255,255,0.2); 
+            background: rgba(40, 40, 40, 0.8); color: white;
+            backdrop-filter: blur(5px); transition: all 0.2s;
         }
+
+        button:active { transform: scale(0.95); }
 
         .block {
             width: 220px; height: 60px; border: 1px solid rgba(255,255,255,0.3);
@@ -51,49 +53,26 @@
             font-size: 1.4rem; font-weight: bold; color: white;
             margin-bottom: 5px; flex-shrink: 0; border-radius: 8px;
             animation: popIn 0.3s ease-out;
-            box-sizing: border-box;
         }
 
         .special-block {
-            position: relative;
-            width: 380px !important; height: 380px !important;
-            border-radius: 50% !important;
-            font-size: 12rem !important;
+            position: relative; width: 380px !important; height: 380px !important;
+            border-radius: 50% !important; font-size: 12rem !important;
             border: 12px solid gold !important;
             background: radial-gradient(circle, #444, #000) !important;
             box-shadow: 0 0 120px rgba(255, 215, 0, 0.6) !important;
-            margin: 200px 0 !important; /* 마진 증가로 이름 공간 확보 */
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
+            margin: 200px 0 !important; display: flex !important;
+            justify-content: center !important; align-items: center !important;
         }
 
-        /* 행성 정보 박스 (이름 + 카운트다운) */
         .planet-info {
-            position: absolute;
-            left: calc(100% + 50px);
-            top: 50%;
-            transform: translateY(-50%);
-            display: none; /* 대기 중엔 숨김 */
-            flex-direction: column;
-            align-items: flex-start;
-            white-space: nowrap;
+            position: absolute; left: calc(100% + 50px); top: 50%;
+            transform: translateY(-50%); display: none; flex-direction: column;
+            align-items: flex-start; white-space: nowrap;
         }
 
-        .planet-name {
-            font-size: 5rem;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 0 0 20px rgba(255,255,255,0.8);
-            margin-bottom: 10px;
-        }
-
-        .ready-msg {
-            font-size: 10rem;
-            color: #ff00ff;
-            text-shadow: 0 0 40px #ff00ff;
-            font-weight: bold;
-        }
+        .planet-name { font-size: 5rem; font-weight: bold; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.8); }
+        .ready-msg { font-size: 10rem; color: #ff00ff; text-shadow: 0 0 40px #ff00ff; font-weight: bold; }
 
         .black-hole {
             background: #000 !important; border-color: #fff !important;
@@ -101,15 +80,34 @@
             animation: rotate 3s linear infinite;
         }
 
+        .sucking { transition: all 3s ease-in !important; transform: translateX(-50%) scale(0) rotate(1080deg) !important; opacity: 0; }
+
+        /* T블럭 스타일 */
+        .t-block {
+            width: 400px; height: 120px;
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            border: 8px solid #fff; border-radius: 20px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 5rem; font-weight: bold; color: #fff;
+            margin-bottom: 10px; flex-shrink: 0; box-shadow: 0 0 30px gold;
+            animation: tDrop 0.2s ease-out forwards;
+        }
+
+        .t-block.final { width: 520px; height: 220px; font-size: 9rem; box-shadow: 0 0 100px gold; border-width: 15px; }
+
+        @keyframes tDrop {
+            0% { transform: translateY(-500px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
         #reset-btn {
-            position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);
+            position: fixed; top: 70%; left: 50%; transform: translate(-50%, -50%);
             padding: 20px 40px; font-size: 2rem; background: #ff0055;
-            display: none; z-index: 300; border-radius: 50px; cursor: pointer; color: white;
+            display: none; z-index: 2000; border-radius: 50px; cursor: pointer; color: white;
         }
 
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .sucking-out { transition: all 2.5s ease-in; transform: scale(0) rotate(1080deg) !important; opacity: 0; }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -131,32 +129,34 @@
     <script>
         let countValue = 0;
         let blockCount = 0;
+        let tCount = 0; // T블럭 카운트 전용
         let timer = null;
         let delay = 500;
         let isWaiting = false;
+        let currentPhase = 'NORMAL'; // 'NORMAL', 'ENDING', 'T_STACKING', 'FINISHED'
 
         const container = document.getElementById('block-container');
         const counterDisplay = document.getElementById('counter');
         const resetBtn = document.getElementById('reset-btn');
 
-        // 태양계 행성 데이터 (이모지 + 이름)
         const solarSystem = [
-            {id: '☀️', name: '태양'},
-            {id: '☄️', name: '수성'},
-            {id: '✨', name: '금성'},
-            {id: '🌍', name: '지구'},
-            {id: '🔴', name: '화성'},
-            {id: '🟠', name: '목성'},
-            {id: '🪐', name: '토성'},
-            {id: '💎', name: '천왕성'},
-            {id: '🔵', name: '해왕성'}
+            {id: '☀️', name: '태양'}, {id: '☄️', name: '수성'}, {id: '✨', name: '금성'},
+            {id: '🌍', name: '지구'}, {id: '🔴', name: '화성'}, {id: '🟠', name: '목성'},
+            {id: '🪐', name: '토성'}, {id: '💎', name: '천왕성'}, {id: '🔵', name: '해왕성'}
         ];
-        const galaxies = Array.from({length: 100}, () => ({id: '🌀', name: '은하계'}));
-        const allObjects = [...solarSystem, ...galaxies];
 
-        function addBlock() {
+        // 통합 실행 함수: 현재 단계에 맞는 동작을 수행
+        function processNext() {
             if (isWaiting) return;
 
+            if (currentPhase === 'NORMAL') {
+                addNormalBlock();
+            } else if (currentPhase === 'T_STACKING') {
+                addTBlock();
+            }
+        }
+
+        function addNormalBlock() {
             blockCount++;
             countValue += 10000;
             counterDisplay.innerText = countValue.toLocaleString();
@@ -165,93 +165,96 @@
 
             if (blockCount > 0 && blockCount % 200 === 0) {
                 const objectIdx = (blockCount / 200) - 1;
-                if (objectIdx < allObjects.length) {
-                    const obj = allObjects[objectIdx];
+                if (objectIdx < solarSystem.length) {
+                    const obj = solarSystem[objectIdx];
                     block.className = 'block special-block';
-                    // 이름과 카운트다운을 위한 구조 생성
-                    block.innerHTML = `
-                        <span>${obj.id}</span>
-                        <div class="planet-info">
-                            <div class="planet-name">${obj.name}</div>
-                            <div class="ready-msg"></div>
-                        </div>`;
+                    block.innerHTML = `<span>${obj.id}</span><div class="planet-info"><div class="planet-name">${obj.name}</div><div class="ready-msg"></div></div>`;
                     container.appendChild(block);
-                    updateCameraAbsolute(block); 
+                    updateCamera(block); 
                     triggerPause(block.querySelector('.planet-info'), 4);
                 } else {
-                    // 블랙홀 등장
                     block.className = 'block special-block black-hole';
                     block.innerHTML = `<span>🕳️</span><div class="planet-info"><div class="planet-name">블랙홀</div><div class="ready-msg"></div></div>`;
                     container.appendChild(block);
-                    updateCameraAbsolute(block);
-                    triggerBlackHole();
+                    updateCamera(block);
+                    startEndingSequence();
                 }
             } else {
                 block.className = 'block';
                 block.innerText = countValue.toLocaleString();
                 block.style.backgroundColor = `hsl(${(blockCount * 10) % 360}, 60%, 45%)`;
                 container.appendChild(block);
-                updateCameraAbsolute(block);
+                updateCamera(block);
             }
         }
 
-        // 새로운 절대 좌표 기반 시점 고정 로직
-        function updateCameraAbsolute(targetBlock) {
-            // 브라우저가 레이아웃을 마친 후 계산하기 위해 requestAnimationFrame 사용
+        // T블럭 추가 함수 (버튼 제어 가능)
+        function addTBlock() {
+            tCount++;
+            if (tCount > 999) {
+                stopTimer();
+                currentPhase = 'FINISHED';
+                resetBtn.style.display = 'block';
+                return;
+            }
+
+            const tBlock = document.createElement('div');
+            tBlock.className = tCount === 999 ? 't-block final' : 't-block';
+            tBlock.innerText = `${tCount}T`;
+            container.appendChild(tBlock);
+            updateCamera(tBlock);
+
+            // T블럭은 기본적으로 속도가 빠름 (원하는 경우 버튼으로 조절 가능)
+            if (tCount === 1) delay = 50; 
+        }
+
+        function updateCamera(targetBlock) {
             requestAnimationFrame(() => {
                 const viewportCenterY = window.innerHeight / 2;
-                
-                // 1. 블럭의 바닥(bottom)을 기준으로 누적된 컨테이너 내부의 절대 높이를 구합니다.
-                //    CSS에서 column-reverse를 사용하므로, targetBlock.offsetTop이 컨테이너 바닥에서의 거리입니다.
-                //    getBoundingClientRect()는 시점에 따라 변하므로 오차가 발생하지만 offsetTop은 고정입니다.
-                const blockTopInsideContainer = targetBlock.offsetTop;
-                const blockHeight = targetBlock.offsetHeight;
-                
-                // 2. 블럭의 중심(center) 좌표를 계산합니다.
-                const blockCenterInsideContainer = blockTopInsideContainer + (blockHeight / 2);
-                
-                // 3. 컨테이너를 이동시켜 블럭의 중심을 뷰포트의 하단에서 중앙까지 끌어올립니다.
-                //    container.style.top = viewportCenterY - blockCenterInsideContainer 가 핵심입니다.
-                //    이전 currentY 계산을 제거하고 절대 좌표로 고정합니다.
-                const targetTop = viewportCenterY - blockCenterInsideContainer;
-                
-                container.style.top = `${targetTop}px`;
+                const blockCenterInsideContainer = targetBlock.offsetTop + (targetBlock.offsetHeight / 2);
+                container.style.top = `${viewportCenterY - blockCenterInsideContainer}px`;
             });
         }
 
         async function triggerPause(infoElement, seconds) {
             isWaiting = true;
-            stopTimer();
-            // 이름과 카운트다운 표시
             infoElement.style.display = 'flex';
             const msgElement = infoElement.querySelector('.ready-msg');
-            
             for (let i = seconds; i > 0; i--) {
                 msgElement.innerText = i;
                 await new Promise(r => setTimeout(r, 1000));
             }
-            // 카운트다운 완료 후 이름도 함께 숨김
             infoElement.style.display = 'none';
             isWaiting = false;
-            startTimer();
         }
 
-        function triggerBlackHole() {
+        async function startEndingSequence() {
+            currentPhase = 'ENDING';
             isWaiting = true;
-            stopTimer();
-            // 이름 표시 (카운트다운은 안 함)
-            container.querySelector('.black-hole .planet-info').style.display = 'flex';
+            const info = container.querySelector('.black-hole .planet-info');
+            info.style.display = 'flex';
+            info.querySelector('.ready-msg').innerText = "흡수 중...";
             
-            document.getElementById('main-controls').style.display = 'none';
-            setTimeout(() => {
-                container.classList.add('sucking-out');
-                setTimeout(() => { resetBtn.style.display = 'block'; }, 2500);
-            }, 1000);
+            await new Promise(r => setTimeout(r, 2000));
+            container.classList.add('sucking');
+            
+            await new Promise(r => setTimeout(r, 3000));
+            
+            // 초기화 후 T블럭 쌓기 단계로 전환
+            container.innerHTML = '';
+            container.classList.remove('sucking');
+            container.style.top = '50%';
+            counterDisplay.style.display = 'none';
+            
+            currentPhase = 'T_STACKING';
+            isWaiting = false;
+            delay = 50; // T블럭 기본 속도 상향
+            // 타이머가 돌고 있었다면 바뀐 phase로 계속 진행됨
         }
 
         function startTimer() {
-            if (!timer) {
-                timer = setInterval(addBlock, delay);
+            if (!timer && currentPhase !== 'FINISHED') {
+                timer = setInterval(processNext, delay);
                 document.getElementById('play-pause').innerText = "멈춤";
             }
         }
@@ -262,18 +265,9 @@
             document.getElementById('play-pause').innerText = "시작";
         }
 
-        document.getElementById('play-pause').onclick = () => {
-            if (timer) stopTimer(); else startTimer();
-        };
-
-        document.getElementById('speed-up').onclick = () => {
-            delay *= 0.8; if (timer) { stopTimer(); startTimer(); }
-        };
-
-        document.getElementById('speed-down').onclick = () => {
-            delay *= 1.2; if (timer) { stopTimer(); startTimer(); }
-        };
-
+        document.getElementById('play-pause').onclick = () => timer ? stopTimer() : startTimer();
+        document.getElementById('speed-up').onclick = () => { delay = Math.max(10, delay * 0.7); if(timer){stopTimer(); startTimer();} };
+        document.getElementById('speed-down').onclick = () => { delay *= 1.4; if(timer){stopTimer(); startTimer();} };
         resetBtn.onclick = () => location.reload();
     </script>
 </body>
