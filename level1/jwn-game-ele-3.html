@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>출동! 아산병원 변신 엘리베이터</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #e0f7fa;
+            font-family: 'Nanum Gothic', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 600px;
+            height: 90vh;
+            background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+            position: relative;
+            border: 8px solid #4caf50;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* 아산병원 건물 */
+        #hospital {
+            position: absolute;
+            top: 10%;
+            right: 20px;
+            width: 180px;
+            height: 220px;
+            background-color: #ffffff;
+            border: 4px solid #b0bec5;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+        #hospital-cross {
+            font-size: 40px;
+            color: #e53935;
+            margin-top: 10px;
+            animation: pulse 1s infinite alternate;
+        }
+        .window {
+            width: 30px;
+            height: 30px;
+            background-color: #e0f7fa;
+            display: inline-block;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        /* 도로와 땅 */
+        #ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 120px;
+            background-color: #78909c;
+            border-top: 10px solid #8d6e63;
+        }
+        #line {
+            border-top: 4px dashed #ffffff;
+            height: 0;
+            width: 100%;
+            position: absolute;
+            top: 50%;
+        }
+
+        /* 변신 캐릭터 (엘리베이터 / 구급차) */
+        #vehicle {
+            position: absolute;
+            bottom: 30px;
+            left: 40px;
+            width: 100px;
+            height: 120px;
+            background-color: #eceff1;
+            border: 5px solid #37474f;
+            border-radius: 15px;
+            transition: all 0.8s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        /* 엘리베이터 문 */
+        .door {
+            width: 40%;
+            height: 80%;
+            background-color: #b0bec5;
+            border: 2px solid #78909c;
+            display: inline-block;
+            transition: transform 0.5s;
+        }
+
+        /* 사이렌 */
+        #siren {
+            position: absolute;
+            top: -25px;
+            width: 30px;
+            height: 20px;
+            background-color: #ff1744;
+            border-radius: 10px 10px 0 0;
+            display: none;
+        }
+
+        /* 바퀴 */
+        .wheel {
+            position: absolute;
+            bottom: -15px;
+            width: 25px;
+            height: 25px;
+            background-color: #212121;
+            border-radius: 50%;
+            display: none;
+        }
+
+        /* 등장 캐릭터들 (사자, 임산부, 아기) */
+        .character {
+            position: absolute;
+            font-size: 50px;
+            cursor: pointer;
+            animation: bounce 0.5s infinite alternate;
+            display: none;
+            text-align: center;
+        }
+        
+        #patient { bottom: 30px; left: 280px; }
+        #pregnant { bottom: 30px; left: 280px; }
+        #baby { bottom: 200px; left: 140px; font-size: 40px; }
+
+        /* 중앙 안내 버튼 */
+        #action-btn {
+            position: absolute;
+            bottom: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+            background-color: #ff5722;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            animation: bigPulse 1.5s infinite;
+        }
+
+        /* 말풍선 안내 */
+        #bubble {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 15px 25px;
+            border-radius: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            border: 3px solid #ffb74d;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 20;
+        }
+
+        /* 애니메이션 효과들 */
+        @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+        @keyframes bigPulse { 
+            0% { transform: translateX(-50%) scale(1); } 
+            50% { transform: translateX(-50%) scale(1.1); } 
+            100% { transform: translateX(-50%) scale(1); } 
+        }
+        
+        .siren-blink { animation: blink 0.3s infinite alternate; }
+        @keyframes blink { from { background-color: #ff1744; } to { background-color: #00e5ff; } }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="hospital">
+            <div id="hospital-cross">🏥</div>
+            <div style="font-weight: bold; color: #37474f; font-size: 14px;">아산병원</div>
+            <div class="window"></div><div class="window"></div>
+            <div class="window"></div><div class="window"></div>
+        </div>
+
+        <div id="bubble">버튼을 눌러서 게임을 시작해요!</div>
+
+        <div id="vehicle">
+            <div id="siren"></div>
+            <div style="display: flex; width: 100%; height: 100%; justify-content: space-around; align-items: center;" id="door-container">
+                <div class="door" id="door-left"></div>
+                <div class="door" id="door-right"></div>
+            </div>
+            <div class="wheel" style="left: 10px;"></div>
+            <div class="wheel" style="right: 10px;"></div>
+        </div>
+
+        <div id="patient" class="character">⛑️🦁<br><span style="font-size: 14px; background: white; border-radius: 5px; padding: 2px;">아파요!</span></div>
+        <div id="pregnant" class="character">🤰🐰<br><span style="font-size: 14px; background: white; border-radius: 5px; padding: 2px;">아기가 나와요!</span></div>
+        <div id="baby" class="character">👶🐰❤️<br><span style="font-size: 12px; background: white; border-radius: 5px; padding: 2px;">응애~!</span></div>
+
+        <div id="ground"><div id="line"></div></div>
+
+        <button id="action-btn" onclick="nextStep()">시작하기!</button>
+    </div>
+
+    <script>
+        let step = 0;
+        const vehicle = document.getElementById('vehicle');
+        const siren = document.getElementById('siren');
+        const wheels = document.querySelectorAll('.wheel');
+        const doors = document.querySelectorAll('.door');
+        const patient = document.getElementById('patient');
+        const pregnant = document.getElementById('pregnant');
+        const baby = document.getElementById('baby');
+        const btn = document.getElementById('action-btn');
+        const bubble = document.getElementById('bubble');
+
+        let audioCtx = null;
+        let sirenInterval = null;
+        
+        function startSirenSound() {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            let high = true;
+            sirenInterval = setInterval(() => {
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(high ? 650 : 500, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.2);
+                high = !high;
+            }, 250);
+        }
+
+        function stopSirenSound() {
+            clearInterval(sirenInterval);
+        }
+
+        function playDingDong() {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // 도
+            osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); // 미
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.4);
+        }
+
+        // 아기 울음소리 비슷한 귀여운 효과음
+        function playBabySound() {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.4);
+        }
+
+        function transformToAmbulance() {
+            vehicle.style.width = "140px";
+            vehicle.style.height = "90px";
+            vehicle.style.backgroundColor = "#ffffff";
+            vehicle.style.border = "5px solid #e53935";
+            document.getElementById('door-container').style.display = 'none';
+            siren.style.display = "block";
+            siren.classList.add('siren-blink');
+            wheels.forEach(w => w.style.display = "block");
+            startSirenSound();
+        }
+
+        function transformToElevator() {
+            stopSirenSound();
+            playDingDong();
+            vehicle.style.width = "100px";
+            vehicle.style.height = "120px";
+            vehicle.style.backgroundColor = "#eceff1";
+            vehicle.style.border = "5px solid #37474f";
+            document.getElementById('door-container').style.display = 'flex';
+            siren.style.display = "none";
+            siren.classList.remove('siren-blink');
+            wheels.forEach(w => w.style.display = "none");
+            document.getElementById('door-left').style.transform = "translateX(0)";
+            document.getElementById('door-right').style.transform = "translateX(0)";
+        }
+
+        function openDoors() {
+            document.getElementById('door-left').style.transform = "translateX(-30px)";
+            document.getElementById('door-right').style.transform = "translateX(30px)";
+        }
+
+        // 게임 진행 단계 로직
+        function nextStep() {
+            if (step === 0) {
+                // [스토리 1: 사자 구하기] 변신!
+                bubble.innerText = "와아! 엘리베이터가 구급차로 변신해요!";
+                btn.style.display = "none";
+                transformToAmbulance();
+
+                setTimeout(() => {
+                    bubble.innerText = "아픈 사자가 기다리고 있어요! 출동~";
+                    patient.style.display = "block";
+                    btn.style.display = "block";
+                    btn.innerText = "사자에게 가기!";
+                    step = 1;
+                }, 1500);
+
+            } else if (step === 1) {
+                // 사자에게 이동
+                bubble.innerText = "삐뽀삐뽀! 사자에게 달려가요!";
+                btn.style.display = "none";
+                vehicle.style.left = "240px";
+
+                setTimeout(() => {
+                    bubble.innerText = "사자를 태웠어요! 아산병원으로 출발!";
+                    patient.style.display = "none";
+                    btn.style.display = "block";
+                    btn.innerText = "병원으로 가기!";
+                    step = 2;
+                }, 1500);
+
+            } else if (step === 2) {
+                // 병원 도착 및 엘리베이터 변신
+                bubble.innerText = "병원으로 빠르게 슈웅~";
+                btn.style.display = "none";
+                vehicle.style.left = "40px";
+                vehicle.style.bottom = "200px";
+
+                setTimeout(() => {
+                    transformToElevator();
+                    bubble.innerText = "도착! 문을 열어 사자를 치료해줘요!";
+                    btn.style.display = "block";
+                    btn.innerText = "문 열기!";
+                    step = 3;
+                }, 1500);
+
+            } else if (step === 3) {
+                // 사자 치료 완료
+                openDoors();
+                btn.style.display = "none";
+                setTimeout(() => {
+                    patient.innerHTML = "🦁❤️<br><span style='font-size: 14px; background: white; border-radius: 5px; padding: 2px;'>다 나았어!</span>";
+                    patient.style.left = "160px";
+                    patient.style.bottom = "200px";
+                    patient.style.display = "block";
+                    bubble.innerText = "치료 완료! 어라? 이번엔 임산부 토끼 엄마가 아프대요!";
+                    
+                    setTimeout(() => {
+                        btn.style.display = "block";
+                        btn.innerText = "토끼 엄마 구하러 가기!";
+                        step = 4;
+                    }, 2000);
+                }, 800);
+
+            } else if (step === 4) {
+                // [스토리 2: 임산부 아기 출산] 다시 구급차 변신
+                patient.style.display = "none";
+                vehicle.style.bottom = "30px";
+                vehicle.style.left = "40px";
+                transformToAmbulance();
+                bubble.innerText = "다시 구급차로 변신! 토끼 엄마에게 출동!";
+                btn.style.display = "none";
+
+                setTimeout(() => {
+                    pregnant.style.display = "block";
+                    bubble.innerText = "배가 부른 토끼 엄마가 기다려요!";
+                    btn.style.display = "block";
+                    btn.innerText = "토끼 엄마 태우기!";
+                    step = 5;
+                }, 1500);
+
+            } else if (step === 5) {
+                // 토끼엄마에게 이동
+                bubble.innerText = "조심조심 안전하게 달려가요! 삐뽀삐뽀~";
+                btn.style.display = "none";
+                vehicle.style.left = "240px";
+
+                setTimeout(() => {
+                    pregnant.style.display = "none";
+                    bubble.innerText = "엄마를 태웠어요! 아산병원 산부인과로 출발!";
+                    btn.style.display = "block";
+                    btn.innerText = "병원으로 달리기!";
+                    step = 6;
+                }, 1500);
+
+            } else if (step === 6) {
+                // 병원(위층)으로 이동 및 변신
+                bubble.innerText = "아기가 곧 나올 것 같아요! 힘내세요!";
+                btn.style.display = "none";
+                vehicle.style.left = "40px";
+                vehicle.style.bottom = "200px";
+
+                setTimeout(() => {
+                    transformToElevator();
+                    bubble.innerText = "아산병원 산부인과 도착! 문을 열어 아기를 만나요!";
+                    btn.style.display = "block";
+                    btn.innerText = "문 열기!";
+                    step = 7;
+                }, 1500);
+
+            } else if (step === 7) {
+                // 문이 열리고 아기 탄생!
+                openDoors();
+                btn.style.display = "none";
+                
+                setTimeout(() => {
+                    playBabySound();
+                    pregnant.innerHTML = "🐰👩❤️<br><span style='font-size: 13px; background: white; border-radius: 5px; padding: 2px;'>엄마가 됐어요!</span>";
+                    pregnant.style.left = "210px";
+                    pregnant.style.bottom = "200px";
+                    pregnant.style.display = "block";
+                    
+                    baby.style.display = "block"; // 귀여운 아기 토끼 등장
+                    bubble.innerText = "축하합니다! 아산병원에서 건강한 아기가 태어났어요! 짝짝짝!";
+                    
+                    setTimeout(() => {
+                        btn.style.display = "block";
+                        btn.innerText = "처음부터 다시하기";
+                        step = 8;
+                    }, 2500);
+                }, 800);
+
+            } else if (step === 8) {
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
