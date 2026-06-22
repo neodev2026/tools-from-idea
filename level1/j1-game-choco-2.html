@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>페파피그 도넛 공장 게임</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            font-family: 'Malgun Gothic', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 게임 화면 컨테이너 */
+        #game-container {
+            width: 1000px;
+            height: 562px;
+            background-color: #79ced6; /* 기본 배경색 */
+            background-image: url('image_82afe2.jpg'); /* 업로드하신 이미지 파일명 */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            border: 4px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        /* 상단 주황색 누르개 (스탬프) */
+        #presser {
+            position: absolute;
+            top: -10px;
+            left: 240px;
+            width: 150px;
+            height: 120px;
+            background: radial-gradient(circle at center, #ff6b6b, #e64a19);
+            border-radius: 50% 50% 20% 20%;
+            border-bottom: 15px solid #d84315;
+            z-index: 10;
+            transform: translateY(0);
+        }
+
+        /* 누르개 기둥 */
+        #presser::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: 65px;
+            width: 20px;
+            height: 200px;
+            background-color: #b0bec5;
+        }
+
+        /* 컨베이어 벨트 위 반죽들이 지나가는 트랙 영역 */
+        #dough-track {
+            position: absolute;
+            top: 215px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        /* 반죽/도넛 요소 */
+        .dough {
+            position: absolute;
+            top: 20px;
+            left: -100px;
+            width: 65px;
+            height: 45px;
+            background-color: #f5e6cc; /* 평평한 반죽 색상 */
+            border: 3px solid #dfcbb5;
+            border-radius: 50%;
+            box-sizing: border-box;
+            transition: transform 0.1s linear;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 누르면 도넛 형태로 변하는 스타일 */
+        .dough.donut {
+            background-color: #fce4ec;
+            border: 6px solid #f8bbd0;
+        }
+        /* 도넛 구멍 구체화 */
+        .dough.donut::after {
+            content: '';
+            width: 16px;
+            height: 12px;
+            background-color: #3b484a; /* 배경 벨트 색상과 유사하게 처리 */
+            border-radius: 50%;
+        }
+
+        /* 우측 하단 컨트롤러 클릭 영역 래퍼 */
+        .control-panel {
+            position: absolute;
+            bottom: 25px;
+            left: 510px;
+            width: 170px;
+            height: 100px;
+            z-index: 10;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 12px;
+            padding-bottom: 5px;
+            box-sizing: border-box;
+        }
+
+        /* 투명한 속도 버튼 조작부 (이미지 위 배치용) */
+        .speed-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.2s;
+        }
+        .speed-btn:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 8px #fff;
+        }
+        .speed-btn.active {
+            border-color: #fff;
+            box-shadow: 0 0 12px #fff;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 대시보드 스코어 및 상태창 */
+        #hud {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            border: 3px solid #ff80ab;
+            z-index: 10;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="presser"></div>
+
+    <div id="dough-track" id="track"></div>
+
+    <div class="control-panel">
+        <div class="speed-btn" id="btn-red" onclick="setSpeed(0)" title="정지"></div>
+        <div class="speed-btn active" id="btn-yellow" onclick="setSpeed(2)" title="보통"></div>
+        <div class="speed-btn" id="btn-green" onclick="setSpeed(5)" title="빠름"></div>
+    </div>
+
+    <div id="hud">
+        <div>현재 속도: <span id="speed-text" style="color:#fbc02d">보통</span></div>
+        <div style="margin-top: 5px;">만든 도넛: <span id="score" style="color:#e91e63">0</span>개</div>
+    </div>
+</div>
+
+<script>
+    const track = document.getElementById('dough-track');
+    const presser = document.getElementById('presser');
+    const scoreText = document.getElementById('score');
+    const speedText = document.getElementById('speed-text');
+
+    let currentSpeed = 2; // 기본 속도 (보통)
+    let score = 0;
+    let doughList = [];
+    
+    // 주기적으로 새로운 반죽 생성 (속도에 관계없이 일정 간격)
+    setInterval(spawnDough, 2500);
+
+    // 게임 루프 (반죽들 이동 처리)
+    function gameLoop() {
+        doughList.forEach((doughObj, index) => {
+            doughObj.x += currentSpeed;
+            doughObj.element.style.left = doughObj.x + 'px';
+
+            // 누르개 영역(X: 280근처)을 지나갈 때 아직 도넛이 안 되었다면 체크
+            if (!doughObj.isDonut && doughObj.x >= 250 && doughObj.x <= 310) {
+                // 현재 누르개가 내려와 있는 상태(동작 중)라면 도넛으로 변신!
+                if (isPressing) {
+                    doughObj.isDonut = true;
+                    doughObj.element.classList.add('donut');
+                    score++;
+                    scoreText.innerText = score;
+                }
+            }
+
+            // 화면 오른쪽 끝으로 완전히 나가면 요소 제거
+            if (doughObj.x > 1050) {
+                doughObj.element.remove();
+                doughList.splice(index, 1);
+            }
+        });
+
+        requestAnimationFrame(gameLoop);
+    }
+    requestAnimationFrame(gameLoop);
+
+    // 반죽 생성기
+    function spawnDough() {
+        // 정지 상태일 때는 새 반죽이 밀려오지 않음
+        if (currentSpeed === 0) return;
+
+        const el = document.createElement('div');
+        el.classList.add('dough');
+        track.appendChild(el);
+
+        doughList.push({
+            element: el,
+            x: -80,
+            isDonut: false
+        });
+    }
+
+    /* 누르개 주기적 자동 작동 시스템 */
+    let isPressing = false;
+    function autoPress() {
+        // 벨트가 멈춰있지 않을 때만 주기적으로 누르기가 작동함
+        if (currentSpeed > 0) {
+            isPressing = true;
+            // 내려찍기 애니메이션 효과
+            presser.style.transition = 'transform 0.15s ease-in';
+            presser.style.transform = 'translateY(115px)'; // 반죽 높이까지 하강
+
+            setTimeout(() => {
+                // 원상복구
+                presser.style.transition = 'transform 0.3s ease-out';
+                presser.style.transform = 'translateY(0)';
+                setTimeout(() => { isPressing = false; }, 300);
+            }, 200);
+        }
+        
+        // 속도가 빠르면 누르개도 더 자주 내려옴
+        let nextPressInterval = currentSpeed === 5 ? 1200 : 2000;
+        setTimeout(autoPress, nextPressInterval);
+    }
+    // 최초 자동 타이머 가동
+    setTimeout(autoPress, 2000);
+
+
+    /* 속도 제어 함수 (우측 하단 레버/버튼 제어용) */
+    function setSpeed(speed) {
+        currentSpeed = speed;
+        
+        // 버튼 활성화 스타일 리셋
+        document.getElementById('btn-red').classList.remove('active');
+        document.getElementById('btn-yellow').classList.remove('active');
+        document.getElementById('btn-green').classList.remove('active');
+
+        if (speed === 0) {
+            document.getElementById('btn-red').classList.add('active');
+            speedText.innerText = "정지";
+            speedText.style.color = "#ef5350";
+        } else if (speed === 2) {
+            document.getElementById('btn-yellow').classList.add('active');
+            speedText.innerText = "보통";
+            speedText.style.color = "#fbc02d";
+        } else if (speed === 5) {
+            document.getElementById('btn-green').classList.add('active');
+            speedText.innerText = "빠름!!";
+            speedText.style.color = "#66bb6a";
+        }
+    }
+</script>
+
+</body>
+</html>
