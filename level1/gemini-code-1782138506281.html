@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>페파피그 초콜릿 공장 게임</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            font-family: 'Malgun Gothic', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 게임 화면 컨테이너 */
+        #game-container {
+            width: 800px;
+            height: 450px;
+            background-color: #b3cde3; /* 기본 배경색 (이미지가 없을 때 대비) */
+            background-image: url('image_82385d.jpg'); /* 업로드하신 이미지 파일명을 적어주세요 */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            border: 4px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        /* 상단 초콜릿 분사구 버튼 영역 */
+        .dispenser-buttons {
+            position: absolute;
+            top: 20px;
+            left: 200px;
+            display: flex;
+            gap: 25px;
+            z-index: 10;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: 3px solid #fff;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            text-shadow: 1px 1px 2px #000;
+            transition: transform 0.1s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-dark { background-color: #3d2314; }    /* 진한 갈색 */
+        .btn-milk { background-color: #7a431d; }    /* 갈색 */
+        .btn-vanilla { background-color: #fffdd0; color: #555; text-shadow: none; border-color: #ccc; } /* 바닐라 */
+
+        /* 초콜릿 줄기 효과 애니메이션 */
+        .chocolate-stream {
+            position: absolute;
+            top: 130px;
+            width: 15px;
+            height: 0;
+            border-radius: 0 0 10px 10px;
+            z-index: 5;
+            transition: height 0.2s ease-in-out;
+        }
+        #stream-dark { left: 242px; background-color: #3d2314; }
+        #stream-milk { left: 327px; background-color: #7a431d; }
+        #stream-vanilla { left: 412px; background-color: #fffdd0; }
+
+        /* 컨베이어 벨트 (시각적 표시용) */
+        .conveyor {
+            position: absolute;
+            bottom: 60px;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: repeating-linear-gradient(90deg, #444, #444 20px, #666 20px, #666 40px);
+            animation: moveBelt 2s linear infinite;
+            animation-play-state: paused;
+            z-index: 2;
+        }
+        @keyframes moveBelt {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 0; }
+        }
+
+        /* 오른쪽 터널 출구 */
+        .tunnel {
+            position: absolute;
+            right: 0;
+            bottom: 50px;
+            width: 120px;
+            height: 120px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 50% 0 0 50%;
+            z-index: 4;
+            border-left: 5px solid #ff4081;
+        }
+
+        /* 초콜릿 상자 */
+        #chocolate-box {
+            position: absolute;
+            bottom: 75px;
+            left: -120px; /* 화면 왼쪽 밖에서 시작 */
+            width: 100px;
+            height: 45px;
+            background-color: #ffd54f;
+            border: 3px solid #ffb300;
+            border-radius: 5px;
+            z-index: 3;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 5px;
+            box-sizing: border-box;
+            transition: left 1.5s linear; /* 부드러운 이동을 위한 트랜지션 */
+        }
+
+        /* 상자 안의 초콜릿 칸 */
+        .choco-slot {
+            width: 25px;
+            height: 30px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+
+        /* 안내 메시지 레이블 */
+        #status-msg {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+            border: 2px solid #ff4081;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="dispenser-buttons">
+        <button class="btn btn-dark" onclick="pourChocolate('#3d2314', '#stream-dark')">진한갈색</button>
+        <button class="btn btn-milk" onclick="pourChocolate('#7a431d', '#stream-milk')">갈색</button>
+        <button class="btn btn-vanilla" onclick="pourChocolate('#fffdd0', '#stream-vanilla')">바닐라</button>
+    </div>
+
+    <div id="stream-dark" class="chocolate-stream"></div>
+    <div id="stream-milk" class="chocolate-stream"></div>
+    <div id="stream-vanilla" class="chocolate-stream"></div>
+
+    <div id="status-msg">상자가 들어오는 중...</div>
+
+    <div id="chocolate-box">
+        <div class="choco-slot" id="slot1"></div>
+        <div class="choco-slot" id="slot2"></div>
+        <div class="choco-slot" id="slot3"></div>
+    </div>
+
+    <div class="conveyor" id="belt"></div>
+    <div class="tunnel"></div>
+</div>
+
+<script>
+    const box = document.getElementById('chocolate-box');
+    const belt = document.getElementById('belt');
+    const msg = document.getElementById('status-msg');
+    const slots = [document.getElementById('slot1'), document.getElementById('slot2'), document.getElementById('slot3')];
+    
+    let currentSlot = 0; // 현재 채워야 할 상자 안의 칸 번호
+    let isReady = false; // 버튼 클릭 가능 여부
+
+    // 게임 시작 시 첫 상자 소환
+    spawnBox();
+
+    // 1. 새로운 빈 상자 등장
+    function spawnBox() {
+        isReady = false;
+        currentSlot = 0;
+        msg.innerText = "새 상자가 들어오는 중...";
+        
+        // 상자 내부 초기화
+        slots.forEach(slot => slot.style.backgroundColor = '#e0e0e0');
+        
+        // 상자 위치 왼조 뒤로 리셋 후 출발
+        box.style.transition = 'none';
+        box.style.left = '-120px';
+        
+        setTimeout(() => {
+            belt.style.animationPlayState = 'running';
+            box.style.transition = 'left 2s linear';
+            box.style.left = '270px'; // 발사구 중앙 아래에 멈춤
+        }, 100);
+    }
+
+    // 컨베이어 벨트 정지 및 발사 대기 처리 (상자가 도착했을 때)
+    box.addEventListener('transitionend', () => {
+        // 상자가 중앙에 도착했을 때
+        if (box.style.left === '270px') {
+            belt.style.animationPlayState = 'paused';
+            isReady = true;
+            msg.innerText = "초콜릿 버튼을 눌러 상자를 채우세요!";
+        } 
+        // 상자가 오른쪽 터널로 나갔을 때
+        else if (box.style.left === '820px') {
+            spawnBox();
+        }
+    });
+
+    // 2. 버튼 클릭 시 초콜릿 발사 애니메이션 및 상자 채우기
+    function pourChocolate(color, streamId) {
+        if (!isReady || currentSlot >= 3) return;
+        
+        isReady = false; // 중복 클릭 방지
+        const stream = document.querySelector(streamId);
+        
+        // 초콜릿 줄기 아래로 발사 애니메이션
+        stream.style.height = '180px';
+        
+        setTimeout(() => {
+            // 상자의 현재 칸 색상 채우기
+            slots[currentSlot].style.backgroundColor = color;
+            currentSlot++;
+            
+            // 초콜릿 줄기 다시 회수
+            stream.style.height = '0px';
+            
+            setTimeout(() => {
+                // 상자가 꽉 찼는지 확인
+                if (currentSlot >= 3) {
+                    shipOut();
+                } else {
+                    isReady = true; // 다음 칸 채우기 대기
+                }
+            }, 200);
+        }, 300);
+    }
+
+    // 3. 초콜릿이 꽉 찬 상자를 오른쪽 터널로 내보내기
+    function shipOut() {
+        msg.innerText = "초콜릿 완성! 터널로 이동합니다.";
+        belt.style.animationPlayState = 'running';
+        box.style.transition = 'left 1.5s linear';
+        box.style.left = '820px'; // 오른쪽 화면 밖(터널 안)으로 이동
+    }
+</script>
+
+</body>
+</html>
